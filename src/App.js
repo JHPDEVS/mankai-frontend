@@ -17,6 +17,7 @@ import { ToastContainer } from 'react-toastify'
 import { Noti } from './store/modules/getNoti'
 import NotiView from './components/NotiView'
 import Dashboard from './components/Dashboard'
+import Chat from './components/Chat/Chat';
 import DashboardUser from './admin/component/User'
 import './css/style.scss'
 axios.defaults.baseURL = 'http://localhost:8000/'
@@ -50,6 +51,7 @@ function App() {
         </Route>
         <Route exact path="/register" component={Register}></Route>
         <Route exact path="/dashboard" component={Dashboard}></Route>
+        <Route exact path="/chat" component={Chat}></Route>
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
         <Route path="*" component={Empty}></Route>
       </Switch>
