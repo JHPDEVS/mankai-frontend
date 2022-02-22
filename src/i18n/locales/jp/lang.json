@@ -1,0 +1,12 @@
+{
+    "LOGIN":"로그인",
+    "NOTID":"아이디가 없으신가요?",
+    "REGISTER":"회원가입",
+    "FINDPASSWORD" : "비밀번호 찾기",
+    "ID" : "아이디",
+    "PASSWORD" : "비밀번호",
+    "HOME" : "ホーム",
+    "PROFILEEDIT" : "Profile Edit",
+    "LOGOUT" : "ローグアウト",
+    "SEARCHPLACE" : "フィンド　ユザーン"
+}

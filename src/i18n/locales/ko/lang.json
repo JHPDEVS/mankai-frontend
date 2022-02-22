@@ -1,0 +1,12 @@
+{
+    "LOGIN":"로그인",
+    "NOTID":"아이디가 없으신가요?",
+    "REGISTER":"회원가입",
+    "FINDPASSWORD" : "비밀번호 찾기",
+    "ID" : "아이디",
+    "PASSWORD" : "비밀번호",
+    "HOME" : "번역테스트",
+    "PROFILEEDIT" : "프로필 수정",
+    "LOGOUT" : "로그아웃",
+    "SEARCHPLACE" : "관심사 및 유저찾기"
+}
