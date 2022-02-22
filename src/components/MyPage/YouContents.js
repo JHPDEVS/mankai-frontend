@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import MyFollow from './MyFollow';
 import MyPost from './MyPost';
 import MyGroups from './MyGroups';
-import MyMemo from './MyMemo';
 
 
 function TabPanel(props) {
@@ -58,7 +57,6 @@ export default function BasicTabs() {
           <Tab label="Follow" {...a11yProps(0)} />
           <Tab label="Post" {...a11yProps(1)} />
           <Tab label="Groups" {...a11yProps(2)} />
-          <Tab label="Memo" {...a11yProps(3)} />
 
         </Tabs>
       </Box>
@@ -70,9 +68,6 @@ export default function BasicTabs() {
       </TabPanel>
       <TabPanel value={value} index={2}>
         <MyGroups/>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <MyMemo/>
       </TabPanel>
     </Box>
   );

@@ -1,12 +1,17 @@
 import * as React from 'react';
+import { useState } from 'react'; 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import Modal from 'react-modal';
+import YouPage from './YouPage'
 
 export default function FollowList() {
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+  
   return (
     <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
       {followData.map((item)=>(
@@ -16,6 +21,7 @@ export default function FollowList() {
         </ListItemAvatar>
         <ListItemText
           primary={item.name}
+          onClick={()=> setModalIsOpen(true)}
           secondary={
             <React.Fragment>
               <Typography
@@ -31,7 +37,10 @@ export default function FollowList() {
         />
       </ListItem>
       ))}
-     
+
+      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
+        <YouPage/>
+      </Modal>
       
     </List>
   );
