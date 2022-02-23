@@ -19,16 +19,24 @@ const GET_NOTI_FAILURE = 'GET_NOTI_FAILURE'
 const GET_USERS_PENDING = 'GET_USERS_PENDING'
 const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS'
 const GET_USERS_FAILURE = 'GET_USERS_FAILURE'
+const BOARD_UPDATE = "BOARD_UPDATE"
+const BOARD_CLICK ="BOARD_CLICK"
+const BOARD_CLEAR ="BOARD_CLEAR"
+const SIDE_OPEN = "SIDE_OPEN"
+const SIDE_CLOSE ="SIDE_CLOSE"
 
 const initialState = {
   user: null,
   pending: false,
   error: false,
   noti: null,
+  boardData:[{}],
+  sideData:"",
+  isOpen:false
 }
 
 export default handleActions(
-  {
+  { 
     [LOGIN]: (state, action) => {
       return {
         ...state, // 모든 states 복사
@@ -156,6 +164,41 @@ export default handleActions(
         error: false,
       }
     },
+    [BOARD_UPDATE]:(state,action)=>{
+        return{
+            ...state,
+            boardData:[...state.boardData,action.payload.boardData]
+        }
+    },
+    [BOARD_CLICK]:(state,action)=>{
+      return {
+        ...state,
+        sideData:action.payload.sideData        
+      }
+    },
+    [BOARD_CLEAR]:(state,action)=>{
+      return {
+        ...state,
+        boardData:[]
+      }
+    },
+    [SIDE_OPEN]:(state,action)=>{
+      return {
+        ...state,
+        isOpen:true
+      }
+    },
+    [SIDE_CLOSE]:(state,action)=>{
+      return {
+        ...state,
+        isOpen:false
+      }
+    }
+
+
+    
   },
+  
   initialState
 )
+

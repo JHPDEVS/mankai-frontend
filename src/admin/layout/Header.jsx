@@ -70,18 +70,7 @@ function Header({ sidebarOpen, setSidebarOpen }) {
               modalOpen={searchModalOpen}
               setModalOpen={setSearchModalOpen}
             />
-            {/*  notification */}
-            {user && !loading ? (
-              <Notifications />
-            ) : loading ? (
-              <Skeleton
-                animation="wave"
-                variant="circular"
-                width={40}
-                height={40}
-                className="ml-3"
-              />
-            ) : null}
+           
 
             {/*  Divider */}
             <hr className="w-px h-6 bg-slate-200 mx-3" />

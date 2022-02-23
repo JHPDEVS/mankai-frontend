@@ -120,7 +120,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                 }`}
               >
                 <NavLink
-                  to="/"
+                  to="/board"
                   className={`block text-white  truncate transition duration-150 ${
                     pathname.includes('ssad') && 'hover:text-black'
                   }`}

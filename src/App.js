@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import Login from './components/Login'
 import Register from './components/Register'
+import BoardCopy from './components/BoardCopy'
 import Mypage from './components/Mypage'
 import axios from 'axios'
 import Home from './layouts/Home'
@@ -51,6 +52,8 @@ function App() {
         <Route exact path="/register" component={Register}></Route>
         <Route exact path="/dashboard" component={Dashboard}></Route>
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
+        <Route exact path="/board" component={BoardCopy}></Route>
+          
         <Route path="*" component={Empty}></Route>
       </Switch>
     </Router>
