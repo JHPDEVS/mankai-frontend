@@ -13,15 +13,15 @@ function ChatContainer(props) {
     window.Echo = new Echo({
         broadcaster: 'pusher',
         key: 'anykey',
-        wsHost: '127.0.0.1',
-        wsPort: 6001,
-        disableStats: true,
+        // wsHost: '127.0.0.1',
+        // wsPort: 6001,
+        // disableStats: true,
     });
     useEffect(() => {
-        // window.Echo.private('chat').listen('send-message', (e) => {
-        //     // setMessages([...messages, e]);
-        //     console.log(e);
-        // })
+        window.Echo.private('chat').listen('send-message', (e) => {
+            // setMessages([...messages, e]);
+            console.log(e);
+        })
     });
     // Pusher.logToConsole = true;
     //     var pusher = new Pusher('da3bc2f433d9160a3164', {
