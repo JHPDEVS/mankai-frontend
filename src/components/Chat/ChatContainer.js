@@ -8,28 +8,32 @@ import Pusher from 'pusher-js';
 function ChatContainer(props) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState();
+    window.Pusher = require('pusher-js');
 
-    // useEffect(() => {
-    //     window.Echo = new Echo({
-    //         broadcaster : 'pusher',
-    //         key : 'da3bc2f433d9160a3164'
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: 'anykey',
+        wsHost: '127.0.0.1',
+        wsPort: 6001,
+        disableStats: true,
+    });
+    useEffect(() => {
+        // window.Echo.private('chat').listen('send-message', (e) => {
+        //     // setMessages([...messages, e]);
+        //     console.log(e);
+        // })
+    });
+    // Pusher.logToConsole = true;
+    //     var pusher = new Pusher('da3bc2f433d9160a3164', {
+    //         cluster : 'ap3'
     //     });
-    //     window.Echo.channel('chat').listen('MessageSent', (e) => {
-    //         // setMessages([...messages, e]);
-    //         console.log(e);
+    // useEffect(() => {
+        
+    //     var channel = pusher.subscribe('chat');
+    //     channel.bind('MessageSent', function(data) {
+    //         console.log(data.data);
     //     })
     // });
-    Pusher.logToConsole = true;
-        var pusher = new Pusher('da3bc2f433d9160a3164', {
-            cluster : 'ap3'
-        });
-    useEffect(() => {
-        
-        var channel = pusher.subscribe('chat');
-        channel.bind('MessageSent', function(data) {
-            console.log(data.data);
-        })
-    });
 
 
     const getMessages = (roomId) => {

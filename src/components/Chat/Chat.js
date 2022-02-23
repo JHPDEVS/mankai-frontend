@@ -14,6 +14,7 @@ import ChatInviteModal from './ChatInviteModal';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton } from '@mui/material';
 import Header from '../../admin/layout/Header';
+import Echo from 'laravel-echo';
 
 function Chat() {
     const [rooms, setRooms] = useState([]);
@@ -60,6 +61,8 @@ function Chat() {
     },[currentUser]);
 
     useEffect(() => {
+
+     
         console.log(rooms);
         // console.log(currentRoom);
     },[rooms, currentRoom]);
