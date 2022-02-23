@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 export default function ImgMediaCard() {
  
   return (
-    <Card sx={{ maxWidth: 300 }} className="card">
+    <Card sx={{ minWidth: 300 , maxWidth: 300  }} className="card">
 
        <div className='cardImg'>
         <ReactRoundedImage className='imgFile' roundedSize="0" imageWidth="110" imageHeight="110" />

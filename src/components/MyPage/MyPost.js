@@ -3,17 +3,20 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 
+
 export default function PostList() {
   return (
-    <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
+   <div>
+      <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
     {postData.map((item)=>(
         <ListItem  key={item.id} >
         <ListItemText primary={item.title} secondary={item.group} />
       </ListItem>
 
     ))}
-    
     </List>
+  
+   </div>
   );
 }
 

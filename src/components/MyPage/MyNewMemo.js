@@ -5,6 +5,8 @@ import { Button, Grid, IconButton, List, ListItem, ListItemText, Stack, Typograp
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 
+import { Editor } from 'react-draft-wysiwyg';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 export default function App() {
 
   return (
@@ -28,7 +30,7 @@ export default function App() {
 
       <Paper>
       <div style={{ border: "1px solid black", padding: '2px', minHeight: '400px' }}>
-        
+      <Editor />
       </div>
 
       </Paper>

@@ -52,7 +52,7 @@ export default function BasicTabs() {
   };
   
   return (
-    <Box className='container' sx={{ width: '100%' }}>
+    <div className='w-2/3 p-3' >
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Follow" {...a11yProps(0)} />
@@ -74,6 +74,6 @@ export default function BasicTabs() {
       <TabPanel value={value} index={3}>
         <MyMemo/>
       </TabPanel>
-    </Box>
+    </div>
   );
 }
