@@ -32,7 +32,7 @@ const postData = [
         group:"직장인은 힘들어",
     },
     {
-        id:1,
+        id:3,
         title: "비오는날.. 이노래 들어보세요",
         group:"음악 추천",
     },
