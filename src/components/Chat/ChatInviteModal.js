@@ -35,7 +35,7 @@ function ChatInviteModal(props) {
     }, [checkedInviteUsers]);
 
     const roomCreate = (e) => {
-      setCheckedInviteUsers([...checkedInviteUsers, props.user.Reducers.user]);
+      setCheckedInviteUsers([...checkedInviteUsers, props.user]);
       setComplete(true);
       props.handleClose(e);
     }
