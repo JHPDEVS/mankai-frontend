@@ -19,7 +19,7 @@ export const Users = () => async dispatch => {
       //요청이 성공하면 서버 응답내용을 payload 로 설정하여 GET_USER_SUCCESS 액션을 디스패치합니다.
       dispatch({
         type: GET_USERS_SUCCESS,
-        payload: res.data.users,
+        payload: res.data,
       })
     })
     .catch(err => {
