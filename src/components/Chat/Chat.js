@@ -16,11 +16,13 @@ import { IconButton } from '@mui/material';
 import Header from '../../admin/layout/Header';
 import Echo from 'laravel-echo';
 import {getRooms} from '../../store/modules/getRoom'
-import { unwrap } from 'idb';
+import { CircularProgress } from '@mui/material';
 function Chat() {
     const [index, setIndex] = useState(0);
     const currentUser = useSelector(state => state.Reducers.user)
+    const state = useSelector(state => state.Reducers.user)
     const rooms = useSelector(state => state.Reducers.rooms)
+    const loading = useSelector(state => state.Reducers.room_pending)
     const [currentRoom, setCurrentRoom] = useState({});
     const [currentChatRoom, setCurrentChatRoom] = useState({});
     const [open, setOpen] = React.useState(false);
@@ -177,6 +179,18 @@ function Chat() {
                                 </Tab>
                                 </TabList>
                                 <TabPanel className="w-full">
+                                {loading && (
+               <CircularProgress
+                 size={48}
+                 sx={{
+                   position: 'absolute',
+                   top: '50%',
+                   left: '50%',
+                   marginTop: '-24px',
+                   marginLeft: '-24px',
+                 }}
+               />
+             )}
                                 <div>{roomList('dm')}</div>
                                 </TabPanel>
                                 <TabPanel>
