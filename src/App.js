@@ -19,6 +19,8 @@ import NotiView from './components/NotiView'
 import Dashboard from './components/Dashboard'
 import Chat from './components/Chat/Chat';
 import DashboardUser from './admin/component/User'
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 import './css/style.scss'
 axios.defaults.baseURL = 'http://localhost:8000/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -30,10 +32,22 @@ axios.interceptors.request.use(function (config) {
   config.headers.Authorization = token ? `Bearer ${token}` : ''
   return config
 })
+window.Pusher = require('pusher-js');
+window.Echo = new Echo({
+broadcaster: 'pusher',
+key: "anykey",
+cluster: "ap3",
+forceTLS: false,
+wsHost: window.location.hostname,
+wsPort: 6001,
+disableStats: true,
+});
+
 
 function App() {
   const token = localStorage.getItem('auth_token')
   const dispatch = useDispatch()
+
   if (!token) {
   } else {
     dispatch(User())
