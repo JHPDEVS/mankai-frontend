@@ -55,6 +55,8 @@ module.exports = {
         tabbg: '#bbdefb',
         primary: '#6441a5',
         active: '#f9f5ff',
+        byuncolor :'#d8d8d8',
+        byuncolor2 :'#dddddd'
       },
     },
   },

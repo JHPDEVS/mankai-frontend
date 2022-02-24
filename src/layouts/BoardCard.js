@@ -51,7 +51,7 @@ function BoardCard(props){
                     </div>
                     <div className='w-full '>
                         <div className='mt-10 mb-5 mx-auto'>
-                            {/* <img className="mx-auto" src="http://placehold.it/600x600" alt='nope' /> */}
+                            <img className="mx-auto" src="http://placehold.it/600x600" alt='nope' />
                             <div className='border border-gray-300 px-4 pb-4'>
                                 <div className='flex'>
                                     <div className='w-1/2 my-2 grid grid-cols-3'>     
@@ -63,16 +63,15 @@ function BoardCard(props){
                                     
                                 </div>
 
-                                <div className='flex'>
-                                    <div className='w-1/2 p-3 font-bold'>
+                                <div className='flex pb-5'>
+                                    <div className='w-1/2 px-1  text-gray-600 '>
                                         117 View
                                     </div>
-                                    <div className='w-1/2 p-3 font-bold text-right text-red-500'>
+                                    <div className='w-1/2 px-1 text-right text-gray-600 '>
                                         19 Likes
                                     </div>
                                 </div>
                               
-
                                 <div className='px-4 py-2 break-words '>
                                     {props.board.content_text}
                                 </div>

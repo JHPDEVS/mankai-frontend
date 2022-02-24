@@ -2,7 +2,7 @@ import  React, { Component , useCallback, useEffect, useState}from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import BoardCard from './BoardCard';
-import { Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Stack, TextField } from '@mui/material';
+import { Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {Provider, useSelector, useDispatch, connect} from 'react-redux';
@@ -11,6 +11,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SvgIcon from '@mui/material/SvgIcon';
 import CreateIcon from '@mui/icons-material/Create';
 import TranslateIcon from '@mui/icons-material/Translate';
+import { Slide } from 'react-toastify';
 
 
 const drawerWidth = 385;
@@ -45,7 +46,7 @@ function BoardSide(props){
         if(sideData != null){
             setCurrent_page(current_page => 1);
             ShowComment(current_page);
-            // dataclean();
+            dataclean();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[sideData])
@@ -190,7 +191,6 @@ function BoardSide(props){
                 {/* 사이드바 데이터 있을경우*/}
                 {sideData != null &&
                 <div className='flex flex-col relative'>
-                    
                     <div className='w-full p-5'>
                     {/* 프사 & 이름 */}
                     <div className='flex justify-between'>
@@ -251,7 +251,6 @@ function BoardSide(props){
                             </Stack>  
                     </div>
                         {/* 게시글 구간 */}
-
                         <div className=' pt-4 mb-10 break-words'>
                             {sideData.content_text}
                         </div>
@@ -260,12 +259,14 @@ function BoardSide(props){
                                 {translatedText}
                             </div>
                         }
+                        <Divider>댓글보기</Divider>
+                       
                        {/* 페이지 네이션 */}
-                        <div className='w-full flex justify-center bg-gray-200'>
+                        <div className='w-full flex justify-center my-4 bg-gray-200'>
                             <Pagination name="paginate" count={last_page} color="primary" onChange={paginateHandle} page={paginatePage} hidePrevButton hideNextButton />
                         </div>
                         {/* 댓글 구간 */}   
-
+                       
                         {/* 댓글 데이터 로딩중 */}
                         {comments.length == 0 &&
                             <div>

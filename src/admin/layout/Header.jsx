@@ -14,9 +14,11 @@ function Header({ sidebarOpen, setSidebarOpen }) {
   const noti_count = useSelector(state => state.Reducers.noti_count)
   const noti = useSelector(state => state.Reducers.noti)
   const noti_loading = useSelector(state => state.Reducers.noti_pending)
+  const isOpen = useSelector(state=>state.Reducers.isOpen)
+
 
   return (
-    <header className="sticky top-0 bg-white border-b rounded-b-xl border-slate-200 z-30">
+    <header className={"sticky top-0 bg-white border-b rounded-b-xl border-slate-200 z-30 " + (isOpen ? "mr-96" : "")}>
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 -mb-px">
           {/* Header: Left side */}
@@ -70,7 +72,18 @@ function Header({ sidebarOpen, setSidebarOpen }) {
               modalOpen={searchModalOpen}
               setModalOpen={setSearchModalOpen}
             />
-           
+            {/*  notification */}
+            {user && !loading ? (
+              <Notifications />
+            ) : loading ? (
+              <Skeleton
+                animation="wave"
+                variant="circular"
+                width={40}
+                height={40}
+                className="ml-3"
+              />
+            ) : null}
 
             {/*  Divider */}
             <hr className="w-px h-6 bg-slate-200 mx-3" />
