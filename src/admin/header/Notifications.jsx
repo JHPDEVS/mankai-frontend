@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography'
 import { CircularProgress, Skeleton } from '@mui/material'
 import { indigo } from '@mui/material/colors'
 import CloseIcon from '@mui/icons-material/Close'
+import Moment from 'react-moment'
+import 'moment-timezone'
 function Notifications() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const noti_count = useSelector(state => state.Reducers.noti_count)
@@ -125,7 +127,9 @@ function Notifications() {
                     <div className="flex justify-between">
                       <div className="flex items-center">
                         <span className="text-xs font-bold text-indigo-500">
-                          {noti.updated_at}
+                          <Moment format="YYYY-MM-DD H:mm:ss" local>
+                            {noti.created_at}
+                          </Moment>
                         </span>
                       </div>
                       <div className="flex items-center">
