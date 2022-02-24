@@ -1,6 +1,6 @@
 import React from "react";
 import Paper from '@mui/material/Paper';
-import { Button, Grid, IconButton, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import { Button, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 
@@ -29,7 +29,8 @@ export default function App() {
 
           <Paper>
           <div style={{ border: "1px solid black", padding: '2px', minHeight: '400px' }}>
-          <Editor />
+          <TextField id="standard-basic" label="글 제목" variant="standard" />
+          <Editor/>
           </div>
 
           </Paper>

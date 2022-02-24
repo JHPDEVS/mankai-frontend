@@ -25,6 +25,7 @@ import ChatMemo from './components/MyPage/ChatMemo';
 import PostMemo from './components/MyPage/PostMemo';
 import MyNewMemo from './components/MyPage/MyNewMemo';
 import Profile from './components/MyPage/Profile';
+import Youpage from './components/MyPage/YouPage'
 
 axios.defaults.baseURL = 'http://localhost:8000/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -64,6 +65,7 @@ function App() {
           <Route exact path="/post_memo" component={PostMemo}></Route>
           <Route exact path="/my_new_memo" component={MyNewMemo}></Route>
           <Route exact path="/profile" component={Profile}></Route>
+          <Route exact path="/youProfile" component={Youpage}></Route>
 
         <Route path="*" component={Empty}></Route>
       </Switch>

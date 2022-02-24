@@ -6,11 +6,8 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import Modal from 'react-modal';
-import YouPage from './YouPage'
 
 export default function FollowList() {
-  const [modalIsOpen, setModalIsOpen] = useState(false)
   
   return (
     <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
@@ -21,9 +18,8 @@ export default function FollowList() {
         </ListItemAvatar>
         <ListItemText
           primary={item.name}
-          onClick={()=> setModalIsOpen(true)}
           secondary={
-            <React.Fragment>
+          
               <Typography
                 sx={{ display: 'inline' }}
                 component="span"
@@ -32,20 +28,16 @@ export default function FollowList() {
               >
                {item.sogae}
               </Typography>
-            </React.Fragment>
+          
           }
         />
       </ListItem>
       ))}
 
-      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
-        <YouPage/>
-      </Modal>
       
     </List>
   );
 }
-
 
 
 const followData = [

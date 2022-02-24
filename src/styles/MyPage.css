@@ -1,0 +1,15 @@
+/* MyUser */
+#cardImg{
+    width: 50%;   
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+}
+
+.name{
+    display: inline-block;
+}
+
+.ProfileEdit{
+    text-align: right;
+}
