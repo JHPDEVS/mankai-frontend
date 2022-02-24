@@ -1,24 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Message from "./Message";
 import { IconButton } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import {getMessage} from '../../store/modules/getMessage'
+import { useDispatch, useSelector } from "react-redux";
 function ChatContainer(props) {
-    const [messages, setMessages] = useState([]);
+    const messages = useSelector(state=>state.Reducers.message);
     const [newMessage, setNewMessage] = useState();
+    const chatBody = useRef(null);
+    const dispatch = useDispatch();
+    const scrollChatToBottom = (chatBody) => chatBody.current.scrollTop = chatBody.current.scrollHeight
 
-    const getMessages = (roomId) => {
-                axios.get('http://localhost:8000/api/messages/'+roomId)
-                .then(res => {
-                    setMessages(res.data);
-                    // console.log(res.data);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
-    }
+ 
 
     const sendMessage = (e) => {
         e.preventDefault();
@@ -48,11 +44,9 @@ function ChatContainer(props) {
 
         } else {
             
-            setMessages([...messages, {"message": newMessage, "user" : props.user.Reducers.user}]);
-            axios.post('http://localhost:8000/api/message/send', {'message' : newMessage, 'room_id' : props.room.id, 'user_id' :props.user.Reducers.user.id })
+            // setMessages([...messages, {"message": newMessage, "user" : props.user.Reducers.user}]);
+            axios.post('/api/message/send', {'message' : newMessage, 'room_id' : props.room.id, 'user_id' :props.user.id })
             .then(res => {
-                // console.log(res.data);
-                // setMessages([...messages, res.data]);
             });
             setNewMessage('');
         }
@@ -60,29 +54,32 @@ function ChatContainer(props) {
     }
     useEffect(() => {
         console.log(props.room);
-        if(props.room.id && props.user.Reducers.user.id) {
-            getMessages(props.room.id);
+        console.log("chat 컨테이너");
+        if(props.room.id && props.user.id) {
+            dispatch(getMessage(props.room.id));
+            console.log(props.room.id)
         }
     }, [props.room, props.user]);
 
     useEffect(() => {
         // console.log(messages);
         window.Echo.channel('chat').listen('.send-message', (e) => {
-            setMessages([...messages, e.message]);
-
+            dispatch({type: 'ADD_MESSAGE',payload:{message:e.message}});
+            // setMessages(messages => ([...messages, e.message]));
+            scrollChatToBottom(chatBody)
           }) 
    
-    });
+    },[]);
     
     return (
         <div className="w-full h-full">
             {props.room.id ? <div className="border w-full h-full">  
-                <IconButton onClick={(e) => {props.deleteChatRoom(e); setMessages([]);}}><CloseIcon /></IconButton>
+                <IconButton onClick={(e) => {props.deleteChatRoom(e); }}><CloseIcon /></IconButton>
                 <div className="w-full flex flex-col h-full">
-                    <div className="chatBody flex flex-col w-full h-full overflow-y-auto">
-                    {messages.map((message, index) => (
+                    <div ref={chatBody} className=" flex flex-col w-full h-full overflow-y-auto">
+                    {messages ? messages.map((message, index) => (
                         <Message message={message} user={props.user} key={index} />
-                    ))}
+                    )) : null}
                     </div>
                     <div className='border p-2 w-full flex'>
                         <form className="flex w-full" onSubmit={sendMessage}>

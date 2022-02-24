@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {Link} from 'react-router-dom'
 import Sidebar from '../../admin/layout/Sidebar'
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
@@ -15,11 +15,12 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton } from '@mui/material';
 import Header from '../../admin/layout/Header';
 import Echo from 'laravel-echo';
-
+import {getRooms} from '../../store/modules/getRoom'
+import { unwrap } from 'idb';
 function Chat() {
-    const [rooms, setRooms] = useState([]);
     const [index, setIndex] = useState(0);
-    const currentUser = useSelector((state) => state);
+    const currentUser = useSelector(state => state.Reducers.user)
+    const rooms = useSelector(state => state.Reducers.rooms)
     const [currentRoom, setCurrentRoom] = useState({});
     const [currentChatRoom, setCurrentChatRoom] = useState({});
     const [open, setOpen] = React.useState(false);
@@ -29,7 +30,7 @@ function Chat() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const open1 = Boolean(anchorEl);
-    
+    const dispatch = useDispatch();
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -41,21 +42,16 @@ function Chat() {
   };
 
     function newRoomList(newRoom) {
-        setRooms([...rooms, newRoom]);
+      //  setRooms([...rooms, newRoom]);
     }
     
-    function getRooms(id) {
-        axios.get('http://localhost:8000/api/rooms/'+id)
-        .then(res => {
-            setRooms(res.data);
-        });
-    }
+   
     useEffect(()=> {
-        console.log(currentUser.Reducers.user);
-        if(currentUser.Reducers.user){
+        console.log(currentUser);
+        if(currentUser){
             // console.log(currentUser.Reducers.user.following);
-            getRooms(currentUser.Reducers.user.id);
-            setFollowing(currentUser.Reducers.user.following)
+            dispatch(getRooms(currentUser.id))
+            setFollowing(currentUser.following)
             // console.log(following);
         }
     },[currentUser]);
@@ -64,7 +60,6 @@ function Chat() {
 
      
         console.log(rooms);
-        // console.log(currentRoom);
     },[rooms, currentRoom]);
 
         
@@ -72,7 +67,7 @@ function Chat() {
     const userName = (types,users) => {
         users = JSON.parse(users);
         // console.log((users));
-        users = users.filter((user, index) => user.user_name !== currentUser.Reducers.user.name);
+        users = users.filter((user, index) => user.user_name !== currentUser.name);
         if(types === "dm"){
             return users[0].user_name;
         }else {
@@ -84,7 +79,7 @@ function Chat() {
     }   
     const deleteRoom = (e) => {
         e.preventDefault();
-        setRooms(rooms.filter(room => room.id !== currentRoom.id));
+        // setRooms(rooms.filter(room => room.id !== currentRoom.id));
         // console.log(currentRoom);
         // console.log(currentUser.Reducers.user);
         handleClose(e);
@@ -110,7 +105,7 @@ function Chat() {
         setCurrentChatRoom({});
     }
     const roomList  = (types) => <ul className='w-full h-full'>
-                                    {rooms.map((room, index) => (
+                                    {rooms ? rooms.map((room, index) => (
                                         
                                         <li 
                                         className={room.type === types ?'room border-b flex w-full p-2 hover:bg-gray-100' : 'hidden'}
@@ -155,7 +150,7 @@ function Chat() {
                                             </div>
                                         </li>
                                     ))
-                                    }
+                                    : null}
                                 </ul>
     return (
         <>
