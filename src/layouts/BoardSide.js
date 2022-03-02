@@ -168,19 +168,20 @@ function BoardSide(props){
         setIsMenuOpen(isMenuOpen => !isMenuOpen)
     }
     return (
-        <Box className="justify-between flex" sx={{ display: 'flex' }}>
+        <Box className="justify-between flex">
             <Drawer
                 sx={{
                 width: drawerWidth,
                 flexShrink: 0,
                 '& .MuiDrawer-paper': {
                     width:drawerWidth,
-                    boxSizing: 'border-box',
-                    overflowX:'hidden'
+                    overflowX:'hidden',
+                    border: "0px"
                 },
                 }}
                 variant="persistent"
                 anchor="right"
+                PaperProps={{ elevation: 4 }}
                 open={isOpen}
             >
                 {/* 닫기 버튼 */}
@@ -380,5 +381,4 @@ function BoardSide(props){
         </Box>
         ); 
 }
-
 export default BoardSide;
