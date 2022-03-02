@@ -55,10 +55,10 @@ export default function BasicTabs() {
     <div className='w-2/3 p-3' >
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Follow" {...a11yProps(0)} />
-          <Tab label="Post" {...a11yProps(1)} />
+          <Tab label="Follows" {...a11yProps(0)} />
+          <Tab label="Posts" {...a11yProps(1)} />
           <Tab label="Groups" {...a11yProps(2)} />
-          <Tab label="Memo" {...a11yProps(3)} />
+          <Tab label="Memos" {...a11yProps(3)} />
 
         </Tabs>
       </Box>

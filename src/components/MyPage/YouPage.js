@@ -12,7 +12,7 @@ function Youpage() {
     return (
         <>
             <Grid container component="main" sx={{ height: '100vh' }}>
-            <div className=" w-full  relative flex flex-col justify-center items-center bg-red-100 overflow-hidden">
+            <div className=" w-full  relative flex flex-col py-6 bg-red-100 overflow-hidden">
 
                 <Container >
                         <Box className="flex ">
