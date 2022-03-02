@@ -1,12 +1,17 @@
 import React from "react";
-import Paper from '@mui/material/Paper';
-import { Button, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+import { Button, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+
+
+
 export default function App() {
+
+  const [showEditor, setShowEditor] = useState(false)
 
   return (
     <div className="MemoBackground">
@@ -16,35 +21,53 @@ export default function App() {
               <List >
               {newMemoData.map((item)=>(
                
-                <ListItem key={item.id}>
+                <ListItem key={item.id} 
+                className="border-b-2 border-indigo-500"
+                onClick={() => setShowEditor(true)}
+                >
                     <ListItemText
+                    
                       primary={item.title}
                     />
                   </ListItem>
+                  
               ))}
                 
               </List>
             
         </Grid>
+         
+        { showEditor ? 
+        <div>
+            <div style={{ border: "1px solid black", padding: '2px', minHeight: '400px' }}>
+            <TextField id="standard-basic" label="글 제목" variant="standard" />
+            <Editor/>
+            </div>
+            <Stack direction="row" spacing={2}>
+              
+              <Button variant="contained" startIcon={<SendIcon />}>
+                Send
+              </Button>
+              
+              <Button variant="outlined" startIcon={<DeleteIcon />}>
+                Delete
+              </Button>
 
-          <Paper>
-          <div style={{ border: "1px solid black", padding: '2px', minHeight: '400px' }}>
-          <TextField id="standard-basic" label="글 제목" variant="standard" />
-          <Editor/>
-          </div>
+              <Button
+                onClick={() => setShowEditor(false)}
+              >
+                 닫기
+               </Button>
+            </Stack>
+        </div> 
+        :
+        <Button
+          onClick={() => setShowEditor(true)}
+        >
+          새 메모 추가
+        </Button> 
+        }
 
-          </Paper>
-
-          <Stack direction="row" spacing={2}>
-          
-          <Button variant="contained" startIcon={<SendIcon />}>
-            Send
-          </Button>
-          
-          <Button variant="outlined" startIcon={<DeleteIcon />}>
-            Delete
-          </Button>
-        </Stack>
       </div>
     </div>
 );
