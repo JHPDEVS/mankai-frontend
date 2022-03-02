@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom'
 import Login from './components/Login'
 import Register from './components/Register'
-import Mypage from './components/MyPage'
+import Mypage from './components/Mypage'
 import axios from 'axios'
 import Home from './layouts/Home'
 import Empty from './components/Empty'
