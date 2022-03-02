@@ -22,6 +22,7 @@ const GET_USERS_FAILURE = 'GET_USERS_FAILURE'
 const BOARD_UPDATE = "BOARD_UPDATE"
 const BOARD_CLICK ="BOARD_CLICK"
 const BOARD_CLEAR ="BOARD_CLEAR"
+const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
 
@@ -30,9 +31,10 @@ const initialState = {
   pending: false,
   error: false,
   noti: null,
-  boardData:[{}],
+  boardData:[],
   sideData:"",
-  isOpen:false
+  isOpen:false,
+  likeData:[]
 }
 
 export default handleActions(
@@ -192,6 +194,12 @@ export default handleActions(
       return {
         ...state,
         isOpen:false
+      }
+    },
+    [LIKE_UPDATE]:(state,action)=>{
+      return{
+        ...state,
+        likeData:action.payload.likeData
       }
     }
 

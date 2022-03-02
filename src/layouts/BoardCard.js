@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import BoardModal from './BoardModal';
 import { Avatar, Button, Card, IconButton } from '@mui/material';
 import BoardSide from './BoardSide';
@@ -8,12 +8,27 @@ import ChatIcon from '@mui/icons-material/Chat';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { red } from '@mui/material/colors';
 import { useDispatch, useSelector } from 'react-redux';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import axios from 'axios';
 
 function BoardCard(props){
     
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
+    const sideBoard = useSelector(state=>state.Reducers.sideData)
+    const likeData = useSelector(state=>state.Reducers.likeData)
+    const [isLike,setIsLike] = useState(false)
+
+    useEffect(()=>{
+        if(likeData !== undefined){
+            console.log(user.id)
+            console.log(props.board.id + "번 게시물")
+            console.log(likeData)
+            // console.log(likeData[props.idx])
+       
+        }        
+    },[likeData])
+
     const BoardToSideData = (e) =>{
         dispatch({
             type:"BOARD_CLICK",
@@ -22,7 +37,6 @@ function BoardCard(props){
             }
         })
         dispatch({type:"SIDE_OPEN"})
-        // console.log(props);
     }
     const ClickLike =()=>{
         axios.post('/api/post/like',{
@@ -42,38 +56,39 @@ function BoardCard(props){
                             {/* <img className=" rounded-full w-10 h-10 mr-3" src="https://scontent.fsub1-1.fna.fbcdn.net/v/t1.0-9/37921553_1447009505400641_8037753745087397888_n.jpg?_nc_cat=102&_nc_sid=09cbfe&_nc_oc=AQnDTnRBxV3QgnhKOtk9AiziIOXw0K68iIUQfdK_rlUSFgs8fkvnQ6FjP6UBEkA6Zd8&_nc_ht=scontent.fsub1-1.fna&oh=728962e2c233fec37154419ef79c3998&oe=5EFA545A" alt=""></img> */}
                                 <Avatar className='mr-3 mt-1'>d</Avatar> 
                                 <div>
+                                   
                                     <h3 className="font-bold text-md">{props.board.name}</h3>
                                     <p className='text-sm text-gray-500'>3시간 전</p>
                                 </div>
                             </div>
-                            <p className='text-blue-500 text-md font-bold'>{props.board.category}</p>
+                            <p className=' text-md font-bold'>{props.board.category}</p>
                         </div>
                     </div>
                     <div className='w-full '>
                         <div className='mt-10 mb-5 mx-auto'>
-                            <img className="mx-auto" src="http://placehold.it/600x600" alt='nope' />
+                            <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
                             <div className='border border-gray-300 px-4 pb-4'>
                                 <div className='flex'>
-                                    <div className='w-1/2 my-2 grid grid-cols-3'>     
+                                    <div className='w-full my-2 grid grid-cols-3'>     
                                         <Button color="error" onClick={ClickLike}><SvgIcon color='action' className='mx-auto' component={FavoriteBorderIcon} fontSize="large"></SvgIcon></Button>
                                         {/* <Button color="error"><SvgIcon color='error' className='mx-auto' component={FavoriteBorderIcon} fontSize="large"></SvgIcon></Button> */}
-                                        <Button onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button>
+                                        {(sideBoard.id === props.board.id 
+                                            ?<Button variant='contained' disabled onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button>
+                                            : <Button onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button>
+                                        )}
+                                        {/* <Button onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button> */}
                                         <Button ><SvgIcon color='action' className='mx-auto' component={StarBorderIcon} fontSize="large"></SvgIcon></Button>
                                     </div>
                                     
                                 </div>
 
-                                <div className='flex pb-5'>
-                                    <div className='w-1/2 px-1  text-gray-600 '>
-                                        117 View
-                                    </div>
-                                    <div className='w-1/2 px-1 text-right text-gray-600 '>
-                                        19 Likes
-                                    </div>
+                                <div className='w-full flex text-lg justify-end'>
+                                        <SvgIcon color='action' className='my-auto' component={VisibilityIcon} fontSize="small"></SvgIcon>117 
+                                        <p className='ml-5'>❤ 19</p>      
                                 </div>
                               
                                 <div className='px-4 py-2 break-words '>
-                                    {props.board.content_text}
+                                    {props.board.name} :  {props.board.content_text}
                                 </div>
                                 
                                 
