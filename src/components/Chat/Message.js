@@ -40,6 +40,28 @@ function Message({ message: message, user: user }) {
                 <span>{message.user.name}</span>
               </div>
               <div className=" py-3 px-4 bg-white  border-b rounded-xl border">
+                {message.message ? null : message.file.startsWith('[') ? (
+                  JSON.parse(message.file).map((image, index) => (
+                    <img
+                      key={index}
+                      className="w-1/2"
+                      src={'http://localhost:8000/storage/' + image}
+                    />
+                  ))
+                ) : message.file.startsWith('images') ? (
+                  <img
+                    className="w-full"
+                    src={'http://localhost:8000/storage/' + message.file}
+                  />
+                ) : (
+                  <a
+                    className="border"
+                    href={'http://localhost:8000/storage/' + message.file}
+                  >
+                    {message.file.split('_')[1]}
+                  </a>
+                )}
+
                 <span className="break-all break-word">{message.message}</span>
               </div>
             </div>
@@ -64,6 +86,28 @@ function Message({ message: message, user: user }) {
             </span>
           </div>
           <div className="text-left mr-2 py-3 px-4 bg-indigo-100  border-b rounded-xl border max-w-[50%]">
+            {message.message ? null : message.file.startsWith('[') ? (
+              JSON.parse(message.file).map((image, index) => (
+                <img
+                  key={index}
+                  className="w-1/2"
+                  src={'http://localhost:8000/storage/' + image}
+                />
+              ))
+            ) : message.file.startsWith('images') ? (
+              <img
+                className="w-full"
+                src={'http://localhost:8000/storage/' + message.file}
+              />
+            ) : (
+              <a
+                className="border"
+                href={'http://localhost:8000/storage/' + message.file}
+              >
+                {message.file.split('_')[1]}
+              </a>
+            )}
+
             <span className="break-all break-word">{message.message}</span>
           </div>
         </>
