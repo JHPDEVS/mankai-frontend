@@ -82,7 +82,6 @@ function BoardSide(props){
     }
     //댓글 작성 핸들
     const commentHandle=(e)=>{
-        console.log(e)
         setPostComment(post_comment => e.target.value);
     }
     // 페이지 네이션 핸들
@@ -265,13 +264,13 @@ function BoardSide(props){
                                 {translatedText}
                             </div>
                         }
-                        <Divider>Comment</Divider>
                        
                        {/* 페이지 네이션 */}
                         <div className='w-full flex justify-center my-4 bg-gray-200'>
                             <Pagination name="paginate" count={last_page} color="primary" onChange={paginateHandle} page={paginatePage} hidePrevButton hideNextButton />
                         </div>
                         {/* 댓글 구간 */}   
+                        <Divider light>Comment</Divider>
                        
                         {/* 댓글 데이터 로딩중 */}
                         {comments.length == 0 &&
@@ -377,7 +376,7 @@ function BoardSide(props){
                     {/* 댓글 달기 */}
                     <div className='flex fixed w-96 bottom-0 right-0 bg-white'>
                         <textarea name='post_comment' className='w-4/5  m-2 bg-gray-200' rows={4} onChange={commentHandle}
-                        ></textarea>
+                        value={post_comment}></textarea>
                           <Button className='w-1/5 my-2' variant="contained" onClick={PostComment}>댓글 달기</Button>
                     </div>
                 </div>

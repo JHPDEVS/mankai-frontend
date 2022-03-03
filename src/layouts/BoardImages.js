@@ -7,7 +7,11 @@ function BoardImages(props){
  
     return(
         <div>
-            <Carousel>
+            <Carousel
+             emulateTouch="true"
+             swipeScrollTolerance="10"
+             useKeyboardArrows="true"
+             >
                 <div>
                     <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
                 </div>
@@ -17,6 +21,46 @@ function BoardImages(props){
                 <div>
                     <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
                 </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+                <div>
+                    <img className="mx-auto" src="https://via.placeholder.com/600" alt='nope' />
+                </div>
+
             </Carousel>
        </div>
     );
