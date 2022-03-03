@@ -21,7 +21,7 @@ function BoardCard(props){
     const sideBoard = useSelector(state=>state.Reducers.sideData)
     const likeData = useSelector(state=>state.Reducers.likeData)
     const isOpen = useSelector(state=>state.Reducers.isOpen)
-
+    const [imageList, setImageList] = useState([]);
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
     const [likeCount,setLikeCount] = useState(0)
@@ -67,6 +67,23 @@ function BoardCard(props){
             console.log(res.data)
         })
     }
+    
+    useEffect(() => {
+        console.log(props.board.id)
+        // axios.get('/api/upload_image/'+props.board.id)
+        // .then(function(response){
+        //     for(let i = 0 ; i<response.data.length ; i++){
+        //         // copiedImageList.push(response.data[i].url);
+        //         setImageList((imageList)=>[...imageList,response.data[i].url])
+        //     }
+
+        // })
+        // .catch(function(error){
+        //     console.log(error);
+        // })
+        // 여기에 데이터베이스에서 url column값을 받고 useState에 저장을 한다. 
+        // 그리고 mui imagelist에다가 렌더링한다.
+    },[])
 
     return (  
         <div className ="w-full mx-auto max-w-3xl px-3">
