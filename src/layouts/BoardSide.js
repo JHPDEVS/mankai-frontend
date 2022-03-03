@@ -78,12 +78,14 @@ function BoardSide(props){
         })
     }
     const updateCommentHandle =(e) =>{
-        console.log(e.target.value)
         setUpdateComment(updateComment => e.target.value);
     }
+    //댓글 작성 핸들
     const commentHandle=(e)=>{
+        console.log(e)
         setPostComment(post_comment => e.target.value);
     }
+    // 페이지 네이션 핸들
     const paginateHandle = (e) =>{
         setCurrent_page(current_page => e.target.outerText);
     }
@@ -105,15 +107,17 @@ function BoardSide(props){
             }
         })
     })
+    // 댓글 수정버튼 클릭
     const clickUpdate = (comment) =>{
         console.log("업데이트 작동")
-        
         setIsUpdate(isUpdate=>comment.id);
         setCheckComment(checkComment=>comment.comment)
     }
+    // 수정 취소
     const updateCancle =()=>{
         setIsUpdate(isUpdate=>0)
     }
+    // 수정 확인
     const CommentUpdate = (comment) =>{
         console.log(comment.id)
         setTransComment(transComment=>[{
@@ -128,7 +132,7 @@ function BoardSide(props){
             ShowComment(current_page);
         })
     }
-
+    // 번역 api 부르기
     const callPapago = (data) =>{
         handleToggle()
         axios.post("/api/show/papago",{
@@ -142,8 +146,8 @@ function BoardSide(props){
             }
         })
     }
+    // 댓글 번역 api 
     const callCommentPapago =(comment)=>{
-        
         axios.post("/api/show/papago",{
             text:comment.comment
         }).then(res=>{
@@ -156,6 +160,7 @@ function BoardSide(props){
         })
         console.log(transComment)
     }
+    // 댓글 삭제
     const clickDelete = (comment)=>{
         axios.post("/api/delete/comment/"+comment.id).
         then(res=>{
@@ -163,7 +168,7 @@ function BoardSide(props){
             console.log("삭제 완료")
         })
     }
-
+    // 설정 오픈여부 확인
     const handleToggle = () =>{
         setIsMenuOpen(isMenuOpen => !isMenuOpen)
     }
@@ -260,7 +265,7 @@ function BoardSide(props){
                                 {translatedText}
                             </div>
                         }
-                        <Divider>댓글보기</Divider>
+                        <Divider>Comment</Divider>
                        
                        {/* 페이지 네이션 */}
                         <div className='w-full flex justify-center my-4 bg-gray-200'>
@@ -300,7 +305,6 @@ function BoardSide(props){
                                 <p>댓글이 없습니다.</p>
                             </div>
                         }
-                        
                         {/* 댓글 보여주기 */}
                         {comments[0] != "No Data" &&   
                             <div className='mb-24 '>
@@ -352,6 +356,7 @@ function BoardSide(props){
                                                         </div>
                                                     }
                                                     <div>
+                                                    {/* 번역 메시지 보여주기 */}
                                                     {transComment[0] &&
                                                             transComment[0].id === comment.id &&
                                                                 <div className='bg-gray-200'>

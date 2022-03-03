@@ -199,7 +199,7 @@ export default handleActions(
     [LIKE_UPDATE]:(state,action)=>{
       return{
         ...state,
-        likeData:action.payload.likeData
+        likeData:[...state.likeData,action.payload.likeData]
       }
     }
 

@@ -42,12 +42,15 @@ function BoardCopy(props)
                 data:array
             })
             .then(res=>{
-                dispatch({
-                    type:'LIKE_UPDATE',
-                    payload:{
-                        likeData:res.data
-                    }
-                })
+                res.data.forEach(element => {
+                    dispatch({
+                        type:'LIKE_UPDATE',
+                        payload:{
+                            likeData:element
+                        }
+                    })
+                });
+                
             })
          })
         setCurrentPage(currentPage=>currentPage+1)
@@ -119,7 +122,7 @@ function BoardCopy(props)
                                 </select>
                             </div>
                             <div className='w-full relative' >
-                                {/* <BoardWriteModal></BoardWriteModal> */}
+                                <BoardWriteModal></BoardWriteModal>
                                 
                                 <InfiniteScroll
                                     dataLength={boards.length} //This is important field to render the next data

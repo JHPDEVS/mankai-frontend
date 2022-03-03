@@ -11,9 +11,6 @@ function BoardWriteModal(){
     const dispatch = useDispatch();
     const number = useSelector((state) => state.number);
     const text ="";
-    const click = () =>{
-        dispatch({type:"Test"});
-    }
     const isOpen = useSelector((state=>state.Reducers.isOpen))
 
     const open = () =>Swal.fire({ 
@@ -24,7 +21,7 @@ function BoardWriteModal(){
     });
     return(
         <div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
-            <Fab color="primary" onClick={click}> <AddIcon /></Fab>
+            <Fab color="primary"> <AddIcon /></Fab>
         </div>
     )
 }
