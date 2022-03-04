@@ -1,0 +1,163 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.Close-icon{
+  position: absolute !important;
+  z-index:10 !important;
+  right:5px !important;
+  top:5px !important;
+  cursor:pointer !important;
+  width: 25px !important;
+  height: 25px !important;
+}
+
+
+#img_1:hover{
+  opacity: .5 !important;
+}
+
+.submit_button{
+  width: 535px;
+  margin-top: 20px !important;
+  background-color: #4D2BF4;
+}
+
+
+.add_photo_alternateIcon{
+  position: relative;
+  z-index: 100;
+  top: 75px;
+  right: 38px;
+  color: black;
+  background-color: white;
+  border-radius: 15px;
+}
+
+
+
+.added_photo_icon{
+  margin-top: 10px;
+  margin-bottom: 10px; 
+  opacity: 0.5;
+  width: 50px;
+  height: 50px;
+  background-color: #b6b4b4;
+  border-radius: 15px;
+  display: inline;
+}
+
+.not_added_photo_icon{
+  margin-top: 10px;
+  display: inline;
+}
+
+.not_added_photo_icon:hover{
+  opacity: 0.7;
+}
+
+.add_photo_alternateIcon:hover{
+  opacity: 0.7;
+}
+
+.close_all_photo2{
+  float: right;
+  display: inline;
+}
+
+.close_all_photo2_text{
+  display: inline;
+  font-weight:900;
+  float: right;
+  margin-right: 3px;
+  margin-left: 5px;
+}
+
+
+.close_all_container{
+  float: right;
+  margin-top: 25px;
+  margin-right: 5px;
+}
+
+.add_photo{
+  margin-top: 55px;
+  margin-left: 240px;
+}
+
+.close_all_photo{
+   float:right;
+   margin-top: 5px;
+   margin-right: 5px;
+}
+
+.close_all_photo:hover{
+  opacity: 0.6;
+}
+
+.photo_icon{
+  display: inline;
+}
+
+.add_photo_text{
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 180px;
+}
+
+.add_photo_subtext{
+  font-size: 13px;
+  color: #808080;
+  margin-left: 195px;
+}
+
+
+.label{
+  width: 523px;
+  background-color: #e7e3e3;
+}
+
+.label:hover{
+  background-color: #d4d1d1;
+}
+
+.video-size{
+  height: 164px !important;
+  object-fit: cover !important;
+}
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

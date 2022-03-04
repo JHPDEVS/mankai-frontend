@@ -1,0 +1,12 @@
+{
+    "LOGIN":"LOGIN",
+    "NOTID":"You don't have an ID?",
+    "REGISTER":"REGISTER",
+    "FINDPASSWORD" : "Forgot your password?",
+    "ID" : "ID",
+    "PASSWORD" : "PASSWORD",
+    "HOME" : "HOME VALUE",
+    "PROFILEEDIT" : "Profile Edit",
+    "LOGOUT" : "LOGOUT",
+    "SEARCHPLACE" : "FIND USER"
+}
