@@ -7,8 +7,6 @@ import SendIcon from '@mui/icons-material/Send';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
-
-
 export default function App() {
 
   const [showEditor, setShowEditor] = useState(false)

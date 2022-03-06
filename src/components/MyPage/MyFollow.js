@@ -6,10 +6,11 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import NewWindow from 'react-new-window'
+
 export default function FollowList() {
 
   return (
+    <div>
     <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
       {followData.map((item)=>(
         <ListItem alignItems="flex-start"  sx={{ borderBottom: 1, borderColor: 'divider' }}  key={item.id}>
@@ -33,10 +34,12 @@ export default function FollowList() {
           }
         />
       </ListItem>
+      
       ))}
 
       
     </List>
+    </div>
   );
 }
 
