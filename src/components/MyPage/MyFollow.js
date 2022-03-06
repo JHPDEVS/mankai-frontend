@@ -6,12 +6,9 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import Modal from 'react-modal';
-import YouPage from './YouPage'
-
+import NewWindow from 'react-new-window'
 export default function FollowList() {
-  const [modalIsOpen, setModalIsOpen] = useState(false)
-  
+
   return (
     <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
       {followData.map((item)=>(
@@ -20,10 +17,10 @@ export default function FollowList() {
           <Avatar alt="Remy Sharp" src={`${item.img}?w=248&fit=crop&auto=format`} />
         </ListItemAvatar>
         <ListItemText
+          onClick={youProfile}
           primary={item.name}
-          onClick={()=> setModalIsOpen(true)}
           secondary={
-            <React.Fragment>
+          
               <Typography
                 sx={{ display: 'inline' }}
                 component="span"
@@ -32,20 +29,20 @@ export default function FollowList() {
               >
                {item.sogae}
               </Typography>
-            </React.Fragment>
+          
           }
         />
       </ListItem>
       ))}
 
-      <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)}>
-        <YouPage/>
-      </Modal>
       
     </List>
   );
 }
 
+const youProfile = () => (
+  window.open("/youProfile", "", "")
+)
 
 
 const followData = [
