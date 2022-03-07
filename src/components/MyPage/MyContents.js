@@ -53,7 +53,7 @@ export default function BasicTabs() {
   
   return (
     <div className='' >
-      <div className='bg-white border-solid rounded-md items-center'>
+      <div className='bg-white border-solid rounded-md items-center mt-10 overflow-x-hidden'>
         <Tabs value={value} onChange={handleChange}>
 
           <Tab label="MyFollows" {...a11yProps(0)} />
@@ -66,7 +66,7 @@ export default function BasicTabs() {
 
       <br/>
 
-      <div className='h-96 p-3 bg-white border-solid rounded-md '>
+      <div className='h-80 p-3 bg-white border-solid rounded-md overflow-auto'>
         <TabPanel value={value} index={0}>
           <MyFollow/>
         </TabPanel>

@@ -1,9 +1,7 @@
 import * as React from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import { Box, Button, Modal, Typography } from '@mui/material';
-
+import { Box,  Modal } from '@mui/material';
+import PostModal from './PostModal';
+import { BsThreeDots } from 'react-icons/bs';
 
 export default function PostList() {
 
@@ -12,9 +10,8 @@ export default function PostList() {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
     boxShadow: 24,
     p: 4,
   };
@@ -25,29 +22,22 @@ export default function PostList() {
 
   return (
    <div>
-      <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
-    {postData.map((item)=>(
-        <ListItem  key={item.id} >
-        <ListItemText onClick={handleOpen} primary={item.title} secondary={item.group} />
-      </ListItem>
+    <div className='border border-gray-300 rounded py-2 px-4 my-3'>
+                <img className="rounded-full border border-gray-100 w-12 h-12 inline-block" src="" alt="img" />
+                <span className='px-3' onClick={handleOpen} >유저이름</span>
+                <BsThreeDots className='float-right my-4 mx-4'/>    
+            </div>
 
-    ))}
-    </List>
-  
+            {/* 게시글 */}
+    
     <Modal
       open={open}
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          사진 동호회 회원 모집
-        </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-        각 나라에서 가장 아름답다고 생각되는 사진을 찍어 올려주세요!
-          퍼온 사진은 안됩니다!
-        </Typography>
+      <Box sx={style} className='rounded-lg'>
+        <PostModal/>
       </Box>
     </Modal>
 
@@ -60,6 +50,7 @@ const postData = [
         id:1,
         title: "사진 동호회 회원 모집",
         group:"사진 동호회",
+        image:""
     },
     {
         id:2,
