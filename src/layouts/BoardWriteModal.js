@@ -172,8 +172,8 @@ const fileDrop = (e) => {
       axios.post('/api/upload_image', formData)
       .then(function(response) {
         console.log(response.data)
-         handleClose();
-        window.location.reload();
+        //  handleClose();
+        // window.location.reload();
 
       }).catch(function(error){
         console.log(error);
