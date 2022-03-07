@@ -8,6 +8,7 @@ import {
 import Login from './components/Login'
 import Register from './components/Register'
 import Mypage from './components/MyPage'
+import BoardCopy from './components/BoardCopy'
 import axios from 'axios'
 import Home from './layouts/Home'
 import Empty from './components/Empty'
@@ -67,6 +68,8 @@ function App() {
           <Route exact path="/profile" component={Profile}></Route>
           <Route exact path="/youProfile" component={Youpage}></Route>
 
+        <Route exact path="/board" component={BoardCopy}></Route>
+          
         <Route path="*" component={Empty}></Route>
       </Switch>
     </Router>
