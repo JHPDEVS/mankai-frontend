@@ -1,7 +1,9 @@
-import { Button } from "@mui/material";
+import { Button, Fab } from "@mui/material";
 import React from "react";
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function MyPage(){
+
     return( 
         <div>
 
@@ -19,16 +21,28 @@ export default function MyPage(){
                 </svg>
             </button>
         </div>
+        
     </div>
+    
+    
 
-        <div className="speech-bubble">
+    {/* 메모 종류에따라 조건 바꾸기 */}
+    {
+        1 == true && 
+        <div className="balloon">
             sssss
+            <br/>
+            <span ><Button onClick={MyMemo}>수정</Button><Button>삭제</Button></span>
+            
         </div>
 
-        <Button variant="contained" onClick={ChattingMemo} >채팅 메모</Button>
-        <Button variant="contained" onClick={PostMemo}>게시글 메모</Button>
-        <Button variant="contained" onClick={MyMemo}> 내 메모 </Button>
-        </div>
+    }
+
+    <Fab color="" onClick={MyMemo}>
+        <EditIcon />
+    </Fab>
+
+    </div>
     )
 }
 

@@ -6,22 +6,23 @@
     margin: auto;
 }
 
-.speech-bubble {
-	position: relative;
-	background: #f4cdde;
-	border-radius: .4em;
-}
+.balloon {  
+	position:relative; 
+	margin: 50px;
+	width:200px; 
+	height:100px;
+	 background:pink; 
+	 border-radius: 10px;
+	 padding: 3%;
+   }
 
-.speech-bubble:after {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-right-color: #f4cdde;
-	border-left: 0;
-	margin-top: -20px;
-	margin-left: -20px;
-}
+.balloon:after { 
+	border-top:16px solid transparent; 
+	border-left: 25px solid transparent; 
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid pink; 
+	content:""; 
+	position:absolute;
+	top:25px;
+	left:-18px;
+ }

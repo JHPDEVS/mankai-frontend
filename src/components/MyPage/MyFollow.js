@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import * as React from 'react';
 import { BiPaperPlane } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
@@ -10,7 +11,7 @@ export default function FollowList() {
         {followData.map((item)=>(
           <div className='border border-gray-300 rounded py-2 px-4 my-3'>
             <img className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={`${item.img}?w=248&fit=crop&auto=format`} alt="user image" />
-            <span className='px-3'onClick={youProfile} >{item.name}</span>
+            <Button href="/youProfile">{item.name}</Button>
             <span className='text-gray-500'> {item.sogae}</span>
             <BsThreeDots className='float-right my-4 mx-4'/>
             <BiPaperPlane className='float-right my-4'/>
@@ -22,10 +23,6 @@ export default function FollowList() {
     </div>
   );
 }
-
-const youProfile = () => (
-  window.open("/youProfile", "", "")
-)
 
 
 const followData = [
