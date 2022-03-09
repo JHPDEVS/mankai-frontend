@@ -1,8 +1,8 @@
 import  React, { Component , useCallback, useEffect, useState}from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import BoardCard from './BoardCard';
-import { Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
+import BoardSideCard from './BoardSideCard';
+import { AppBar, Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {Provider, useSelector, useDispatch, connect} from 'react-redux';
@@ -12,13 +12,15 @@ import SvgIcon from '@mui/material/SvgIcon';
 import CreateIcon from '@mui/icons-material/Create';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { Slide } from 'react-toastify';
+import Header from '../admin/layout/Header';
 
 
-const drawerWidth = 385;
+const drawerWidth = 700;
 
 function BoardSide(props){
     
     const sideData = useSelector((state=>state.Reducers.sideData));
+    const sideLikeData =useSelector((state=>state.Reducers.sideLikeData));
     const user = useSelector((state=>state.Reducers.user))
     const [translatedText,setTranslatedText] = useState("");
     const [post_comment,setPostComment] = useState("");
@@ -32,6 +34,8 @@ function BoardSide(props){
     const [isMenuOpen,setIsMenuOpen] = useState(false);
     const [transComment,setTransComment] = useState([]);
     const anchorRef = React.useRef(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+    
         
 
     const isOpen = useSelector((state=>state.Reducers.isOpen))
@@ -63,7 +67,6 @@ function BoardSide(props){
         setTranslatedText(translatedText =>"")
         setComments(comments => [])
     }
-
     // 댓글 작성하기
     const PostComment = () =>{
         axios.post('/api/post/comment',{
@@ -91,20 +94,20 @@ function BoardSide(props){
 
     // 게시글 누르면 코멘트 불러오기 & 페이지네이션 버튼누르면 반응
     const ShowComment = useCallback(async (page) =>{
-        axios.post("/api/show/comment/"+sideData.id+"?page=" + page)
-        .then(res=>{ 
-            setPaginatePage(paginatePage=>res.data.current_page)
-            // console.log("댓글 부르기")
-            // console.log(res.data);
-            if(res.data.data.length === 0){
-                // console.log("값없음")
-                setComments(comments => ["No Data"])
-            }
-            else{
-                setLast_page(last_page => res.data.last_page)
-                setComments(comments => res.data.data);
-            }
-        })
+        if(sideData){
+            axios.post("/api/show/comment/"+sideData.id+"?page=" + page)
+            .then(res=>{ 
+                setPaginatePage(paginatePage=>res.data.current_page)
+                if(res.data.data.length === 0){
+                    setComments(comments => ["No Data"])
+                }
+                else{
+                    setLast_page(last_page => res.data.last_page)
+                    setComments(comments => res.data.data);
+                }
+            })
+        }
+        
     })
     // 댓글 수정버튼 클릭
     const clickUpdate = (comment) =>{
@@ -188,82 +191,20 @@ function BoardSide(props){
                 PaperProps={{ elevation: 4 }}
                 open={isOpen}
             >
-                {/* 닫기 버튼 */}
-                <Button onClick={handleDrawerClose}>
-                        <div>닫기</div>
-                </Button>
+                
                 
                 {/* 사이드바 데이터 있을경우*/}
                 {sideData != null &&
-                <div className='flex flex-col relative'>
+                <div className='flex flex-col relative mb-20 mt-20'>
+                    <Button onClick={handleDrawerClose}>
+                        <div>닫기</div>
+                    </Button>
                     <div className='w-full p-5'>
                     {/* 프사 & 이름 */}
-                    <div className='flex justify-between'>
-                        <div className="flex">
-                            {/* <img className=" rounded-full w-10 h-10 mr-3" src="https://scontent.fsub1-1.fna.fbcdn.net/v/t1.0-9/37921553_1447009505400641_8037753745087397888_n.jpg?_nc_cat=102&_nc_sid=09cbfe&_nc_oc=AQnDTnRBxV3QgnhKOtk9AiziIOXw0K68iIUQfdK_rlUSFgs8fkvnQ6FjP6UBEkA6Zd8&_nc_ht=scontent.fsub1-1.fna&oh=728962e2c233fec37154419ef79c3998&oe=5EFA545A" alt=""></img> */}
-                            <Avatar className='mr-3'>d</Avatar> 
-                            <div>
-                                <h3 className="text-md font-semibold">{sideData.name}</h3>
-                                <p className="text-xs text-gray-500">시간표시할것</p>
-                            </div>
-                        </div>
-                            {/* 메뉴바 */}
-                            <Stack direction="row" className='z-10' spacing={2}>
-                                <div>
-                                    <Button className=''
-                                        ref={anchorRef}
-                                        id="composition-button"
-                                        aria-controls={isMenuOpen ? 'composition-menu' : undefined}
-                                        aria-expanded={isMenuOpen ? 'true' : undefined}
-                                        aria-haspopup="true"
-                                        onClick={handleToggle}
-                                    >
-                                    설정
-                                    </Button>
-                                    <Popper
-                                        open={isMenuOpen}
-                                        anchorEl={anchorRef.current}
-                                        role={undefined}
-                                        placement="bottom"
-                                        transition
-                                        disablePortal
-                                    >
-                                    {({ TransitionProps, placement }) => (
-                                        <Grow
-                                            {...TransitionProps}
-                                            style={{
-                                                transformOrigin:
-                                                placement === 'bottom-start' ? 'left top' : 'left bottom',
-                                            }}
-                                            >
-                                            <Paper>
-                                                <ClickAwayListener onClickAway={handleToggle}>
-                                                <MenuList
-                                                    autoFocusItem={isMenuOpen}
-                                                    id="composition-menu"
-                                                    aria-labelledby="composition-button"
-                                                >
-                                                    <MenuItem onClick={()=>callPapago(sideData.content_text)}>번역하기</MenuItem>
-                                                    <MenuItem onClick={handleToggle}>메모 보내기</MenuItem>
-                                                    <MenuItem onClick={handleToggle}>신고하기</MenuItem>
-                                                </MenuList>
-                                                </ClickAwayListener>
-                                            </Paper>
-                                        </Grow>
-                                    )}
-                                    </Popper>
-                                </div>
-                            </Stack>  
-                    </div>
+                        
                         {/* 게시글 구간 */}
-                        <div className=' pt-4 mb-10 break-words'>
-                            {sideData.content_text}
-                        </div>
-                        {translatedText != "" &&
-                            <div className='bg-gray-200 p-4 mb-10 break-words'>
-                                {translatedText}
-                            </div>
-                        }
+                        <BoardSideCard board={sideData}></BoardSideCard>
+                        
                        
                        {/* 페이지 네이션 */}
                         <div className='w-full flex justify-center my-4 bg-gray-200'>
@@ -300,7 +241,7 @@ function BoardSide(props){
                         }
                         {/* axios 값없으면 보여줌 */}
                         {comments[0] == "No Data" &&  
-                            <div>
+                            <div className='w-full text-center mt-10 text-sm text-gray-500'>
                                 <p>댓글이 없습니다.</p>
                             </div>
                         }
@@ -342,7 +283,7 @@ function BoardSide(props){
                                                     {/* 수정중 이면 */}
                                                     {isUpdate == comment.id&&
                                                         <div>
-                                                             <textarea name='updateComment' className='w-4/5  m-2 bg-gray-200' rows={4} onChange={updateCommentHandle}
+                                                             <textarea name='updateComment' className='w-full m-2 bg-gray-200' rows={4} onChange={updateCommentHandle}
                                                             defaultValue={checkComment}></textarea>
                                                             <Button onClick={()=>CommentUpdate(comment)}>수정하기</Button>
                                                             <Button onClick={updateCancle}>취소</Button>
@@ -350,7 +291,7 @@ function BoardSide(props){
                                                     }
                                                     {/* 수정중 아니면 */}
                                                     {isUpdate != comment.id && 
-                                                        <div>
+                                                        <div className='mx-8 '>
                                                             {comment.comment}
                                                         </div>
                                                     }
@@ -358,9 +299,9 @@ function BoardSide(props){
                                                     {/* 번역 메시지 보여주기 */}
                                                     {transComment[0] &&
                                                             transComment[0].id === comment.id &&
-                                                                <div className='bg-gray-200'>
-                                                                    {transComment[0].text}
-                                                                </div>
+                                                            <div className='bg-gray-200 mx-8'>
+                                                                {transComment[0].text}
+                                                            </div>
                                                     }
                                                     </div>
                                                    
@@ -374,10 +315,10 @@ function BoardSide(props){
                         }
                     </div>
                     {/* 댓글 달기 */}
-                    <div className='flex fixed w-96 bottom-0 right-0 bg-white'>
-                        <textarea name='post_comment' className='w-4/5  m-2 bg-gray-200' rows={4} onChange={commentHandle}
+                    <div className='flex fixed w-192 px-5 bottom-0 right-0 '>
+                        <textarea name='post_comment' className='w-4/5 bg-gray-200' rows={4} onChange={commentHandle}
                         value={post_comment}></textarea>
-                          <Button className='w-1/5 my-2' variant="contained" onClick={PostComment}>댓글 달기</Button>
+                          <Button className='w-1/5 ' variant="contained" onClick={PostComment}>댓글 달기</Button>
                     </div>
                 </div>
             }
