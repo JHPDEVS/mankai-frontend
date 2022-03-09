@@ -33,6 +33,8 @@ const initialState = {
   noti: null,
   boardData:[],
   sideData:"",
+  sideLikeData:[],
+  sideImageList:[],
   isOpen:false,
   likeData:[]
 }
@@ -175,7 +177,9 @@ export default handleActions(
     [BOARD_CLICK]:(state,action)=>{
       return {
         ...state,
-        sideData:action.payload.sideData        
+        sideData:action.payload.sideData,
+        sideLikeData:action.payload.sideLikeData,
+        sideImageList:action.payload.sideImageList   
       }
     },
     [BOARD_CLEAR]:(state,action)=>{

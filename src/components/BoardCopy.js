@@ -10,7 +10,7 @@ import {Provider, useSelector, useDispatch, connect} from 'react-redux';
 import { BoardUpdate } from '../store/actions';
 import Sidebar from '../admin/layout/Sidebar';
 import Header from '../admin/layout/Header';
-import { Avatar, Card, Skeleton } from '@mui/material';
+import { AppBar, Avatar, Card, Skeleton } from '@mui/material';
 
 
 
@@ -30,6 +30,7 @@ function BoardCopy(props)
         // console.log("showboard")
         axios.post('/api/board/show/'+category+"?page="+currentPage)
         .then(res=>{
+            console.log(res.data)
             // console.log(res.data.data)
             if(res.data.last_page === currentPage){
                 setInfHandle(infHandle=>false)
@@ -38,20 +39,6 @@ function BoardCopy(props)
                 setBoardData(boardData=>res.data.data[i])    
                 array.push(res.data.data[i].id);
             }
-            axios.post("/api/show/like",{
-                data:array
-            })
-            .then(res=>{
-                res.data.forEach(element => {
-                    dispatch({
-                        type:'LIKE_UPDATE',
-                        payload:{
-                            likeData:element
-                        }
-                    })
-                });
-                
-            })
          })
         setCurrentPage(currentPage=>currentPage+1)
     }
@@ -87,25 +74,30 @@ function BoardCopy(props)
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const isOpen = useSelector((state)=>state.Reducers.isOpen);
     const likeData = useSelector((state)=>state.Reducers.likeData)
+    
         return(
-            <div className="flex bg-byuncolor2">
+            <div className="flex bg-byuncolor">
                 {/* Sidebar */}  
-                    <div className={'w-0  lg:mr-20 xl:mr-64'}>
-                        <div className='fixed z-40 top-0 left-0'>
-                            <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+                    <div className={'w-0 lg:mr-64'}>
+                        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                                <div className='fixed top-0 left-0'>
+                                    <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}  />
+                                </div>
+                            </AppBar>
+                            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>   
+                        </AppBar>
+                        
+                        <div className='z-0'>
+                            <BoardSide></BoardSide>
                         </div>
-                        <div className="fixed z-20 flex flex-col flex-1 w-full"  >
-                        {/*  Site header */}
-                            <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
-                        </div>
-                        <BoardSide></BoardSide>
                             
                     </div>
                         {/* Content area */}
                 
                     <div className='w-full flex mt-16 z-10' >
                         {/* main */}  
-                        <div className={'w-full '+(isOpen ? " pr-96":"")} >
+                        <div className={'w-full '+(isOpen ? "pr-192":"")} >
                             <div className="inline-flex fixed m-3 z-20 lg:mr-64"  >
                                 <svg className="w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 232"><path d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z" fill="#648299" fillRule="nonzero"/></svg>
                                 <select onChange={categoryHandle} className="border border-gray-300 rounded-full text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none">

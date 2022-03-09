@@ -29,6 +29,9 @@ module.exports = {
         '5xl': ['3rem', { lineHeight: '1.25', letterSpacing: '-0.02em' }],
         '6xl': ['3.75rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
       },
+      spacing: {
+        '192': '44rem',
+      },
       screens: {
         xs: '480px',
       },
