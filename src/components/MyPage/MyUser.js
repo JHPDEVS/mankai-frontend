@@ -16,7 +16,7 @@ export default function ImgMediaCard() {
     
         <h1>sosoeueun</h1>
         <br/>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ textOverflow: 'ellipsis' }}>
           김소은은 자기소개 따위 필요 없다. 말하는 감자이기 때문이다.
         </Typography>
 

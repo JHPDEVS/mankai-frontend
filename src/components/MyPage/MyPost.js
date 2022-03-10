@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Box,  Modal } from '@mui/material';
 import PostModal from './PostModal';
 import { BsThreeDots } from 'react-icons/bs';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
 
 export default function PostList() {
 
@@ -16,18 +18,35 @@ export default function PostList() {
     p: 4,
   };
 
+  
+  const user = useSelector((state)=>state.Reducers.user)
+  const [myPostData, setMyPostData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  React.useEffect(()=>{
+    axios.get("/api/get/board/"+user.id)
+    .then(res=>{
+      setMyPostData(res.data)
+    })
+  },[])
+
   return (
    <div>
-    <div className='border border-gray-300 rounded py-2 px-4 my-3'>
+    {myPostData.map((postData)=>{
+      return(
+        <div>
+            <div className='border border-gray-300 rounded py-2 px-4 my-3'>
                 <img className="rounded-full border border-gray-100 w-12 h-12 inline-block" src="" alt="img" />
-                <span className='px-3' onClick={handleOpen} >유저이름</span>
+                <span className='px-3' onClick={handleOpen} >{postData.name}</span>
                 <BsThreeDots className='float-right my-4 mx-4'/>    
             </div>
-
+            <p>{postData.content_text}</p>
+                  
+          </div>
+      )})}
+    
             {/* 게시글 */}
     
     <Modal
@@ -45,21 +64,3 @@ export default function PostList() {
   );
 }
 
-const postData = [
-    {
-        id:1,
-        title: "사진 동호회 회원 모집",
-        group:"사진 동호회",
-        image:""
-    },
-    {
-        id:2,
-        title: "직장인이 가장 좋아하는 요일은?",
-        group:"직장인은 힘들어",
-    },
-    {
-        id:3,
-        title: "비오는날.. 이노래 들어보세요",
-        group:"음악 추천",
-    },
-]

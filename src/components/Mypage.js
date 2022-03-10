@@ -20,7 +20,7 @@ function Mypage() {
         {/*  Site header */}
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <div className="bg-gray-200 inline-flex">
+        <div className="bg-gray-200 inline-flex h-screen">
             {/* 화면에서 왼쪽 : 내 정보 간략히 보여주는 컴포넌트 */}
             <div className="w-1/3 p-3">
                 <MyUser/>
