@@ -15,6 +15,7 @@ import { getMessage } from '../../store/modules/getMessage'
 import Moment from 'react-moment'
 import moment from 'moment'
 import 'moment/locale/ko'
+import MessageIcon from '@mui/icons-material/Message'
 function ChatContainer(props) {
   const messages = useSelector(state => state.Reducers.message)
   const currentUser = useSelector(state => state.Reducers.user)
@@ -31,6 +32,7 @@ function ChatContainer(props) {
   const handleOpen = () => setOpen(true)
   const { t } = useTranslation(['lang'])
   const [following, setFollowing] = useState([])
+  const [toUser, setToUser] = useState({})
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -67,24 +69,31 @@ function ChatContainer(props) {
   const transBotChat = () => {
     let users = JSON.parse(props.room.users)
     for (let i = 0; i < users.length; i++) {
-      console.log(users[i])
-      if (users[i].position === 'offical') {
+      if (users[i].position === 'official') {
+        let toUsers = []
+        for (let i = 0; i < toUser.length; i++) {
+          toUsers.push(toUser[i]['user_id'])
+        }
         axios
           .post('/api/messageBot/send', {
             message: newMessage,
             room_id: props.room.id,
             user_id: users[i].user_id,
+            to_users: toUsers,
           })
           .then(res => {
             console.log(res.data)
+            console.log('번역봇가동')
           })
       }
     }
   }
 
   const sendMessage = () => {
-    console.log(newMessage === '')
-    if (newMessage == '') {
+    // e.preventDefault();
+    // console.log(newMessage === '');
+
+    if (newMessage === '') {
       // console.log(files);
       if (files && files.length >= 1) {
         // console.log(e.target.files);
@@ -94,6 +103,9 @@ function ChatContainer(props) {
         const formData = new FormData()
         formData.append('room_id', props.room.id)
         formData.append('user_id', props.user.id)
+        for (let i = 0; i < toUser.length; i++) {
+          formData.append('to_users[]', toUser[i]['user_id'])
+        }
         if (files.length > 1) {
           for (let i = 0; i < files.length; i++) {
             formData.append('file[]', files[i])
@@ -101,15 +113,12 @@ function ChatContainer(props) {
         } else {
           formData.append('file', files[0])
         }
-        // console.log(files);
         axios
           .post('api/message/send', formData, {
             headers: { 'Content-Type': 'multipart/from-data' },
           })
-          .then(response => {
-            console.log(response)
-            transBotChat()
-            dispatch(getMessage(props.room.id))
+          .then(res => {
+            console.log('파일 전송됨')
           })
         setFiles(null)
       } else {
@@ -117,15 +126,20 @@ function ChatContainer(props) {
       }
       return
     } else {
+      // setMessages([...messages, {"message": newMessage, "user" : props.user.Reducers.user}]);
+      let toUsers = []
+      for (let i = 0; i < toUser.length; i++) {
+        toUsers.push(toUser[i]['user_id'])
+      }
       axios
         .post('/api/message/send', {
           message: newMessage,
           room_id: props.room.id,
+          to_users: toUsers,
           user_id: props.user.id,
         })
         .then(res => {
-          console.log(res.data)
-          // setMessages([...messages, res.data]);
+          transBotChat()
         })
       setNewMessage('')
     }
@@ -154,19 +168,20 @@ function ChatContainer(props) {
     console.log('chat 컨테이너')
     if (props.room.id && props.user.id) {
       dispatch(getMessage(props.room.id))
-      console.log(props.room.id)
+      setFollowing(props.user.following)
+      let toUsers = JSON.parse(props.room.users)
+      setToUser(toUsers)
+      window.Echo.channel('user.' + props.user.id).listen(
+        '.send-message',
+        e => {
+          dispatch({ type: 'ADD_MESSAGE', payload: { message: e.message } })
+          // setMessages(messages => ([...messages, e.message]));
+          scrollChatToBottom(chatBody)
+        }
+      )
     }
   }, [props.room, props.user])
-
-  useEffect(() => {
-    // console.log(messages);
-    window.Echo.channel('chat').listen('.send-message', e => {
-      dispatch({ type: 'ADD_MESSAGE', payload: { message: e.message } })
-      // setMessages(messages => ([...messages, e.message]));
-      scrollChatToBottom(chatBody)
-    })
-  }, [])
-
+  useEffect(() => {}, [])
   return (
     <div className="w-full">
       {props.room.id ? (
@@ -179,9 +194,9 @@ function ChatContainer(props) {
             handleClose={handleClose}
           />
           <div className="w-full flex  flex-col  flex-grow">
-            <div class="flex flex-col h-full w-full bg-white p-2">
-              <div class="flex flex-row items-center">
-                <div class="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
+            <div className="flex flex-col h-full w-full bg-white p-2">
+              <div className="flex flex-row items-center">
+                <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
                   {props.room.title
                     ? props.room.title
                     : userName(props.room.types, props.room.users).substring(
@@ -189,33 +204,33 @@ function ChatContainer(props) {
                         1
                       )}
                 </div>
-                <div class="flex flex-col ml-3">
-                  <div class="font-bold text-sm">
+                <div className="flex flex-col ml-3">
+                  <div className="font-bold text-sm">
                     {props.room.title
                       ? props.room.title
                       : userName(props.room.types, props.room.users)}
                   </div>
-                  <div class="text-xs text-gray-500">온라인</div>
+                  <div className="text-left text-xs text-gray-500">온라인</div>
                 </div>
-                <div class="ml-auto">
-                  <ul class="flex flex-row items-center space-x-2">
+                <div className="ml-auto">
+                  <ul className="flex flex-row items-center space-x-2">
                     <li>
                       <a
                         href="#"
-                        class="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
+                        className="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
                       >
                         <span>
                           <svg
-                            class="w-5 h-5"
+                            className="w-5 h-5"
                             fill="currentColor"
                             stroke="none"
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinejoin="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                             ></path>
                           </svg>
@@ -225,20 +240,20 @@ function ChatContainer(props) {
                     <li>
                       <a
                         href="#"
-                        class="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
+                        className="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
                       >
                         <span>
                           <svg
-                            class="w-5 h-5"
+                            className="w-5 h-5"
                             fill="currentColor"
                             stroke="none"
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinejoin="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                             ></path>
                           </svg>
@@ -246,27 +261,70 @@ function ChatContainer(props) {
                       </a>
                     </li>
                     <li>
-                      <a
-                        href="#"
-                        class="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
+                      <button
+                        aria-controls={open1 ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open1 ? 'true' : undefined}
+                        onClick={e => {
+                          handleClick(e)
+                        }}
+                        aria-label="more-vert"
+                        className="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
                       >
                         <span>
                           <svg
-                            class="w-5 h-5"
+                            className="w-5 h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
                           >
                             <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
+                              strokeLinejoin="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
                               d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
                             ></path>
                           </svg>
                         </span>
-                      </a>
+                      </button>
+                      <Menu
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right',
+                        }}
+                        keepMounted
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open1}
+                        onClose={handleClose}
+                        MenuListProps={{
+                          'aria-labelledby': 'basic-button',
+                        }}
+                      >
+                        {/* <MenuItem onClick={(e) => {handleClose(e); deleteRoom(room); }}>{t("lang:DELETE")}</MenuItem> */}
+                        {/* <MenuItem onClick={deleteRoom} >{t("lang:DELETE")}</MenuItem> */}
+                        <MenuItem
+                          onClick={e => {
+                            handleClose(e)
+                            inviteUser(props.room)
+                          }}
+                        >
+                          invite
+                        </MenuItem>
+                        <MenuItem onClick={handleClose}>photos</MenuItem>
+                      </Menu>
+                      <RoomInviteUserModal
+                        following={following}
+                        room={props.room}
+                        open={open}
+                        user={props.user}
+                        handleClose={handleClose}
+                      />
                     </li>
                   </ul>
                 </div>
@@ -302,14 +360,14 @@ function ChatContainer(props) {
                               'days'
                             ) > 0 ? (
                             <div className="p-3 font-bold">
-                              <div class="relative flex py-5 items-center">
-                                <div class="flex-grow border-t border-gray-400"></div>
-                                <span class="flex-shrink mx-4 text-gray-400">
+                              <div className="relative flex py-5 items-center">
+                                <div className="flex-grow border-t border-gray-400"></div>
+                                <span className="flex-shrink mx-4 text-gray-400">
                                   <Moment format="yyyy-MM-DD dddd" local>
                                     {messages[index].created_at}
                                   </Moment>
                                 </span>
-                                <div class="flex-grow border-t border-gray-400"></div>
+                                <div className="flex-grow border-t border-gray-400"></div>
                               </div>
                             </div>
                           ) : null
@@ -329,66 +387,77 @@ function ChatContainer(props) {
             </div>
             <div className=" w-full flex">
               {JSON.parse(props.room.users).findIndex(officalCheck) ? (
-                <div class="flex flex-row  items-center  bottom-0 my-2 w-full">
-                  <div class="ml-2 flex flex-row border-gray bg-white items-center w-full border rounded-3xl h-12 px-2">
-                    <button class="focus:outline-none flex items-center justify-center h-10 w-10 hover:text-red-600 text-red-400 ml-1">
+                <div className="flex flex-row  items-center  bottom-0 my-2 w-full">
+                  <div className="ml-2 flex flex-row border-gray bg-white items-center w-full border rounded-3xl h-12 px-2">
+                    <button className="focus:outline-none flex items-center justify-center h-10 w-10 hover:text-red-600 text-red-400 ml-1">
                       <svg
-                        class="w-5 h-5"
+                        className="w-5 h-5"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
+                          strokeLinejoin="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
                           d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
                         ></path>
                       </svg>
                     </button>
-                    <div class="w-full">
+                    <div className="w-full">
                       <input
                         value={newMessage || ''}
                         onKeyPress={onKeyPress}
                         onChange={e => setNewMessage(e.target.value)}
                         type="text"
-                        class="border rounded-2xl border-transparent w-full focus:outline-none text-sm h-10 flex items-center"
+                        className="border rounded-2xl border-transparent w-full focus:outline-none text-sm h-10 flex items-center"
                         placeholder="메세지를 입력해주세요"
                       />
                     </div>
-                    <div class="flex flex-row">
-                      <button class="focus:outline-none flex items-center justify-center h-10 w-8 hover:text-blue-600  text-blue-400">
+                    <div className="flex flex-row">
+                      <label
+                        className="focus:outline-none flex items-center justify-center h-10 w-8 hover:text-blue-600  text-blue-400"
+                        htmlFor="input-file"
+                      >
                         <svg
-                          class="w-5 h-5 "
+                          className="w-5 h-5 "
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinejoin="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
                           ></path>
                         </svg>
-                      </button>
+                      </label>
+                      <input
+                        type="file"
+                        id="input-file"
+                        className="hidden"
+                        multiple
+                        onChange={e => handleFileInput(e)}
+                      />
+
                       <button
                         id="capture"
-                        class="focus:outline-none flex items-center justify-center h-10 w-8 hover:text-green-600 text-green-400 ml-1 mr-2"
+                        className="focus:outline-none flex items-center justify-center h-10 w-8 hover:text-green-600 text-green-400 ml-1 mr-2"
                       >
                         <svg
-                          class="w-5 h-5"
+                          className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinejoin="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                           ></path>
                         </svg>
@@ -403,8 +472,16 @@ function ChatContainer(props) {
           </div>
         </div>
       ) : (
-        <div className="bg-blue-100 h-full flex-grow shadow-xl">
-          메세지를 보내보세요
+        <div className=" flex flex-row w-full h-[calc(100vh-110px)] flex-grow ">
+          <div className="m-auto ">
+            <MessageIcon
+              style={{ fontSize: 169 }}
+              className="motion-safe:animate-bounce text-primary"
+            />
+            <div className="text-3xl text-primarytext font-bold">
+              메세지 선택되지 않음
+            </div>
+          </div>
         </div>
       )}
     </div>
