@@ -26,7 +26,7 @@ export default function App({match}) {
   const[data, setData] = useState("")
 
   function handle(e){
-    setData(e.target.value)
+    setMemos(e.target.value)
   }
 
   // 저장요청
@@ -38,11 +38,6 @@ export default function App({match}) {
   }
 
   // 삭제 요청
-  // axios.delete(URL, {
-  //   content : data,
-  //   writer : user.id,
-  //   memo_id : data.id
-  // });
 
   return (
       
