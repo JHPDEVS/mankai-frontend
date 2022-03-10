@@ -1,19 +1,13 @@
-<<<<<<< HEAD
+
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import axios from "axios";
 import React, { useEffect, useState } from 'react';
 import ListItemText from '@mui/material/ListItemText';
 import { Box, Button, Modal, Typography } from '@mui/material';
-
-=======
-import * as React from 'react';
-import { Box,  Modal } from '@mui/material';
 import PostModal from './PostModal';
 import { BsThreeDots } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
->>>>>>> dfadfd8944e50021b31ea10489e14738cafd89af
 
 export default function PostList() {
 
@@ -35,17 +29,13 @@ export default function PostList() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-<<<<<<< HEAD
-  
-=======
+
   React.useEffect(()=>{
     axios.get("/api/get/board/"+user.id)
     .then(res=>{
       setMyPostData(res.data)
     })
   },[])
->>>>>>> dfadfd8944e50021b31ea10489e14738cafd89af
-
   return (
    <div>
     {myPostData.map((postData)=>{

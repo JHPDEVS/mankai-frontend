@@ -1,105 +1,3 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react'
-import Swal from 'sweetalert2'
-import { Delete } from "@mui/icons-material";
-import axios from "axios";
-import { Link } from 'react-router-dom'
-import { Box, Button, Modal, Typography, Stack } from '@mui/material';
-
-export default function MyPage(){
-    const ChattingMemo = () => (
-        window.open("/chatting_memo", "", "width=500,height=600"))
-    const PostMemo = () => (
-       window.open("/post_memo", "", "width=500,height=600"))
-    const MyMemo = () => (
-       window.open("/my_new_memo", "", "width=500,height=600"))
-
-
-
-        const[mymemoData,setMymemoData] = useState([]);
-       useEffect(()=> {
-           console.log("test")
-           ShowMymemo()
-       },[])
-   
-       const ShowMymemo = () => {
-           axios.post('/api/mymemoshow').then(res=>{
-               console.log(res.data)
-               setMymemoData(res.data)
-           })
-       }
-   
-       const deleteMymemo = (id) => {
-           axios.post('/api/deletememo/'+id)
-           .then(res=>{
-               ShowMymemo()
-           })
-       }
-
-
-
-    return( 
-        <div className="container">
-        <div className="row">
-          <div className='col-12'>
-             
-          </div>
-          <div className="col-12">
-              <div className="card card-body">
-                        <Stack direction="row" spacing={2}>
-                        <Button variant="contained" onClick={ChattingMemo} >채팅 메모</Button>
-                        <Button variant="contained" onClick={PostMemo}>게시글 메모</Button>
-                        <Button variant="contained" onClick={MyMemo}> 내 메모 </Button>
-                        <Link to="/MymemoCreate"><button>메모</button></Link>
-                        </Stack>
-                  <div className="table-responsive">
-                      <table className="table table-bordered mb-0 text-center">
-                          <thead>
-                              <tr>
-                                  <th>id</th>
-                                  <th>mymemotitle</th>
-                                  <th>mymemo</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              {
-                                
-                                      mymemoData.map((row, key)=>{
-                                        return(
-                                            <tr key={key}>
-                                                <td>{row.id}</td>
-                                                <td>{row.mymemotitle}</td>
-                                                <td>{row.mymemo}</td>
-                                                <td>
-                                                    test
-                                                </td>
-                                                <td>
-                                                    <Link to={`/MyPage/MymemoUpdate/${row.id}`}  className='btn btn-success me-2'>Update</Link>
-                                                </td>          
-                                                <td>
-                                                <Button variant="danger" onClick={()=>deleteMymemo(row.id)}>
-                                                    Delete
-                                                </Button>
-                                                </td>
-                                            </tr>
-                                        )    
-                                    
-
-                                      })
-                                      
-                                  
-                              }
-                          </tbody>
-                      </table>
-                  </div>
-              </div>
-          </div>
-        </div>
-    </div>
-    )
-}
-
-=======
 import {Button, Fab, Link} from "@mui/material";
 import React, {memo, useEffect, useState} from "react";
 import EditIcon from '@mui/icons-material/Edit';
@@ -118,12 +16,38 @@ export default function MyPage() {
             .get('/api/show/memo/' + user.id)
             .then(res => {
                 setMemos(res.data)
+                console.log(res.data)
             })
     }, [])
 
     function editPage(memo){
         window.open("/my_memo_edit/"+memo.id, "bnhgn", "width=500,height=600")
     }
+
+    const deleteMymemo = (memo_id) => {
+        axios.post('/api/deletememo/',{
+            memo_id:memo_id,
+            user_id:user.id
+        })
+        .then(res=>{
+            setMemos(res.data)
+        })
+    }
+
+
+    // const [testmemo, setTestmemo] = useState([]);
+    // useEffect(()=>{
+    //     console.log("testing")
+    //     Showmemo()
+    // },[])
+    // const Showmemo = () => {
+    //     axios.post('/api/mymemoshow').then(res=>{
+    //         console.log(res.data)
+            
+    //     })
+    // }
+
+
 
     return (
         <div>
@@ -157,11 +81,11 @@ export default function MyPage() {
             </div>
 
             {
-                memos.map((memo) => {
+                memos.map((memo, key) => {
 
                     return (
 
-                        <div className="balloon" key={memo.id}>
+                        <div className="balloon" key={key}>
                             {memo.memo}
                             <br/>
                             <span >
@@ -169,7 +93,8 @@ export default function MyPage() {
                                 <Button onClick={() => {editPage(memo)}}>수정</Button>
                             
                                 
-                                <Button>삭제</Button>
+                                <Button variant="danger" onClick={()=>deleteMymemo(memo.id)}>
+                                    삭제</Button>
                             </span>
                         </div>
                     )
@@ -184,4 +109,3 @@ export default function MyPage() {
         </div>
     )
 }
->>>>>>> dfadfd8944e50021b31ea10489e14738cafd89af
