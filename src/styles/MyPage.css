@@ -26,3 +26,8 @@
 	top:25px;
 	left:-18px;
  }
+
+ #scroll{
+	height: 405px;
+	overflow-y: scroll;
+ }
