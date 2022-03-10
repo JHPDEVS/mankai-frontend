@@ -21,6 +21,9 @@ function BoardCard(props){
     const user = useSelector(state=>state.Reducers.user)
     const sideBoard = useSelector(state=>state.Reducers.sideData)
     const isOpen = useSelector(state=>state.Reducers.isOpen)
+    const likeUpdate = useSelector(state=>state.Reducers.likeUpdate)
+    const likeId = useSelector(state=>state.Reducers.likeId)
+
     const [imageList, setImageList] = useState([]);
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
@@ -40,36 +43,57 @@ function BoardCard(props){
         dispatch({type:"SIDE_OPEN"})
     }
     const ClickLike = () => {
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
+        })
         setIsLike(true)
-        setLikeCount(likeCount+1)
         axios.post('/api/post/like',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
-            console.log(res)
+            setLikes(res.data)
         })
     }
     const ClickDisLike =() => {
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
+        })
         setIsLike(false)
-        setLikeCount(likeCount-1)
         axios.post('/api/delete/like',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
-            console.log(res.data)
+            setLikes(res.data)
         })
     }
+
     useEffect(()=>{
+        if(likeId == props.board.id){
+            axios.get('/api/show/like/'+props.board.id)
+            .then(res=>{
+                console.log(res.data)
+                setLikes(res.data)
+            })
+        }
+    },[likeUpdate])
+
+    useEffect(()=>{
+        setIsLike(false)
         likes.forEach(like=>{
             if(user.id == like.user_id)
             {
-                console.log("좋아용")
-                setIsLike(true);
+                setIsLike(true)
             }
-            
         })
     },[likes])
-    
+
+    // 통합 데이터 받기
     useEffect(() => {
         let check = 0 
         if(check == 0){
@@ -86,8 +110,6 @@ function BoardCard(props){
                 setSampleComment(res.data.comments)
                 setCommentLength(res.data.comment_length)
                 setLikes(res.data.likes)
-
-                
             })
             .catch(function(error){
                 console.log(error);
@@ -112,7 +134,7 @@ function BoardCard(props){
                         </div>
                     </div>
                     <div className='w-full mt-10 '>
-                        <div className='w-full mx-auto px-20'>
+                        <div className='w-full mx-auto xl:px-16 px-10'>
                             {/* 게시글 사진및 본문내용 */}
                             <p className='font-bold'>{props.board.content_text}</p>
                             {imageList == ''

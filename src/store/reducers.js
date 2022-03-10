@@ -36,7 +36,8 @@ const initialState = {
   sideLikeData:[],
   sideImageList:[],
   isOpen:false,
-  likeData:[]
+  likeUpdate:0,
+  likeId:0
 }
 
 export default handleActions(
@@ -203,12 +204,10 @@ export default handleActions(
     [LIKE_UPDATE]:(state,action)=>{
       return{
         ...state,
-        likeData:[...state.likeData,action.payload.likeData]
+        likeUpdate:state.likeUpdate+1,
+        likeId:action.payload.board_id
       }
-    }
-
-
-    
+    },
   },
   
   initialState

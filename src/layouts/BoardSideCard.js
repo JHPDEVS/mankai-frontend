@@ -19,32 +19,76 @@ function BoardSideCard(props){
     
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
-    const likeData = useSelector(state=>state.Reducers.likeData)
     const imageList = useSelector(state=>state.Reducers.sideImageList)
+    const likeUpdate = useSelector(state=>state.Reducers.likeUpdate)
+    const likeId = useSelector(state=>state.Reducers.likeId)
+    const isOpen = useSelector(state=>state.Reducers.isOpen)
+
+    const sideData = useSelector(state=>state.Reducers.sideData)
+
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
-    const [likeCount,setLikeCount] = useState(0)
-
+    
     const ClickLike = () => {
         setIsLike(true)
-        setLikeCount(likeCount+1)
         axios.post('/api/post/like',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
-            console.log(res)
+            setLikes(res.data)
+        })
+        
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
         })
     }
     const ClickDisLike =() => {
         setIsLike(false)
-        setLikeCount(likeCount-1)
         axios.post('/api/delete/like',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
-            console.log(res.data)
+            setLikes(res.data)
+        })
+        
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
         })
     }
+
+    useEffect(()=>{
+        if(isOpen && likeId == props.board.id){
+            axios.get('/api/show/like/'+props.board.id)
+            .then(res=>{
+                console.log(res.data)
+                setLikes(res.data)
+            })
+        }
+    },[likeUpdate])
+
+    useEffect(()=>{
+        axios.get('/api/show/like/'+props.board.id)
+            .then(res=>{
+                
+                setLikes(res.data)
+            })
+    },[sideData])
+
+    useEffect(()=>{
+        setIsLike(false)
+        likes.forEach(like=>{
+            if(user.id == like.user_id)
+            {
+                setIsLike(true)
+            }
+        })
+    },[likes])
 
     return (  
         <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
@@ -63,7 +107,7 @@ function BoardSideCard(props){
                         </div>
                     </div>
                     <div className='w-full mt-10 '>
-                        <div className='w-full mx-auto px-20'>
+                        <div className='w-full mx-auto px-5'>
                             {/* 게시글 사진및 본문내용 */}
                             <p className='mb-3'>{props.board.content_text}</p>
                             {imageList != "No Data"
@@ -77,12 +121,12 @@ function BoardSideCard(props){
                                     <div className='w-1/3 grid grid-cols-2'> 
                                         {isLike
                                             ?<Button color="error" onClick={ClickDisLike}>
-                                                <SvgIcon color='error'  className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
-                                                <p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+                                                <SvgIcon color='error' disabled className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
+                                                <p>{likes ? likes.length : 0}</p></Button>
 
                                             :<Button color='error' onClick={ClickLike}>
                                                 <SvgIcon color='action' className='mx-auto' component={FavoriteBorderIcon} fontSize="large">
-                                                    </SvgIcon><p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+                                                    </SvgIcon><p>{likes ? likes.length : 0}</p></Button>
                                         }       
                                     </div>
                                     <div className='w-2/3 text-right'>

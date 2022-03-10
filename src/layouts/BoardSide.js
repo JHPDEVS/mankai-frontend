@@ -20,7 +20,6 @@ const drawerWidth = 700;
 function BoardSide(props){
     
     const sideData = useSelector((state=>state.Reducers.sideData));
-    const sideLikeData =useSelector((state=>state.Reducers.sideLikeData));
     const user = useSelector((state=>state.Reducers.user))
     const [translatedText,setTranslatedText] = useState("");
     const [post_comment,setPostComment] = useState("");
@@ -195,9 +194,9 @@ function BoardSide(props){
                 
                 {/* 사이드바 데이터 있을경우*/}
                 {sideData != null &&
-                <div className='flex flex-col relative mb-20 mt-20'>
+                <div className='flex flex-col relative mb-20 mt-16'>
                     <Button onClick={handleDrawerClose}>
-                        <div>닫기</div>
+                        <div className='h-8 text-lg'>X</div>
                     </Button>
                     <div className='w-full p-5'>
                     {/* 프사 & 이름 */}
