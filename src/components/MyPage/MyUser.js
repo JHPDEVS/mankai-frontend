@@ -8,7 +8,7 @@ import '../../styles/MyPage.css'
 export default function ImgMediaCard() {
 
   return (
-    <div className='bg-white border-solid rounded-lg p-3 drop-shadow-xl '>
+    <div id='user_page' className='bg-white border-solid rounded-lg p-3 drop-shadow-xl '>
       <Link to="/profile">
         <SettingsIcon color="action" className='float-right'/>
       </Link>
