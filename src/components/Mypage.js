@@ -10,9 +10,9 @@ function Mypage() {
     return (
 
         <div>
-            < div className="flex h-screen">
+            <div className="flex h-screen">
                 <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
-                <div className="relative ">
+                <div className="relative  flex-col flex-1">
                     {/*  Site header */}
                     <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
                     <div className="w-full">
