@@ -1,22 +1,34 @@
 import axios from "axios";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
+import Button from 'react-bootstrap/Button'
+import { Delete } from "@mui/icons-material";
+import { Link } from 'react-router-dom'
 
 
-export default function ChatMemo(){
+export default function ChatMemo(props){
 
-    const[mymemoData,setMymemoData] = useState(null);
+    const[mymemoData,setMymemoData] = useState([]);
 
     useEffect(()=> {
         console.log("test")
         ShowMymemo()
-    })
+    },[])
 
     const ShowMymemo = () => {
-        axios.get('/api/mymemoshow').then(res=>{
-            console.log(res.data.data)
+        axios.post('/api/mymemoshow').then(res=>{
+            console.log(res.data)
+            setMymemoData(res.data)
         })
     }
+
+    const deleteMymemo = (id) => {
+        axios.post('/api/deletememo/'+id)
+        .then(res=>{
+            ShowMymemo()
+        })
+    }
+
     return (
         <div className="container">
             <div className="row">
@@ -29,22 +41,37 @@ export default function ChatMemo(){
                           <table className="table table-bordered mb-0 text-center">
                               <thead>
                                   <tr>
-                                      <th>user_id</th>
+                                      <th>id</th>
                                       <th>mymemotitle</th>
                                       <th>mymemo</th>
                                   </tr>
                               </thead>
                               <tbody>
                                   {
-                                      ShowMymemo.length > 0 && (
-                                          ShowMymemo.map((row, key)=>(
-                                              <tr key={key}>
-                                                  <td>{row.user_id}</td>
-                                                  <td>{row.mymemotitle}</td>
-                                                  <td>{row.mymemo}</td>
-                                              </tr>
-                                          ))
-                                      )
+                                    
+                                          mymemoData.map((row, key)=>{
+                                            return(
+                                                <tr key={key}>
+                                                    <td>{row.id}</td>
+                                                    <td>{row.mymemotitle}</td>
+                                                    <td>{row.mymemo}</td>
+                                                    <td>
+                                                        <Button>
+                                                            Update
+                                                        </Button>
+                                                    </td>
+                                                    <td>
+                                                    <Button variant="danger" onClick={()=>deleteMymemo(row.id)}>
+                                                        Delete
+                                                    </Button>
+                                                    </td>
+                                                </tr>
+                                            )    
+                                        
+
+                                          })
+                                          
+                                      
                                   }
                               </tbody>
                           </table>

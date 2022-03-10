@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Button, Grid, IconButton, List, ListItem, ListItemText, Stack, TextField } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -12,6 +11,8 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 export default function App() {
 
   const [showEditor, setShowEditor] = useState(false)
+
+  const [] = useState
 
   return (
     <div className="MemoBackground">
@@ -46,7 +47,7 @@ export default function App() {
             </div>
             <Stack direction="row" spacing={2}>
               
-              <Button variant="contained" startIcon={<SendIcon />}>
+              <Button type="submit"variant="contained" startIcon={<SendIcon />}>
                 Send
               </Button>
               

@@ -257,7 +257,7 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="무슨 생각을 하고 있나요?" 
+          label="무슨 생각을 하고 있나요? test" 
           variant="standard"
           />
       <div>
