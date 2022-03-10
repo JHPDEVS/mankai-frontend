@@ -9,8 +9,8 @@ import {
 
 import Login from './components/Login'
 import Register from './components/Register'
+import Mypage from './components/MyPage'
 import BoardCopy from './components/BoardCopy'
-import Mypage from './components/Mypage'
 import axios from 'axios'
 import Home from './layouts/Home'
 import Empty from './components/Empty'
@@ -21,10 +21,9 @@ import { Noti } from './store/modules/getNoti'
 import NotiView from './components/NotiView'
 import Dashboard from './components/Dashboard'
 import DashboardUser from './admin/component/User'
-import './css/style.scss';
-
 import ChatMemo from './components/MyPage/ChatMemo';
 import PostMemo from './components/MyPage/PostMemo';
+import './css/style.scss'
 import MyNewMemo from './components/MyPage/MyNewMemo';
 import Profile from './components/MyPage/Profile';
 import Youpage from './components/MyPage/YouPage'
@@ -64,6 +63,7 @@ function App() {
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
         <Route exact path="/chatting_memo" component={ChatMemo}></Route>
           <Route exact path="/post_memo" component={PostMemo}></Route>
+          <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route>
           <Route exact path="/my_new_memo" component={MyNewMemo}></Route>
           <Route exact path="/profile" component={Profile}></Route>
           <Route exact path="/youProfile" component={Youpage}></Route>

@@ -52,28 +52,34 @@ export default function BasicTabs() {
   };
   
   return (
-    <div className='w-2/3 p-3' >
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Follows" {...a11yProps(0)} />
-          <Tab label="Posts" {...a11yProps(1)} />
-          <Tab label="Groups" {...a11yProps(2)} />
-          <Tab label="Memos" {...a11yProps(3)} />
+    <div className='' >
+      <div className='bg-white border-solid rounded-md items-center mt-10 overflow-x-hidden'>
+        <Tabs value={value} onChange={handleChange}>
+
+          <Tab label="MyFollows" {...a11yProps(0)} />
+          <Tab label="MyPosts" {...a11yProps(1)} />
+          <Tab label="MyGroups" {...a11yProps(2)} />
+          <Tab label="MyMemos" {...a11yProps(3)} />
 
         </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
-        <MyFollow/>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <MyPost/>
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <MyGroups/>
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <MyMemo/>
-      </TabPanel>
+      </div>        
+
+      <br/>
+
+      <div className='h-80 p-3 bg-white border-solid rounded-md overflow-auto'>
+        <TabPanel value={value} index={0}>
+          <MyFollow/>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <MyPost/>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <MyGroups/>
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <MyMemo/>
+        </TabPanel>
+      </div>
     </div>
   );
 }

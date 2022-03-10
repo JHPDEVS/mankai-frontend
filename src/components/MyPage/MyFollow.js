@@ -1,48 +1,28 @@
+import { Button } from '@mui/material';
 import * as React from 'react';
-import { useState } from 'react'; 
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import NewWindow from 'react-new-window'
+import { BiPaperPlane } from "react-icons/bi";
+import { BsThreeDots } from "react-icons/bs";
 export default function FollowList() {
 
   return (
-    <List sx={{ width: '100%', maxWidth: 750, bgcolor: 'background.paper' }}>
-      {followData.map((item)=>(
-        <ListItem alignItems="flex-start"  sx={{ borderBottom: 1, borderColor: 'divider' }}  key={item.id}>
-        <ListItemAvatar>
-          <Avatar alt="Remy Sharp" src={`${item.img}?w=248&fit=crop&auto=format`} />
-        </ListItemAvatar>
-        <ListItemText
-          onClick={youProfile}
-          primary={item.name}
-          secondary={
-          
-              <Typography
-                sx={{ display: 'inline' }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-               {item.sogae}
-              </Typography>
-          
-          }
-        />
-      </ListItem>
-      ))}
+    <div className='snap-y'>
 
-      
-    </List>
+      <div >
+        {followData.map((item)=>(
+          <div className='border border-gray-300 rounded py-2 px-4 my-3'>
+            <img className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={`${item.img}?w=248&fit=crop&auto=format`} alt="user image" />
+            <Button href="/youProfile">{item.name}</Button>
+            <span className='text-gray-500'> {item.sogae}</span>
+            <BsThreeDots className='float-right my-4 mx-4'/>
+            <BiPaperPlane className='float-right my-4'/>
+          </div>
+        ))}
+            
+      </div>
+
+    </div>
   );
 }
-
-const youProfile = () => (
-  window.open("/youProfile", "", "")
-)
 
 
 const followData = [
