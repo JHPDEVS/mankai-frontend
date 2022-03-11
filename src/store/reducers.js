@@ -25,13 +25,15 @@ const POST_USEREDIT_FAILURE = 'POST_USEREDIT_FAILURE'
 const POST_NOTI_PENDING = 'POST_NOTI_PENDING'
 const POST_NOTI_SUCCESS = 'POST_NOTI_SUCCESS'
 const POST_NOTI_FAILURE = 'POST_NOTI_FAILURE'
-const GET_MESSAGE_PENDING = "GET_MESSAGE_PENDING";
-const GET_MESSAGE_SUCCESS = "GET_MESSAGE_SUCCESS";
-const GET_MESSAGE_FAILURE = "GET_MESSAGE_FAILURE";
-const GET_ROOM_PENDING = "GET_ROOM_PENDING";
-const GET_ROOM_SUCCESS = "GET_ROOM_SUCCESS";
-const GET_ROOM_FAILURE = "GET_ROOM_FAILURE";
-const ADD_MESSAGE = "ADD_MESSAGE";
+const GET_MESSAGE_PENDING = 'GET_MESSAGE_PENDING'
+const GET_MESSAGE_SUCCESS = 'GET_MESSAGE_SUCCESS'
+const GET_MESSAGE_FAILURE = 'GET_MESSAGE_FAILURE'
+const GET_ROOM_PENDING = 'GET_ROOM_PENDING'
+const GET_ROOM_SUCCESS = 'GET_ROOM_SUCCESS'
+const GET_ROOM_FAILURE = 'GET_ROOM_FAILURE'
+const ADD_MESSAGE = 'ADD_MESSAGE'
+const ADD_ROOM = 'ADD_ROOM'
+const DELETE_ROOM = 'DELETE_ROOM'
 const initialState = {
   user: null,
   pending: false,
@@ -260,7 +262,22 @@ export default handleActions(
     [ADD_MESSAGE]: (state, action) => {
       return {
         ...state,
-        message:[...state.message,action.payload.message]
+        message: [...state.message, action.payload.message],
+      }
+    },
+    [ADD_ROOM]: (state, action) => {
+      return {
+        ...state,
+        rooms: [action.payload.room, ...state.rooms],
+      }
+    },
+    [DELETE_ROOM]: (state, action) => {
+      return {
+        ...state,
+        // rooms:[...state.rooms,action.payload.room]
+        rooms: state.rooms.filter((room, index) => {
+          return room.id !== action.payload.room.id
+        }),
       }
     },
   },
