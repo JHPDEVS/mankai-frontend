@@ -34,7 +34,7 @@ const initialState = {
   boardData:[],
   sideData:"",
   isOpen:false,
-  likeData:[]
+  likeData:[],
 }
 
 export default handleActions(
@@ -201,10 +201,7 @@ export default handleActions(
         ...state,
         likeData:[...state.likeData,action.payload.likeData]
       }
-    }
-
-
-    
+    },  
   },
   
   initialState

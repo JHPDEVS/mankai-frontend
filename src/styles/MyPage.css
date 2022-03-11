@@ -1,0 +1,28 @@
+/* MyUser */
+#cardImg{
+    width: 50%;   
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+}
+
+.balloon {  
+	position:relative; 
+	margin: 50px;
+	width:200px; 
+	height:100px;
+	 background:pink; 
+	 border-radius: 10px;
+	 padding: 3%;
+   }
+
+.balloon:after { 
+	border-top:16px solid transparent; 
+	border-left: 25px solid transparent; 
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid pink; 
+	content:""; 
+	position:absolute;
+	top:25px;
+	left:-18px;
+ }

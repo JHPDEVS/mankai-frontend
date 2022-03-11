@@ -5,16 +5,21 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
+import MyFollow from './MyFollow';
+import MyPost from './MyPost';
+import MyGroups from './MyGroups';
+import MyMemo from './MyMemo';
+
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
-    <div 
+    <div
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      className="w-full"
       {...other}
     >
       {value === index && (
@@ -45,29 +50,36 @@ export default function BasicTabs() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  
   return (
-    <Box >
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="즐겨찾기" {...a11yProps(0)} />
-          <Tab label="게시물" {...a11yProps(1)} />
-          <Tab label="그룹" {...a11yProps(2)} />
-          <Tab label="메모" {...a11yProps(3)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
-     
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-     
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-     
-      </TabPanel>
-      <TabPanel value={value} index={3}>
+    <div className='' >
+      <div className='bg-white border-solid rounded-md items-center mt-10 overflow-x-hidden'>
+        <Tabs value={value} onChange={handleChange}>
 
-      </TabPanel>
-    </Box>
+          <Tab label="MyFollows" {...a11yProps(0)} />
+          <Tab label="MyPosts" {...a11yProps(1)} />
+          <Tab label="MyGroups" {...a11yProps(2)} />
+          <Tab label="MyMemos" {...a11yProps(3)} />
+
+        </Tabs>
+      </div>        
+
+      <br/>
+
+      <div className='h-80 p-3 bg-white border-solid rounded-md overflow-auto'>
+        <TabPanel value={value} index={0}>
+          <MyFollow/>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <MyPost/>
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <MyGroups/>
+        </TabPanel>
+        <TabPanel value={value} index={3}>
+          <MyMemo/>
+        </TabPanel>
+      </div>
+    </div>
   );
 }
