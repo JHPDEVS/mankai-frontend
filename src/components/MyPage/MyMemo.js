@@ -1,15 +1,77 @@
 import { Button, Fab } from "@mui/material";
 import React from "react";
+import { useState, useEffect } from "react";
 import EditIcon from '@mui/icons-material/Edit';
+import axios from "axios";
 
-export default function MyPage(){
+export default function MyMemo(props){
+    const [postMemo, setPostMemo] = useState(props.postMemo);
+    const [messageMemo, setMessageMemo] = useState(props.messageMemo);
 
+
+    const [allMemo, setAllMemo] = useState([]);
+    const [allMemoExist, setAllMemoExist] = useState([]);
+
+    useEffect(()=>{
+       setAllMemo([...postMemo,...messageMemo])
+       console.log("allMemo:",allMemo);
+    },[])
+
+    useEffect(()=>{
+        var intoAllMemoExist = new Array(allMemo.length).fill(true)
+        setAllMemoExist(intoAllMemoExist);
+    },[allMemo])
+    
+const ChattingMemo = () => (
+    window.open("/chatting_memo", "", "width=500,height=600")
+ )
+
+ const PostMemo = () => (
+   window.open("/post_memo", "", "width=500,height=600")
+)
+
+const MyMemo = () => {
+    console.log({postMemo})
+    console.log({messageMemo})
+    console.log({allMemo})
+   
+   window.open("/my_new_memo", "", "width=500,height=600")
+}
+
+const postMemoDelete = (memo_id,idx) => {
+    const copiedAllMemoExist = [...allMemoExist]
+    copiedAllMemoExist[idx] = false;
+    setAllMemoExist(copiedAllMemoExist)
+    axios.post('/api/deletemypostmemos/'+memo_id)
+    .then((res)=>{
+        console.log("삭제성공")
+    })
+    .catch((err)=>{
+        console.log(err);
+    })
+}
+
+const messageMemoDelete = (memo_id,idx) => {
+    const copiedAllMemoExist = [...allMemoExist]
+    copiedAllMemoExist[idx] = false;
+    setAllMemoExist(copiedAllMemoExist)
+    axios.post('/api/deletemymessagememos/'+memo_id)
+    .then((res)=>{
+        console.log("삭제성공")
+    })
+    .catch((err)=>{
+        console.log(err);
+    })
+}
     return( 
         <div>
 
+
+
 <div class="flex items-center max-w-md mx-auto bg-gray-200 rounded-lg" >
         <div class="w-full">
-            <input type="search" class="w-full px-4 py-1 bg-gray-200 text-gray-800 rounded-full focus:outline-none"
+        
+            <input type="search" class=" w-full px-4 py-1 bg-gray-200 text-gray-800 rounded-full focus:outline-none"
                 placeholder="search"/>
         </div>
         <div>
@@ -26,34 +88,48 @@ export default function MyPage(){
     
     
 
-    {/* 메모 종류에따라 조건 바꾸기 */}
+    
+    
     {
-        1 == true && 
-        <div className="balloon">
-            sssss
-            <br/>
-            <span ><Button onClick={MyMemo}>수정</Button><Button>삭제</Button></span>
-            
-        </div>
-
+        allMemo.map((memo,idx)=>{
+            return(
+            <>
+            {
+             (memo.category) ?
+                    (allMemoExist[idx]) ?
+                    <div className="postballoon">
+                    <div>{memo.name}</div>
+                    {memo.content_text}
+                    <br/>
+                    <span>
+                        <Button onClick={MyMemo}>수정</Button>
+                        <Button onClick={() => {postMemoDelete(memo.id,idx)}}>삭제</Button></span>
+                    </div>
+                    :null
+                      : 
+             (memo.message) ?
+             (allMemoExist[idx]) ?
+             <div className="chatballoon">
+                    <div>{memo.name}</div>
+                    {memo.message}
+                    <br/>
+                    <Button onClick={MyMemo}>수정</Button><Button onClick={() => {messageMemoDelete(memo.id,idx)}}>삭제</Button>
+             </div>
+             :null
+                     :
+                     null
+            }
+            </>
+            )
+        })
     }
-
-    <Fab color="" onClick={MyMemo}>
+    
+    
+    <Fab onClick={MyMemo} color="">
         <EditIcon />
-    </Fab>
+        </Fab>
+   
 
     </div>
     )
 }
-
-const ChattingMemo = () => (
-     window.open("/chatting_memo", "", "width=500,height=600")
-  )
-
-  const PostMemo = () => (
-    window.open("/post_memo", "", "width=500,height=600")
- )
-
- const MyMemo = () => (
-    window.open("/my_new_memo", "", "width=500,height=600")
- )

@@ -19,6 +19,7 @@ const drawerWidth = 385;
 function BoardSide(props){
     
     const sideData = useSelector((state=>state.Reducers.sideData));
+    const postMemo = useSelector((state=>state.Reducers.postMemo));
     const user = useSelector((state=>state.Reducers.user))
     const [translatedText,setTranslatedText] = useState("");
     const [post_comment,setPostComment] = useState("");
@@ -168,8 +169,21 @@ function BoardSide(props){
         })
     }
     // 설정 오픈여부 확인
-    const handleToggle = () =>{
+    const handleToggle = (clickCategory) =>{
+
         setIsMenuOpen(isMenuOpen => !isMenuOpen)
+        if(clickCategory === 'memo'){
+            axios.post("/api/postmemo/"+{sideData}.sideData.id+"/"+user.id+"/"+{sideData}.sideData.user_id,{
+                category:{sideData}.sideData.category,
+                content_text:{sideData}.sideData.content_text,
+            })
+            .then((res)=>{
+                console.log(res);
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+        }
     }
     return (
         <Box className="justify-between flex">
@@ -237,15 +251,15 @@ function BoardSide(props){
                                             }}
                                             >
                                             <Paper>
-                                                <ClickAwayListener onClickAway={handleToggle}>
+                                                <ClickAwayListener onClickAway={() => handleToggle("")}>
                                                 <MenuList
                                                     autoFocusItem={isMenuOpen}
                                                     id="composition-menu"
                                                     aria-labelledby="composition-button"
                                                 >
                                                     <MenuItem onClick={()=>callPapago(sideData.content_text)}>번역하기</MenuItem>
-                                                    <MenuItem onClick={handleToggle}>메모 보내기</MenuItem>
-                                                    <MenuItem onClick={handleToggle}>신고하기</MenuItem>
+                                                    <MenuItem onClick={() => handleToggle("memo")}>메모 보내기</MenuItem>
+                                                    <MenuItem onClick={() => handleToggle("")}>신고하기</MenuItem>
                                                 </MenuList>
                                                 </ClickAwayListener>
                                             </Paper>

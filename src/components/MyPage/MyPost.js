@@ -3,7 +3,7 @@ import { Box,  Modal } from '@mui/material';
 import PostModal from './PostModal';
 import { BsThreeDots } from 'react-icons/bs';
 
-export default function PostList() {
+export default function PostList(props) {
 
   const style = {
     position: 'absolute',
@@ -17,9 +17,10 @@ export default function PostList() {
   };
 
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    setOpen(true);
+  };
   const handleClose = () => setOpen(false);
-
   return (
    <div>
     <div className='border border-gray-300 rounded py-2 px-4 my-3'>

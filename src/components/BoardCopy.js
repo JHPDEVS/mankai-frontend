@@ -20,6 +20,8 @@ function BoardCopy(props)
     const [infHandle,setInfHandle] = useState(true);
     const [currentPage,setCurrentPage] = useState(1);
     const [category,setCategory]= useState("전체");
+    const user = useSelector((state=>state.Reducers.user))
+
 
     const dispatch = useDispatch();
     let array = [];
@@ -69,8 +71,12 @@ function BoardCopy(props)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[boardData])
 
-    const myPosts = () =>{
-        axios.get('/api/myposts/1')
+
+    
+    const editPostMemo = () => {
+        axios.post('/api/editmypostmemos/41',{
+            content_text:"props로 받을 예정인 content_text"
+        })
         .then((res)=>{
             console.log(res);
         })
@@ -78,7 +84,21 @@ function BoardCopy(props)
             console.log(err);
         })
     }
+    // PostMemo->Edit
+    // 41번글을 고친다고 가정
 
+    const deletePostMemo = () => {
+        axios.post('/api/deletemypostmemos/40')
+        .then((res)=>{
+            console.log(res);
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+    }
+    // PostMemo->Delete
+    // 40번글 없앤다고 가정
+    
     const categoryHandle = (e) =>{
         setCategory(e.target.value);
         setInfHandle(infHandle => true)
@@ -115,7 +135,8 @@ function BoardCopy(props)
                 
                     <div className='w-full flex mt-16 z-10' >
                         {/* main */}  
-                        <button onClick={myPosts}>내가 쓴 게시글 확인하기</button> 
+                        <button onClick={editPostMemo}>내가 메모한 게시글 수정하기</button>
+                        <button onClick={deletePostMemo}>내가 메모한 게시글 삭제하기</button>
                         <div className={'w-full '+(isOpen ? " pr-96":"")} >
                             <div className="inline-flex fixed m-3 z-20 lg:mr-64"  >
                                 <svg className="w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 232"><path d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z" fill="#648299" fillRule="nonzero"/></svg>

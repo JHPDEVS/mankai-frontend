@@ -6,21 +6,46 @@
     margin: auto;
 }
 
-.balloon {  
+.postballoon {  
 	position:relative; 
-	margin: 50px;
+	margin-right : 30px;
+	margin-top : 15px;
 	width:200px; 
-	height:100px;
-	 background:pink; 
+	height:140px;
+	 background:rgb(248, 136, 229); 
 	 border-radius: 10px;
 	 padding: 3%;
+	 display:inline-block;
    }
 
-.balloon:after { 
+   .postballoon:after { 
 	border-top:16px solid transparent; 
 	border-left: 25px solid transparent; 
 	border-right: 10px solid transparent; 
-	border-bottom: 10px solid pink; 
+	border-bottom: 10px solid rgb(248, 136, 229); 
+	content:""; 
+	position:absolute;
+	top:25px;
+	left:-18px;
+ }
+
+ .chatballoon {  
+	position:relative; 
+	margin-right : 30px;
+	margin-top : 15px;
+	width:200px; 
+	height:140px;
+	 background:rgb(86, 145, 233); 
+	 border-radius: 10px;
+	 padding: 3%;
+	 display:inline-block;
+   }
+
+   .chatballoon:after { 
+	border-top:16px solid transparent; 
+	border-left: 25px solid transparent; 
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid rgb(86, 145, 233); 
 	content:""; 
 	position:absolute;
 	top:25px;
