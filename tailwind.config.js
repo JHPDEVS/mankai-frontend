@@ -30,7 +30,10 @@ module.exports = {
         '6xl': ['3.75rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
       },
       spacing: {
+        '240': '52rem',
         '192': '44rem',
+        '186': '43rem',
+        '180': '40rem'
       },
       screens: {
         xs: '480px',

@@ -14,6 +14,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import axios from 'axios';
 import BoardImages from './BoardImages';
+import Dropdown from 'react-dropdown';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Moment from 'react-moment';
+import 'react-dropdown/style.css';
+import { OptionUnstyled } from '@mui/base';
 
 function BoardCard(props){
     
@@ -30,6 +36,30 @@ function BoardCard(props){
     const [likeCount,setLikeCount] = useState(0)
     const [sampleComment, setSampleComment] = useState([])
     const [commentLength, setCommentLength] = useState("")
+    const option = ["번역하기","클립보드로 이동","신고하기"]
+    const [translated,setTranslated] = useState("");
+
+    // 메뉴바 조절
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = (e) => {
+        let eText = e.target.outerText;
+        if(eText == option[0])
+        {
+            // console.log(props.board.content_text)
+            axios.post('/api/show/papago',{
+                text:props.board.content_text
+            }).then(res=>{
+                // console.log(res.data)
+               setTranslated(res.data.message.result.translatedText); 
+            })
+        }
+        setAnchorEl(null);
+    };
+
     const BoardToSideData = (e) =>{
         console.log(likes)
         dispatch({
@@ -120,23 +150,52 @@ function BoardCard(props){
     return (  
         <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
             <div>
-                <div className="bg-white w-full rounded-md shadow-md mt-2">
+                <div className="bg-white w-full rounded-2xl shadow-md mt-2">
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
                             <div className="flex">
                                 <Avatar className='mr-3 mt-1'>d</Avatar> 
                                 <div>        
                                     <h3 className="font-bold text-md">{props.board.name}</h3>
-                                    <p className='text-sm text-gray-500'>3시간 전</p>
+                                    <p className='text-sm text-gray-500'><Moment format='YYYY/MM/DD'>{props.board.updated_at}</Moment> </p>
                                 </div>
                             </div>
-                            <p className='text-md font-bold'>{props.board.category}</p>
+                            {/* 메뉴바 */}
+                            <div>
+                                <Button
+                                    id="basic-button"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                >
+                                    설정
+                                </Button>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                    'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    {option.map((option)=>{
+                                        return(
+                                            <MenuItem onClick={handleClose}>{option}</MenuItem>
+                                        )
+                                    })}
+                                    
+                                </Menu>
+                            </div>
+
                         </div>
                     </div>
                     <div className='w-full mt-10 '>
                         <div className='w-full mx-auto xl:px-16 px-10'>
                             {/* 게시글 사진및 본문내용 */}
                             <p className='font-bold'>{props.board.content_text}</p>
+                            <p className="bg-gray-200">{translated}</p>
                             {imageList == ''
                                 ?<Skeleton variant="rectangular" width={550} height={550} />
                                 :imageList != 'No Data'

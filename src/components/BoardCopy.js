@@ -56,17 +56,14 @@ function BoardCopy(props)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[boardData])
 
-    const categoryHandle = (e) =>{
-        setCategory(e.target.value);
+    const categoryHandle = (name) =>{
+        setCategory(name);
         setInfHandle(infHandle => true)
         setCurrentPage(currentPage => 1)
     }
     useEffect(()=>{
-            // console.log("category")
             dispatch({type:"BOARD_CLEAR"})
-            // console.log("현재페이지" + currentPage)
             ShowBoard()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[category])
 
     // redux state 받아옴
@@ -74,12 +71,13 @@ function BoardCopy(props)
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const isOpen = useSelector((state)=>state.Reducers.isOpen);
     const likeData = useSelector((state)=>state.Reducers.likeData)
-    
+    let categoryList = ['전체','영화','여행','모바일','주식','테스트'];
+
         return(
             <div className="flex bg-byuncolor">
                 {/* Sidebar */}  
                     <div className={'w-0 lg:mr-64'}>
-                        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                        <AppBar position="fixed" color="transparent" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                             <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
                                 <div className='fixed top-0 left-0'>
                                     <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}  />
@@ -98,24 +96,24 @@ function BoardCopy(props)
                     <div className='w-full flex mt-16 z-10' >
                         {/* main */}  
                         <div className={'w-full '+(isOpen ? "pr-192":"")} >
-                            <div className="inline-flex fixed m-3 z-20 lg:mr-64"  >
-                                <svg className="w-2 h-2 absolute top-0 right-0 m-4 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 412 232"><path d="M206 171.144L42.678 7.822c-9.763-9.763-25.592-9.763-35.355 0-9.763 9.764-9.763 25.592 0 35.355l181 181c4.88 4.882 11.279 7.323 17.677 7.323s12.796-2.441 17.678-7.322l181-181c9.763-9.764 9.763-25.592 0-35.355-9.763-9.763-25.592-9.763-35.355 0L206 171.144z" fill="#648299" fillRule="nonzero"/></svg>
-                                <select onChange={categoryHandle} className="border border-gray-300 rounded-full text-gray-600 h-10 pl-5 pr-10 bg-white hover:border-gray-400 focus:outline-none appearance-none">
-                                    <option>전체</option>
-                                    <option>영화</option>
-                                    <option>음식</option>
-                                    <option>여행</option>
-                                    <option>자동차</option>
-                                    <option>IT</option>
-                                    <option>패션</option>
-                                    <option>취업</option>
-                                    <option>가상화폐</option>
-                                    <option>홍보</option>
-                                </select>
+                            
+                            <div className="w-full fixed flex bg-white p-2 z-20 border">
+                                <div className={'flex '}>
+                                    {categoryList.map((data)=>{
+                                        return(
+                                            <div>
+                                                {category == data 
+                                                    ? <p className='rounded-3xl px-4 py-1 text-white bg-blue-500 border-2 border-gray-100 mx-2'>{data}</p>
+                                                    : <p onClick={()=>categoryHandle(data)} className='rounded-3xl px-4 py-1 bg-gray-100 border-2 border-gray-300 mx-2 hover:bg-gray-200'>{data}</p>
+                                                }
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </div>
-                            <div className='w-full relative' >
+
+                            <div className='w-full relative mt-16' >
                                 <BoardWriteModal></BoardWriteModal>
-                                
                                 <InfiniteScroll
                                     dataLength={boards.length} //This is important field to render the next data
                                     next={ShowBoard}
@@ -129,7 +127,7 @@ function BoardCopy(props)
                                                 
                                                 <Skeleton variant="text" width={600} height={100}/>
                                                 <Skeleton variant="rectangular" width={600} height={300} />
-                                                
+
                                                 <Skeleton variant="text" width={600} height={100}/>
                                                 <Skeleton variant="rectangular" width={600} height={300} />
                                             </div>
@@ -138,8 +136,6 @@ function BoardCopy(props)
                                     }
                                     endMessage={
                                     <p style={{ textAlign: 'center' }}>
-                                          {sidebarOpen ? "O" : "X"}
-                      
                                         <b className='my-10'>더이상 글이 없습니다.. 글을 써주세요</b>
                                     </p>
                                     }
@@ -157,7 +153,7 @@ function BoardCopy(props)
 
                         <div className={(isOpen ? "" : "lg:pl-96")}>
                         {!isOpen &&
-                            <div className={'w-0 h-screen bg-byuncolor fixed top-16 right-0   lg:w-96'}>
+                            <div className={'w-0 h-screen bg-byuncolor2 fixed top-24 mt-6 right-0 lg:w-96'}>
                                 <p className='text-center font-bold text-lg bg-blue-500 text-white border rounded '>
                                     온라인 친구 상태 
                                 </p>

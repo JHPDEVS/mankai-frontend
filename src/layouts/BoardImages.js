@@ -16,24 +16,22 @@ function BoardImages(props){
     
     },[sideData])
 
-
-
     return(
         <div>
-            <button>adawdawd</button>
             <Carousel
                 emulateTouch="true"
                 swipeScrollTolerance="10"
                 useKeyboardArrows="true"
                 showThumbs=""
                 infiniteLoop="true"
+                dynamicHeight="false"
                 selectedItem={item}
                 ref = {imageRef}
             >
                 {props.imageList.map((url,idx)=>{
                     return(
-                        <div key={idx}>
-                            <img className="mx-auto" src={url} alt='nope' />
+                        <div className="" key={idx}>
+                            <img className="mx-auto bg-cover" src={url} alt='nope' />
                         </div>
                     )
                 })}

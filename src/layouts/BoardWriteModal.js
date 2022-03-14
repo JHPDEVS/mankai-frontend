@@ -195,7 +195,7 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
-<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
+<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-192" : "right-0")}>
             <Fab color="primary" onClick={handleOpen}> <AddIcon /></Fab>
         </div>
 
@@ -224,17 +224,17 @@ const fileDrop = (e) => {
                 <br/>
             </div>
             <FormControl sx={{ ml:2, mt:0.7 }}>
-  <InputLabel
-  size="small"
-  id="demo-simple-select-label">category</InputLabel>
-  <Select 
-    labelId="demo-simple-select-label"
-    id="demo-simple-select"
-    sx={{ minWidth: 110, maxHeight:35 }}
-    label="Age"
-    value={muiSelectValue}
-    onChange={SelectChange}
-  >
+      <InputLabel
+      size="small"
+      id="demo-simple-select-label">category</InputLabel>
+      <Select 
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        sx={{ minWidth: 110, maxHeight:35 }}
+        label="Age"
+        value={muiSelectValue}
+        onChange={SelectChange}
+      >
     
     <MenuItem value={"전체"}>전체</MenuItem>
     <MenuItem value={"영화"}>영화</MenuItem>

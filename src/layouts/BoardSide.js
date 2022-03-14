@@ -282,7 +282,7 @@ function BoardSide(props){
                                                     {/* 수정중 이면 */}
                                                     {isUpdate == comment.id&&
                                                         <div>
-                                                             <textarea name='updateComment' className='w-full m-2 bg-gray-200' rows={4} onChange={updateCommentHandle}
+                                                            <textarea name='updateComment' className='w-full m-2 bg-gray-200' rows={4} onChange={updateCommentHandle}
                                                             defaultValue={checkComment}></textarea>
                                                             <Button onClick={()=>CommentUpdate(comment)}>수정하기</Button>
                                                             <Button onClick={updateCancle}>취소</Button>
@@ -314,10 +314,13 @@ function BoardSide(props){
                         }
                     </div>
                     {/* 댓글 달기 */}
-                    <div className='flex fixed w-192 px-5 bottom-0 right-0 '>
-                        <textarea name='post_comment' className='w-4/5 bg-gray-200' rows={4} onChange={commentHandle}
-                        value={post_comment}></textarea>
-                          <Button className='w-1/5 ' variant="contained" onClick={PostComment}>댓글 달기</Button>
+                    <div className='flex fixed w-186 mr-4 bottom-0 right-0 bg-gray-100'>
+                        <div className='w-full flex'>
+                            <textarea name='post_comment' className='w-4/5 bg-gray-200' rows={4} onChange={commentHandle}
+                                value={post_comment}></textarea>
+                            <Button className='w-1/5' onClick={PostComment}>댓글 달기</Button>
+                    
+                        </div>
                     </div>
                 </div>
             }
