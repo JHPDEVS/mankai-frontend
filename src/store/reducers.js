@@ -25,6 +25,7 @@ const BOARD_CLEAR ="BOARD_CLEAR"
 const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
+const GROUP_LIST = "GROUP_LIST"
 
 const initialState = {
   user: null,
@@ -37,7 +38,8 @@ const initialState = {
   sideImageList:[],
   isOpen:false,
   likeUpdate:0,
-  likeId:0
+  likeId:0,
+  groupChange:0
 }
 
 export default handleActions(
@@ -208,6 +210,12 @@ export default handleActions(
         likeId:action.payload.board_id
       }
     },
+    [GROUP_LIST]:(state,action)=>{
+      return{
+        ...state,
+        groupChange:state.groupChange+1
+      }
+    }
   },
   
   initialState
