@@ -1,44 +1,56 @@
 import React, { memo, useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 export default function App({match}) {
-  
-  const url = "/api/post/memo"
-
+  const dispatch = useDispatch()
   // 메모 아이디 값에따라 받아 와야 함
   useEffect(() => {
     axios
         .get('/api/show/memos/' + match.params.id)
         .then(res => {
             console.log(res)
-            setMemos(res.data)
+            setMemos(res.data.memo)
         })
   }, [])
   
-  const [memos, setMemos] = useState([]);
-
+  const [memos, setMemos] = useState("");
   const user = useSelector((state)=>state.Reducers.user)
-
   const[data, setData] = useState("")
-
+  
   function handle(e){
-
-    //setData(e.target.value)
-
     setMemos(e.target.value)
   }
 
   // 저장요청
-  function submit(){
-    axios.post(url, {
-      content : data,
-      writer : user.id
+  // function submit(){
+  //   axios.post( {
+  //     content : data,
+  //     writer : user.id
+  //   })
+  // }
+
+  const [updateMemos, setupdateMemos] =useState("");
+  const memoUpdate = useSelector((state)=>state.Reducers.memoUpdate);
+  const updateMemosHandle = (e) => {
+    setupdateMemos(updateMemo => e.target.value);
+  }
+
+  const MemoUpdate = (memo_id) =>{
+    console.log(memo.id)
+    axios.post("/api/update/memo",{
+      memo_id:memo_id,
+      text:memos
+    }).then(res=>{
+      dispatch({type:"MEMO_UPDATE"})
+      console.log(memoUpdate)
     })
   }
+
+
 
   // 삭제 요청
   // axios.delete(URL, {
@@ -71,14 +83,17 @@ export default function App({match}) {
               m-0
               focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               onChange={(e)=> handle(e)}
-              value={memos.memo}>
+              value={memos}>
 
             </textarea>
             
             
               
             <div className="block m-3">
-              <Button variant="contained" className="float-right" onClick={submit} startIcon={<SendIcon />}>
+              {/* <Button variant="contained" className="float-right" onClick={submit} startIcon={<SendIcon />}>
+                Save
+              </Button> */}
+              <Button variant="contained" className="float-right" onClick={()=>MemoUpdate(match.params.id)} startIcon={<SendIcon/>}>
                 Save
               </Button>
             </div>

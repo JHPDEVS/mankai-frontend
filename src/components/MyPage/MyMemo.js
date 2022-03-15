@@ -8,19 +8,22 @@ export default function MyPage() {
 
     const user = useSelector((state) => state.Reducers.user)
     const [memos, setMemos] = useState([]);
-
+    
     const MyMemo = () => (window.open("/my_new_memo", "", "width=500,height=600"))
-<<<<<<< HEAD
 
     useEffect(() => {
+        showMemo();
+    }, [])
+
+    const showMemo = () =>{
         axios
             .get('/api/show/memo/' + user.id)
             .then(res => {
                 setMemos(res.data)
                 console.log(res.data)
             })
-    }, [])
-
+    }
+    
     function editPage(memo){
         window.open("/my_memo_edit/"+memo.id, "bnhgn", "width=500,height=600")
     }

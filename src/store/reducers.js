@@ -25,6 +25,7 @@ const BOARD_CLEAR ="BOARD_CLEAR"
 const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
+const MEMO_UPDATE = "MEMO_UPDATE"
 
 const initialState = {
   user: null,
@@ -34,7 +35,8 @@ const initialState = {
   boardData:[],
   sideData:"",
   isOpen:false,
-  likeData:[]
+  likeData:[],
+  memoUpdate:[]
 }
 
 export default handleActions(
@@ -200,6 +202,12 @@ export default handleActions(
       return{
         ...state,
         likeData:[...state.likeData,action.payload.likeData]
+      }
+    },
+    [MEMO_UPDATE]:(state,action)=>{
+      return{
+        ...state,
+        memoUpdate:[...state.memoUpdate,1]
       }
     }
 
