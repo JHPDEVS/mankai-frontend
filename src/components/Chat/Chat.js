@@ -25,11 +25,9 @@ function Chat() {
   const rooms = useSelector(state => state.Reducers.rooms)
   const loading = useSelector(state => state.Reducers.room_pending)
   const [currentRoom, setCurrentRoom] = useState({})
-  const [currentChatRoom, setCurrentChatRoom] = useState({})
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const { t } = useTranslation(['lang'])
-  const [following, setFollowing] = useState([])
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const open1 = Boolean(anchorEl)
@@ -44,17 +42,11 @@ function Chat() {
     setOpen(false)
   }
 
-  function newRoomList(newRoom) {
-    dispatch({ type: 'ADD_ROOM', payload: { room: newRoom } })
-  }
-
   useEffect(() => {
     console.log(currentUser)
     if (currentUser) {
       // console.log(currentUser.Reducers.user.following);
       dispatch(getRooms(currentUser.id))
-      setFollowing(currentUser.following)
-      // console.log(following);
     }
   }, [currentUser])
 
@@ -63,12 +55,22 @@ function Chat() {
     if (currentUser) {
       // console.log(currentUser.Reducers.user.following);
       getRooms(currentUser.id)
-      setFollowing(currentUser.following)
       // console.log(following);
       window.Echo.channel('user.' + currentUser.id).listen(
         '.send-message',
         e => {
-          console.log(e) //일단 되는거 확인, 이거는 유저 channel이니깐 메세지만 생각하지말고 할것
+          dispatch({
+            type: 'ADD_MESSAGE_REVERSE',
+            payload: { message: e.message },
+          })
+          dispatch({
+            type: 'SET_ROOM_UPDATED_AT',
+            payload: {
+              updated_at: e.message.updated_at,
+              last_message: e.message.message,
+              room_id: e.message.room_id,
+            },
+          })
         }
       )
     }
@@ -92,9 +94,7 @@ function Chat() {
   }
   const deleteRoom = e => {
     e.preventDefault()
-    // setRooms(rooms.filter(room => room.id !== currentRoom.id));
-    // console.log(currentRoom);
-    // console.log(currentUser.Reducers.user);
+
     handleClose(e)
     axios
       .post('http://localhost:8000/api/room/check', {
@@ -102,27 +102,26 @@ function Chat() {
         user_id: currentUser.id,
       })
       .then(res => {
-        dispatch(getRooms(currentUser.id))
-        setCurrentChatRoom('')
+        // dispatch(getRooms(currentUser.id))
+        dispatch({ type: 'DELETE_ROOM', payload: { room: res.data } })
+        dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: null } })
+        // setCurrentChatRoom('')
       })
   }
   const selectRoom = (e, room) => {
     //room setting room
     e.preventDefault()
-    console.log(room)
     setCurrentRoom(room)
   }
   const selectChatRoom = (e, room) => {
     //chatting room choose
     e.preventDefault()
     console.log(room)
-    setCurrentChatRoom(room)
+    dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: room } })
+    dispatch({ type: 'CHAT_PAGE_ONE' })
+    // setCurrentChatRoom(room)
   }
-  const deleteChatRoom = e => {
-    e.preventDefault()
-    console.log(11)
-    setCurrentChatRoom({})
-  }
+
   const roomList = types => (
     <ul className="w-full h-full">
       {rooms && !loading
@@ -199,7 +198,6 @@ function Chat() {
   return (
     <>
       <div className="flex  h-screen overflow-hidden">
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="relative flex flex-col flex-1 h-screen  overflow-y-hidden overflow-x-hidden">
           {/*  Site header */}
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
@@ -277,21 +275,11 @@ function Chat() {
                 </div>
               </div>
               <div className="flex w-3/4  rounded-3xl sm:flex-col p-4 hidden mx-5 my-2 text-gray-800 relative sm:flex items-center text-center  bg-white sm:block">
-                <ChatContainer
-                  room={currentChatRoom}
-                  user={currentUser}
-                  deleteChatRoom={deleteChatRoom}
-                />
+                <ChatContainer />
               </div>
             </div>
           </div>
-          <ChatInviteModal
-            following={following}
-            open={open}
-            user={currentUser}
-            newRoomList={newRoomList}
-            handleClose={handleClose}
-          />
+          <ChatInviteModal open={open} handleClose={handleClose} />
         </div>
       </div>
     </>

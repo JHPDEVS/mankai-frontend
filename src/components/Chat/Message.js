@@ -8,22 +8,22 @@ import 'moment-timezone'
 import { FileIcon, defaultStyles } from 'react-file-icon'
 import ReactImageViewer from '../../layouts/ReactImageViewer'
 import prettyBytes from 'pretty-bytes'
-function Message({ message: msg, user: user }) {
+import { useDispatch, useSelector } from 'react-redux'
+function Message({ message: msg }) {
   const [message, setMessage] = useState(msg)
+  const currentUser = useSelector(state => state.Reducers.user)
   const [isOpen, setOpen] = useState(false)
+  const dispatch = useDispatch()
   useEffect(() => {
     // console.log(user);
-  }, [user])
+  }, [currentUser])
 
   const translation = msg => {
-    // console.log(msg);
-    // console.log(user.Reducers.user.country);
-    // return ;
     if (msg === '') {
       return
     }
     axios
-      .post('api/translate/text', { country: user.country, text: msg })
+      .post('api/translate/text', { country: currentUser.country, text: msg })
       .then(res => {
         setMessage(prevState => ({
           ...prevState,
@@ -39,12 +39,12 @@ function Message({ message: msg, user: user }) {
     <>
       <div
         className={
-          user.id === message.user.id
+          currentUser.id === message.user.id
             ? 'flex p-1 mr-2 justify-end relative'
             : 'flex p-1 mr-2 justify-start relative  max-w-[50%]'
         }
       >
-        {user.id != message.user.id ? (
+        {currentUser.id != message.user.id ? (
           <>
             <div className="">
               {message.user.profile ? (
@@ -106,7 +106,16 @@ function Message({ message: msg, user: user }) {
                       </div>
                     ))
                   ) : message.file.startsWith('[') ? (
-                    <div>사진 여러개</div>
+                    <div className="flex text-left mr-2 p-2 flex-wrap rounded-xl border-2  max-w-[50%]">
+                      {JSON.parse(message.file).map((image, index) => (
+                        <img
+                          key={index}
+                          className="w-1/2"
+                          src={'http://localhost:8000/storage/' + image}
+                          onClick={() => setOpen(true)}
+                        ></img>
+                      ))}
+                    </div>
                   ) : (
                     <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2">
                       <img
@@ -150,7 +159,7 @@ function Message({ message: msg, user: user }) {
         ) : null}
 
         {/* 자신이 타이핑한 메세지 */}
-        {user.id === message.user.id ? (
+        {currentUser.id === message.user.id ? (
           <>
             <div className="relative">
               <span className="absolute bottom-0 right-2">
@@ -201,7 +210,16 @@ function Message({ message: msg, user: user }) {
                   </div>
                 ))
               ) : message.file.startsWith('[') ? (
-                <div>사진 여러개</div>
+                <div className="flex text-left mr-2 p-2 flex-wrap rounded-xl border-2  max-w-[50%]">
+                  {JSON.parse(message.file).map((image, index) => (
+                    <img
+                      key={index}
+                      className="w-1/2"
+                      src={'http://localhost:8000/storage/' + image}
+                      onClick={() => setOpen(true)}
+                    ></img>
+                  ))}
+                </div>
               ) : (
                 <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  max-w-[50%]">
                   <img
