@@ -23,6 +23,8 @@ import Dashboard from './components/Dashboard'
 import DashboardUser from './admin/component/User'
 import ChatMemo from './components/MyPage/ChatMemo';
 import './css/style.scss'
+
+import MyMemoEdit from './components/MyPage/MyMemoEdit';
 import MyNewMemo from './components/MyPage/MyNewMemo';
 import Profile from './components/MyPage/Profile';
 import Youpage from './components/MyPage/YouPage'
@@ -63,6 +65,7 @@ function App() {
         <Route exact path="/chatting_memo" component={ChatMemo}></Route>
           {/* <Route exact path="/post_memo" component={PostMemo}></Route>
           <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route> */}
+          <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route>
           <Route exact path="/my_new_memo" component={MyNewMemo}></Route>
           <Route exact path="/profile" component={Profile}></Route>
           <Route exact path="/youProfile" component={Youpage}></Route>

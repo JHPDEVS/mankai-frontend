@@ -26,7 +26,10 @@ export default function App({match}) {
   const[data, setData] = useState("")
 
   function handle(e){
-    setData(e.target.value)
+
+    //setData(e.target.value)
+
+    setMemos(e.target.value)
   }
 
   // 저장요청

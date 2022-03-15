@@ -10,6 +10,7 @@ export default function MyPage() {
     const [memos, setMemos] = useState([]);
 
     const MyMemo = () => (window.open("/my_new_memo", "", "width=500,height=600"))
+<<<<<<< HEAD
 
     useEffect(() => {
         axios

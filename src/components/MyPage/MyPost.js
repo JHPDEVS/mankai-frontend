@@ -1,4 +1,3 @@
-
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import axios from "axios";
@@ -28,7 +27,6 @@ export default function PostList() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
 
   React.useEffect(()=>{
     axios.get("/api/get/board/"+user.id)
