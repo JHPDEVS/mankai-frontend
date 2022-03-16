@@ -16,8 +16,9 @@ import BoardImages from './BoardImages';
 import Moment from 'react-moment';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import GroupBoardImages from './GroupBoardImages';
 
-function BoardSideCard(props){
+function GroupBoardSideCard(props){
     
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
@@ -31,24 +32,39 @@ function BoardSideCard(props){
     
     const option = ["번역하기","클립보드로 이동","신고하기"]
     const [translated,setTranslated] = useState("");
-    
+
     const ClickLike = () => {
-        setIsLike(true)
-        axios.post('/api/post/like',{
-            user_id:user.id,
-            board_id:props.board.id
-        }).then(res=>{
-            setLikes(res.data)
-        })
-        
         dispatch({
             type:"LIKE_UPDATE",
             payload:{
                 board_id:props.board.id
             }
         })
+        setIsLike(true)
+        axios.post('/api/post/grouplike',{
+            user_id:user.id,
+            board_id:props.board.id
+        }).then(res=>{
+            console.log(res.data)
+            setLikes(res.data)
+        })
     }
-
+    const ClickDisLike =() => {
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
+        })
+        setIsLike(false)
+        axios.post('/api/delete/grouplike',{
+            user_id:user.id,
+            board_id:props.board.id
+        }).then(res=>{
+            console.log(res.data)
+            setLikes(res.data)
+        })
+    }
     // 메뉴바 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -70,23 +86,6 @@ function BoardSideCard(props){
         setAnchorEl(null);
     };
 
-    const ClickDisLike =() => {
-        setIsLike(false)
-        axios.post('/api/delete/like',{
-            user_id:user.id,
-            board_id:props.board.id
-        }).then(res=>{
-            setLikes(res.data)
-        })
-        
-        dispatch({
-            type:"LIKE_UPDATE",
-            payload:{
-                board_id:props.board.id
-            }
-        })
-    }
-
     useEffect(()=>{
         if(isOpen && likeId == props.board.id){
             axios.get('/api/show/like/'+props.board.id)
@@ -98,13 +97,13 @@ function BoardSideCard(props){
     },[likeUpdate])
 
     useEffect(()=>{
-        axios.get('/api/show/like/'+props.board.id)
+        axios.get('/api/show/grouplike/'+props.board.id)
             .then(res=>{
-                
                 setLikes(res.data)
             })
     },[sideData])
 
+    // 좋아요 업데이트되면 유저 있는지 체크
     useEffect(()=>{
         setIsLike(false)
         likes.forEach(like=>{
@@ -136,7 +135,7 @@ function BoardSideCard(props){
                                     aria-expanded={open ? 'true' : undefined}
                                     onClick={handleClick}
                                 >
-                                    Setting
+                                    설정
                                 </Button>
                                 <Menu
                                     id="basic-menu"
@@ -149,7 +148,7 @@ function BoardSideCard(props){
                                 >
                                     {option.map((option)=>{
                                         return(
-                                            <MenuItem onClick={handleClose}>{option}</MenuItem>
+                                            <MenuItem key={option} onClick={handleClose}>{option}</MenuItem>
                                         )
                                     })}
                                     
@@ -196,4 +195,4 @@ function BoardSideCard(props){
         </div>
     );   
 }
-export default BoardSideCard;
+export default GroupBoardSideCard;

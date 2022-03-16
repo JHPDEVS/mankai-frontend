@@ -3,6 +3,7 @@ import { Box } from '@mui/system';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Header from "../admin/layout/Header";
+import GroupBoard from '../layouts/GroupBoard';
 import GroupIntro from '../layouts/GroupIntro';
 
 
@@ -18,7 +19,6 @@ function GroupDetail({match}) {
         if(group_id){
             axios.get("/api/show/detail_group/"+group_id)
             .then(res=>{
-                console.log(res.data)
                 setGroup_data(res.data)
             })
         }
@@ -26,10 +26,7 @@ function GroupDetail({match}) {
 
     const optionHandle = (e,newValue) =>{
         setOptionValue(newValue)
-        console.log(e.target)
     }
-    
-    const tab_options = ["그룹 소개","그룹 게시판",""]
 
     return(
         <div className='bg-gray-200'>
@@ -47,12 +44,12 @@ function GroupDetail({match}) {
                 </Tabs>
             </div>
 
-            <div className='max-w-4xl mx-auto h-screen rounded-xl mt-16 bg-white'>
+            <div className='max-w-3xl min-h-screen mx-auto rounded-xl mt-16 bg-white'>
                 {optionValue == "1" 
                     && <GroupIntro group={group_data}/>
                 } 
                 {optionValue == "2" 
-                    // && <GroupIntro/>
+                    && <GroupBoard group={group_data}/>
                 }    
                 {optionValue == "3" 
                     // && <GroupIntro/>
@@ -60,6 +57,7 @@ function GroupDetail({match}) {
                 {optionValue == "4" 
                     // && <GroupIntro/>
                 }       
+                <div className='max-h-3xl'></div>
             </div>
             
            
