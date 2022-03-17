@@ -33,7 +33,7 @@ function GroupBoard(props){
 
     return(
         <div className="bg-gray-200">
-            {groupBoard.length >0 
+            {groupBoard.length > 0 
                 ?<InfiniteScroll
                     dataLength={groupBoard.length} //This is important field to render the next data
                     next={board_update}
@@ -66,9 +66,6 @@ function GroupBoard(props){
                         )
                     })}
                 </InfiniteScroll>
-
-
-
                 :<div></div>
             }
             

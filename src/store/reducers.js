@@ -26,7 +26,8 @@ const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
 const GROUP_LIST = "GROUP_LIST"
-
+const GROUP_IN = "GROUP_IN"
+const GROUP_OUT = "GROUP_OUT"
 const initialState = {
   user: null,
   pending: false,
@@ -39,7 +40,8 @@ const initialState = {
   isOpen:false,
   likeUpdate:0,
   likeId:0,
-  groupChange:0
+  groupChange:0,
+  isGroupChange:0
 }
 
 export default handleActions(
@@ -214,6 +216,18 @@ export default handleActions(
       return{
         ...state,
         groupChange:state.groupChange+1
+      }
+    },
+    [GROUP_IN]:(state,action)=>{
+      return{
+        ...state,
+        isGroupChange:state.isGroupChange+1
+      }
+    },
+    [GROUP_OUT]:(state,action)=>{
+      return{
+        ...state,
+        isGroupChange:state.isGroupChange+1
       }
     }
   },

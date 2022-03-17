@@ -42,21 +42,22 @@ function Group(props) {
             </div>        
             
             <div className="w-full flex flex-wrap">
-
             {groups.map((group)=>{
                 return(
-                    <div className="w-96 shadow mx-5 mt-5 rounded-xl border hover:brightness-50" onClick={()=>listClick(group.id)} key={group.id}>
+                    <div className="w-80 shadow-lg mx-5 mt-8 rounded-xl border hover:brightness-50" onClick={()=>listClick(group.id)} key={group.id}>
                         <img className="h-60 rounded-t-xl w-full" src={group.logoImage} alt='null' />
-                        <div className="flex py-4  px-4 text-lg font-bold text-black">
+                        <div className=" pt-6 w-fit mx-auto px-4 text-lg font-bold text-black">
                             {group.name}
-                            <div className="">
-                                {group.category}
-                            </div>
+                        </div>
+                        <div className="w-fit mx-auto pb-4">
+                            <p className="text-sm text-gray-400">
+                                {group.category} / 맴버수 : 30
+                                
+                            </p>
                         </div>
                     </div> 
             )})}
             </div>
-            
         </div>
     )
 

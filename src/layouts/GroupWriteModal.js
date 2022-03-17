@@ -174,7 +174,6 @@ const fileDrop = (e) => {
       .then(function(response) {
         console.log(response.data)
          handleClose();
-        // window.location.reload();
 
       }).catch(function(error){
         console.log(error);
