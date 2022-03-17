@@ -67,7 +67,10 @@ function Message({ message: msg }) {
                   {message.file ? (
                     message.message ? null : message.file.startsWith('[{') ? (
                       JSON.parse(message.file).map((file, index) => (
-                        <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  ">
+                        <div
+                          className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  "
+                          key={file + index}
+                        >
                           <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
                             <a
                               className="p-3 w-12 h-12"
@@ -177,7 +180,10 @@ function Message({ message: msg }) {
               {message.file ? (
                 message.message ? null : message.file.startsWith('[{') ? (
                   JSON.parse(message.file).map((file, index) => (
-                    <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  max-w-[50%]">
+                    <div
+                      className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  max-w-[50%]"
+                      key={file + index}
+                    >
                       <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center mr-1">
                         <a
                           className="p-3 w-12 h-12"
