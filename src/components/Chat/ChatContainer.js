@@ -360,7 +360,7 @@ function ChatContainer() {
                               ) > 0 ? (
                               <div
                                 className="p-3 font-bold"
-                                key={messages[index].created_at}
+                                key={messages[index].id + message.room_id}
                               >
                                 <div className="relative flex py-5 items-center">
                                   <div className="flex-grow border-t border-gray-400"></div>
@@ -374,10 +374,16 @@ function ChatContainer() {
                               </div>
                             ) : null
                           ) : null}
-                          <Message message={message} key={message.id} />
+                          <Message
+                            message={message}
+                            key={message.id + message.user_id}
+                          />
                           <div>
                             {index == messages.length - 1 ? (
-                              <div className="relative flex items-center">
+                              <div
+                                className="relative flex items-center"
+                                key={messages[index].created_at + index}
+                              >
                                 <div className="flex-grow border-t border-gray-400"></div>
                                 <span className="flex-shrink mx-4 text-gray-400">
                                   <Moment format="yyyy-MM-DD dddd" local>
