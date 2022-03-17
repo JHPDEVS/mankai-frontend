@@ -169,16 +169,7 @@ function ChatContainer() {
     console.log(users)
     setOpen(true)
   }
-  useEffect(() => {
-    if (currentUser) {
-      window.Echo.channel('user.' + currentUser.id).listen(
-        '.send-message',
-        e => {
-          scrollChatToBottom(chatBody)
-        }
-      )
-    }
-  }, [currentUser])
+
   useEffect(() => {
     console.log(currentChatRoom)
     console.log('chat 컨테이너')
@@ -357,7 +348,32 @@ function ChatContainer() {
                 >
                   {!loading && messages
                     ? messages.map((message, index) => (
-                        <>
+                        <div key={message.id}>
+                          {messages[index - 1] ? (
+                            moment(messages[index - 1].created_at)
+                              .startOf('day')
+                              .diff(
+                                moment(messages[index].created_at).startOf(
+                                  'day'
+                                ),
+                                'days'
+                              ) > 0 ? (
+                              <div
+                                className="p-3 font-bold"
+                                key={messages[index].created_at}
+                              >
+                                <div className="relative flex py-5 items-center">
+                                  <div className="flex-grow border-t border-gray-400"></div>
+                                  <span className="flex-shrink mx-4 text-gray-400">
+                                    <Moment format="yyyy-MM-DD dddd" local>
+                                      {messages[index - 1].created_at}
+                                    </Moment>
+                                  </span>
+                                  <div className="flex-grow border-t border-gray-400"></div>
+                                </div>
+                              </div>
+                            ) : null
+                          ) : null}
                           <Message message={message} key={message.id} />
                           <div>
                             {index == messages.length - 1 ? (
@@ -371,30 +387,8 @@ function ChatContainer() {
                                 <div className="flex-grow border-t border-gray-400"></div>
                               </div>
                             ) : null}
-                            {messages[index - 1] ? (
-                              moment(messages[index].created_at)
-                                .startOf('day')
-                                .diff(
-                                  moment(
-                                    messages[index - 1].created_at
-                                  ).startOf('day'),
-                                  'days'
-                                ) > 0 ? (
-                                <div className="p-3 font-bold">
-                                  <div className="relative flex py-5 items-center">
-                                    <div className="flex-grow border-t border-gray-400"></div>
-                                    <span className="flex-shrink mx-4 text-gray-400">
-                                      <Moment format="yyyy-MM-DD dddd" local>
-                                        {messages[index].created_at}
-                                      </Moment>
-                                    </span>
-                                    <div className="flex-grow border-t border-gray-400"></div>
-                                  </div>
-                                </div>
-                              ) : null
-                            ) : null}
                           </div>
-                        </>
+                        </div>
                       ))
                     : null}
                 </InfiniteScroll>

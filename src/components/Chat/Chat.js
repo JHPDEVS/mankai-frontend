@@ -12,19 +12,23 @@ import { useTranslation } from 'react-i18next'
 import * as React from 'react'
 import ChatInviteModal from './ChatInviteModal'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { IconButton } from '@mui/material'
+import { Badge, IconButton } from '@mui/material'
 import Header from '../../admin/layout/Header'
 import Echo from 'laravel-echo'
 import { getRooms } from '../../store/modules/getRoom'
 import { CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
+import Moment from 'react-moment'
+import 'moment-timezone'
+import moment from 'moment'
+import { now } from 'moment'
 function Chat() {
   const [index, setIndex] = useState(0)
   const currentUser = useSelector(state => state.Reducers.user)
   const state = useSelector(state => state.Reducers.user)
   const rooms = useSelector(state => state.Reducers.rooms)
   const loading = useSelector(state => state.Reducers.room_pending)
-  const [currentRoom, setCurrentRoom] = useState({})
+  const currentRoom = useSelector(state => state.Reducers.currentRoom)
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
   const { t } = useTranslation(['lang'])
@@ -41,7 +45,33 @@ function Chat() {
     setAnchorEl(null)
     setOpen(false)
   }
+  useEffect(() => {
+    if (currentUser) {
+      const channel = window.Echo.channel('user.' + currentUser.id) // 채팅방 참여
+        .listen('.send-message', e => {
+          dispatch({
+            type: 'ADD_MESSAGE_REVERSE',
+            payload: {
+              message: e.message,
+            },
+          })
 
+          dispatch({
+            type: 'SET_ROOM_UPDATED_AT',
+            payload: {
+              updated_at: e.message.updated_at,
+              last_message: e.message.message,
+              room_id: e.message.room_id,
+            },
+          })
+        })
+      return () => {
+        channel.subscription.unbind(
+          channel.eventFormatter.format('.send-message')
+        )
+      }
+    }
+  }, [currentUser])
   useEffect(() => {
     console.log(currentUser)
     if (currentUser) {
@@ -56,23 +86,6 @@ function Chat() {
       // console.log(currentUser.Reducers.user.following);
       getRooms(currentUser.id)
       // console.log(following);
-      window.Echo.channel('user.' + currentUser.id).listen(
-        '.send-message',
-        e => {
-          dispatch({
-            type: 'ADD_MESSAGE_REVERSE',
-            payload: { message: e.message },
-          })
-          dispatch({
-            type: 'SET_ROOM_UPDATED_AT',
-            payload: {
-              updated_at: e.message.updated_at,
-              last_message: e.message.message,
-              room_id: e.message.room_id,
-            },
-          })
-        }
-      )
     }
   }, [currentUser])
 
@@ -108,28 +121,32 @@ function Chat() {
         // setCurrentChatRoom('')
       })
   }
-  const selectRoom = (e, room) => {
-    //room setting room
-    e.preventDefault()
-    setCurrentRoom(room)
-  }
   const selectChatRoom = (e, room) => {
     //chatting room choose
     e.preventDefault()
     console.log(room)
-    dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: room } })
-    dispatch({ type: 'CHAT_PAGE_ONE' })
+    if (currentRoom) {
+      if (currentRoom.id != room.id) {
+        dispatch({ type: 'CHAT_PAGE_ONE' })
+        dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: room } })
+      }
+    } else {
+      dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: room } })
+      dispatch({ type: 'CHAT_PAGE_ONE' })
+    }
     // setCurrentChatRoom(room)
   }
 
   const roomList = types => (
-    <ul className="w-full h-full">
+    <div className="w-full h-full ">
       {rooms && !loading
         ? rooms.map((room, index) => (
-            <li
+            <div
               className={
                 room.type === types
-                  ? 'room border-b flex w-full p-2 hover:bg-gray-100'
+                  ? room == currentRoom
+                    ? 'room border-b flex w-full bg-active p-2 hover:bg-gray-100'
+                    : 'room border-b flex w-full p-2 hover:bg-gray-100'
                   : 'hidden'
               }
               id={'room' + index}
@@ -138,62 +155,65 @@ function Chat() {
               }}
               key={room.id}
             >
-              <img src="#" className="room" />
-              <div className="room flex w-full justify-between ml-2">
+              <div className="room flex w-4/5  ">
+                <IconButton
+                  className="inline-flex justify-center items-center group"
+                  aria-haspopup="true"
+                >
+                  <div class="flex flex-row items-center text-center">
+                    <div class="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                      <span> {userName(types, room.users).substr(0, 1)}</span>
+                    </div>
+                  </div>
+                </IconButton>
                 <div className="room truncate flex flex-col text-left">
-                  <div className="bg-indigo">
-                    {room.type === types
-                      ? room.title
-                        ? room.title
-                        : userName(types, room.users)
-                      : ''}{' '}
-                    <span className="font-medium">
+                  <div className="flex">
+                    {room.type === types ? (
+                      room.title ? (
+                        room.title
+                      ) : (
+                        <span className="mr-1 block overflow-hidden text-ellipsis whitespace-nowrap font-bold">
+                          {userName(types, room.users)}
+                        </span>
+                      )
+                    ) : (
+                      ''
+                    )}{' '}
+                    <span className=" mr-1 text-gray-400 font-semibold">
                       {types === 'group' ? JSON.parse(room.users).length : ''}
                     </span>
                   </div>
-                  <span className="room text-xs ">{room.last_message}</span>
+
+                  <span className="room text-sm text-left block overflow-hidden text-ellipsis whitespace-nowrap">
+                    {room.last_message}
+                  </span>
                 </div>
-                <IconButton
-                  aria-controls={open1 ? 'basic-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open1 ? 'true' : undefined}
-                  onClick={e => {
-                    handleClick(e)
-                    selectRoom(e, room)
-                  }}
-                  aria-label="more-vert"
-                  size="small"
-                >
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open1}
-                  onClose={handleClose}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                  }}
-                >
-                  {/* <MenuItem onClick={(e) => {handleClose(e); deleteRoom(room); }}>{t("lang:DELETE")}</MenuItem> */}
-                  <MenuItem onClick={deleteRoom}>{t('lang:DELETE')}</MenuItem>
-                  <MenuItem onClick={handleClose}>My account</MenuItem>
-                  <MenuItem onClick={handleClose}>Logout</MenuItem>
-                </Menu>
               </div>
-            </li>
+              <div className="flex flex-col  w-1/5 text-xs font-semibold">
+                {moment(room.updated_at)
+                  .startOf('day')
+                  .diff(moment().startOf('day'), 'days') == 0 ? (
+                  <Moment format="H:mm" local className="">
+                    {room.updated_at}
+                  </Moment>
+                ) : (
+                  <Moment format="MMMM Do" local className="">
+                    {room.updated_at}
+                  </Moment>
+                )}
+
+                <div className="flex flex-grow justify-center items-center">
+                  <Badge
+                    badgeContent={5}
+                    color="error"
+                    invisible={5 != 0 ? false : true}
+                  ></Badge>
+                </div>
+              </div>
+            </div>
           ))
         : null}
-    </ul>
+    </div>
   )
   return (
     <>
@@ -203,7 +223,7 @@ function Chat() {
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <div className="w-full ">
             <div className=" bg-primarybg rounded-3xl flex relative ">
-              <div className="sm:flex sm:flex-col w-full sm:w-1/4 md:w-1/4 border rounded-2xl bg-white sm:mr-5 p-3 text-gray-800 relative items-center text-center">
+              <div className="sm:flex sm:flex-col w-full sm:w-1/4 md:w-1/4 border rounded-2xl bg-white shrink-0 p-3 text-gray-800 relative items-center text-center">
                 <div className="w-full  sm:flex sm:justify-between p-2">
                   <span className="text-primarytext font-bold p-2">
                     {t('lang:MESSAGE')}
@@ -241,8 +261,8 @@ function Chat() {
                         <span>{t('lang:GROUP')}</span>
                       </Tab>
                     </TabList>
-                    <TabPanel className="w-full py-2">
-                      <div>{roomList('dm')}</div>
+                    <TabPanel>
+                      <div className="py-2">{roomList('dm')}</div>
                       {loading && (
                         <CircularProgress
                           size={48}
@@ -257,7 +277,7 @@ function Chat() {
                       )}
                     </TabPanel>
                     <TabPanel>
-                      <div>{roomList('group')}</div>
+                      <div className="py-2">{roomList('group')}</div>
                       {loading && (
                         <CircularProgress
                           size={48}
