@@ -34,12 +34,32 @@ const GET_ROOM_FAILURE = 'GET_ROOM_FAILURE'
 const ADD_MESSAGE = 'ADD_MESSAGE'
 const ADD_ROOM = 'ADD_ROOM'
 const DELETE_ROOM = 'DELETE_ROOM'
+const SET_CURRENT_CHATROOM = 'SET_CURRENT_CHATROOM'
+const SORT_ROOM = 'SORT_ROOM'
+const SET_ROOM_UPDATED_AT = 'SET_ROOM_UPDATED_AT'
+const ADD_CHAT_PAGE = 'ADD_CHAT_PAGE'
+const CHAT_PAGE_ONE = 'CHAT_PAGE_ONE'
+const ADD_MESSAGE_REVERSE = 'ADD_MESSAGE_REVERSE'
+const CHAT_PAGE_IS = 'CHAT_PAGE_IS'
+const CHAT_PAGE_NOT = 'CHAT_PAGE_NOT'
+const GET_FOLLOWS_PENDING = 'GET_FOLLOWS_PENDING'
+const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
+const GET_FOLLOWS_FAILURE = 'GET_FOLLOWS_FAILURE'
+const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
+const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
+const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
+const ADD_MEMO = 'ADD_MEMO'
+
 const initialState = {
   user: null,
   pending: false,
   error: false,
   noti: null,
   rooms: null,
+  message: [],
+  currentRoom: null,
+  chat_current_page: 1,
+  chat_inf_handle: true,
 }
 
 export default handleActions(
@@ -265,6 +285,12 @@ export default handleActions(
         message: [...state.message, action.payload.message],
       }
     },
+    [ADD_MESSAGE_REVERSE]: (state, action) => {
+      return {
+        ...state,
+        message: [action.payload.message, ...state.message],
+      }
+    },
     [ADD_ROOM]: (state, action) => {
       return {
         ...state,
@@ -278,6 +304,108 @@ export default handleActions(
         rooms: state.rooms.filter((room, index) => {
           return room.id !== action.payload.room.id
         }),
+      }
+    },
+    [SET_CURRENT_CHATROOM]: (state, action) => {
+      return {
+        ...state,
+        // rooms:[...state.rooms,action.payload.room]
+        currentRoom: action.payload.room,
+        chat_inf_handle: true,
+      }
+    },
+    [SET_ROOM_UPDATED_AT]: (state, action) => {
+      return {
+        ...state,
+        rooms: [
+          ...state.rooms.filter(room => {
+            if (room.id == action.payload.room_id) {
+              room.updated_at = action.payload.updated_at
+              room.last_message = action.payload.last_message
+            }
+            return room.id == action.payload.room_id
+          }),
+          ...state.rooms.filter(room => {
+            return room.id != action.payload.room_id
+          }),
+        ],
+      }
+    },
+    [SORT_ROOM]: (state, action) => {
+      return {
+        ...state,
+        rooms: action.payload.rooms.sort((a, b) => {
+          return new Date(a.updated_at) - new Date(b.updated_at)
+        }),
+      }
+    },
+    [ADD_CHAT_PAGE]: (state, action) => {
+      return {
+        ...state,
+        chat_current_page: state.chat_current_page + 1,
+      }
+    },
+    [CHAT_PAGE_ONE]: (state, action) => {
+      return {
+        ...state,
+        chat_current_page: 1,
+      }
+    },
+
+    [CHAT_PAGE_NOT]: (state, action) => {
+      return {
+        ...state,
+        chat_inf_handle: false,
+      }
+    },
+    [GET_FOLLOWS_PENDING]: (state, action) => {
+      return {
+        ...state,
+        follows_pending: true,
+        get_follows_error: true,
+      }
+    },
+    [GET_FOLLOWS_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        follows_pending: false,
+        follows: action.payload,
+        get_follows_error: false,
+      }
+    },
+    [GET_FOLLOWS_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        follows_pending: false,
+        get_follows_error: true,
+      }
+    },
+    [GET_MEMO_PENDING]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: true,
+        get_memo_error: true,
+      }
+    },
+    [GET_MEMO_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: false,
+        memo: action.payload,
+        get_memo_error: false,
+      }
+    },
+    [GET_MEMO_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: false,
+        get_memo_error: true,
+      }
+    },
+    [ADD_MEMO]: (state, action) => {
+      return {
+        ...state,
+        memo: [...state.memo, action.payload.memo],
       }
     },
   },
