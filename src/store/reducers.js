@@ -40,7 +40,6 @@ const SET_ROOM_UPDATED_AT = 'SET_ROOM_UPDATED_AT'
 const ADD_CHAT_PAGE = 'ADD_CHAT_PAGE'
 const CHAT_PAGE_ONE = 'CHAT_PAGE_ONE'
 const ADD_MESSAGE_REVERSE = 'ADD_MESSAGE_REVERSE'
-const CHAT_PAGE_IS = 'CHAT_PAGE_IS'
 const CHAT_PAGE_NOT = 'CHAT_PAGE_NOT'
 const GET_FOLLOWS_PENDING = 'GET_FOLLOWS_PENDING'
 const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
@@ -49,7 +48,8 @@ const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
 const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
 const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
 const ADD_MEMO = 'ADD_MEMO'
-
+const CHAT_SIDE_OPEN = 'CHAT_SIDE_OPEN'
+const CHAT_SIDE_CLOSE = 'CHAT_SIDE_CLOSE'
 const initialState = {
   user: null,
   pending: false,
@@ -60,6 +60,7 @@ const initialState = {
   currentRoom: null,
   chat_current_page: 1,
   chat_inf_handle: true,
+  chat_side: false,
 }
 
 export default handleActions(
@@ -406,6 +407,18 @@ export default handleActions(
       return {
         ...state,
         memo: [...state.memo, action.payload.memo],
+      }
+    },
+    [CHAT_SIDE_OPEN]: (state, action) => {
+      return {
+        ...state,
+        chat_side: true,
+      }
+    },
+    [CHAT_SIDE_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        chat_side: false,
       }
     },
   },
