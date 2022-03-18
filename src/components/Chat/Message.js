@@ -176,6 +176,9 @@ function Message({ message: msg }) {
                     {message.created_at}
                   </Moment>
                 </span>
+                <span>
+                  <div className="text-primarytext text-sm mr-2">7</div>
+                </span>
               </div>
               {message.file ? (
                 message.message ? null : message.file.startsWith('[{') ? (

@@ -22,7 +22,9 @@ import Moment from 'react-moment'
 import 'moment-timezone'
 import moment from 'moment'
 import { now } from 'moment'
+import ChatDrawer from './ChatDrawer'
 function Chat() {
+  const isOpen = useSelector(state => state.Reducers.chat_side)
   const [index, setIndex] = useState(0)
   const currentUser = useSelector(state => state.Reducers.user)
   const state = useSelector(state => state.Reducers.user)
@@ -41,9 +43,11 @@ function Chat() {
   }
 
   const handleClose = e => {
-    e.preventDefault()
     setAnchorEl(null)
     setOpen(false)
+  }
+  const handleChatClose = () => {
+    dispatch({ type: 'CHAT_SIDE_CLOSE' })
   }
   useEffect(() => {
     if (currentUser) {
@@ -105,22 +109,7 @@ function Chat() {
       return userNames
     }
   }
-  const deleteRoom = e => {
-    e.preventDefault()
 
-    handleClose(e)
-    axios
-      .post('http://localhost:8000/api/room/check', {
-        room: currentRoom,
-        user_id: currentUser.id,
-      })
-      .then(res => {
-        // dispatch(getRooms(currentUser.id))
-        dispatch({ type: 'DELETE_ROOM', payload: { room: res.data } })
-        dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: null } })
-        // setCurrentChatRoom('')
-      })
-  }
   const selectChatRoom = (e, room) => {
     //chatting room choose
     e.preventDefault()
@@ -160,8 +149,8 @@ function Chat() {
                   className="inline-flex justify-center items-center group"
                   aria-haspopup="true"
                 >
-                  <div class="flex flex-row items-center text-center">
-                    <div class="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                  <div className="flex flex-row items-center text-center">
+                    <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
                       <span> {userName(types, room.users).substr(0, 1)}</span>
                     </div>
                   </div>
@@ -262,7 +251,9 @@ function Chat() {
                       </Tab>
                     </TabList>
                     <TabPanel>
-                      <div className="py-2">{roomList('dm')}</div>
+                      <div className="py-2 h-[calc(100vh-200px)]  overflow-y-auto">
+                        {roomList('dm')}
+                      </div>
                       {loading && (
                         <CircularProgress
                           size={48}
@@ -277,7 +268,9 @@ function Chat() {
                       )}
                     </TabPanel>
                     <TabPanel>
-                      <div className="py-2">{roomList('group')}</div>
+                      <div className="py-2 h-[calc(100vh-200px)]  overflow-y-auto">
+                        {roomList('group')}
+                      </div>
                       {loading && (
                         <CircularProgress
                           size={48}
@@ -294,9 +287,14 @@ function Chat() {
                   </Tabs>
                 </div>
               </div>
-              <div className="flex w-3/4  rounded-3xl sm:flex-col p-4 hidden mx-5 my-2 text-gray-800 relative sm:flex items-center text-center  bg-white sm:block">
+              <div className="flex w-full  rounded-3xl sm:flex-col p-4 hidden mx-5 my-2 text-gray-800 relative sm:flex items-center text-center  bg-white sm:block">
                 <ChatContainer />
               </div>
+              {isOpen ? (
+                <div className="transition-opacity hidden duration-200 flex w-2/5  shrink  rounded-3xl sm:flex-col p-4 hidden mx-5 my-2 text-gray-800 relative sm:flex items-center text-center  bg-white shrink sm:block">
+                  <ChatDrawer />
+                </div>
+              ) : null}
             </div>
           </div>
           <ChatInviteModal open={open} handleClose={handleClose} />

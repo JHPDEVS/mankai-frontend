@@ -23,6 +23,7 @@ function ChatContainer() {
   const currentChatRoom = useSelector(state => state.Reducers.currentRoom)
   const [newMessage, setNewMessage] = useState()
   const [anchorEl, setAnchorEl] = useState(null)
+  const isOpen = useSelector(state => state.Reducers.chat_side)
   const open1 = Boolean(anchorEl)
   const [open, setOpen] = React.useState(false)
   const loading = useSelector(state => state.Reducers.message_pending)
@@ -66,7 +67,6 @@ function ChatContainer() {
   }
 
   const handleClose = e => {
-    e.preventDefault()
     setAnchorEl(null)
     setOpen(false)
   }
@@ -169,6 +169,22 @@ function ChatContainer() {
     console.log(users)
     setOpen(true)
   }
+  const deleteRoom = e => {
+    e.preventDefault()
+
+    handleClose(e)
+    axios
+      .post('/api/room/check', {
+        room: currentChatRoom,
+        user_id: currentUser.id,
+      })
+      .then(res => {
+        // dispatch(getRooms(currentUser.id))
+        dispatch({ type: 'DELETE_ROOM', payload: { room: res.data } })
+        dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: null } })
+        // setCurrentChatRoom('')
+      })
+  }
 
   useEffect(() => {
     console.log(currentChatRoom)
@@ -181,10 +197,9 @@ function ChatContainer() {
     }
   }, [currentChatRoom, currentUser])
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden">
       {currentChatRoom ? (
         <div className=" w-full ">
-          <RoomInviteUserModal open={open} handleClose={handleClose} />
           <div className="w-full flex  flex-col  flex-grow">
             <div className="flex flex-col h-full w-full bg-white p-2">
               <div className="flex flex-row items-center">
@@ -196,8 +211,8 @@ function ChatContainer() {
                         currentChatRoom.users
                       ).substring(0, 1)}
                 </div>
-                <div className="flex flex-col ml-3">
-                  <div className="font-bold text-sm">
+                <div className="flex flex-col ml-2 w-[70vh] ">
+                  <div className=" text-left block overflow-hidden text-ellipsis whitespace-nowrap font-bold text-sm">
                     {currentChatRoom.title
                       ? currentChatRoom.title
                       : userName(currentChatRoom.types, currentChatRoom.users)}
@@ -252,13 +267,11 @@ function ChatContainer() {
                     </li>
                     <li>
                       <button
-                        aria-controls={open1 ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open1 ? 'true' : undefined}
-                        onClick={e => {
-                          handleClick(e)
-                        }}
-                        aria-label="more-vert"
+                        onClick={() =>
+                          isOpen
+                            ? dispatch({ type: 'CHAT_SIDE_CLOSE' })
+                            : dispatch({ type: 'CHAT_SIDE_OPEN' })
+                        }
                         className="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
                       >
                         <span>
@@ -277,38 +290,6 @@ function ChatContainer() {
                           </svg>
                         </span>
                       </button>
-                      <Menu
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right',
-                        }}
-                        id="basic-menu"
-                        anchorEl={anchorEl}
-                        open={open1}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          'aria-labelledby': 'basic-button',
-                        }}
-                      >
-                        <MenuItem
-                          onClick={e => {
-                            handleClose(e)
-                            inviteUser(currentChatRoom)
-                          }}
-                        >
-                          invite
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>photos</MenuItem>
-                      </Menu>
-                      <RoomInviteUserModal
-                        open={open}
-                        handleClose={handleClose}
-                      />
                     </li>
                   </ul>
                 </div>
@@ -318,13 +299,17 @@ function ChatContainer() {
               <div
                 id="scrollableDiv"
                 ref={chatBody}
-                className=" flex flex-col-reverse w-full h-[calc(100vh-230px)] overflow-y-auto p-2"
+                className=" flex flex-col-reverse w-full h-[calc(100vh-230px)]  overflow-y-auto p-2"
               >
                 {/*Put the scroll bar always on the bottom*/}
                 <InfiniteScroll
                   dataLength={messages.length}
                   next={loadMessage}
-                  style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column-reverse',
+                    overflowX: 'hidden',
+                  }} //To put endMessage and loader to the top.
                   inverse={true} //
                   hasMore={chatInfHandle}
                   endMessage={
@@ -349,6 +334,26 @@ function ChatContainer() {
                   {!loading && messages
                     ? messages.map((message, index) => (
                         <div key={message.id}>
+                          <div>
+                            {index == messages.length - 1 ? (
+                              <div
+                                className="relative flex items-center"
+                                key={messages[index].created_at + index}
+                              >
+                                <div className="flex-grow border-t border-gray-400"></div>
+                                <span className="flex-shrink mx-4 text-gray-400">
+                                  <Moment format="yyyy-MM-DD dddd" local>
+                                    {messages[index].created_at}
+                                  </Moment>
+                                </span>
+                                <div className="flex-grow border-t border-gray-400"></div>
+                              </div>
+                            ) : null}
+                          </div>
+                          <Message
+                            message={message}
+                            key={message.id + message.user_id}
+                          />
                           {messages[index - 1] ? (
                             moment(messages[index - 1].created_at)
                               .startOf('day')
@@ -374,26 +379,6 @@ function ChatContainer() {
                               </div>
                             ) : null
                           ) : null}
-                          <Message
-                            message={message}
-                            key={message.id + message.user_id}
-                          />
-                          <div>
-                            {index == messages.length - 1 ? (
-                              <div
-                                className="relative flex items-center"
-                                key={messages[index].created_at + index}
-                              >
-                                <div className="flex-grow border-t border-gray-400"></div>
-                                <span className="flex-shrink mx-4 text-gray-400">
-                                  <Moment format="yyyy-MM-DD dddd" local>
-                                    {messages[index].created_at}
-                                  </Moment>
-                                </span>
-                                <div className="flex-grow border-t border-gray-400"></div>
-                              </div>
-                            ) : null}
-                          </div>
                         </div>
                       ))
                     : null}
@@ -401,7 +386,7 @@ function ChatContainer() {
               </div>
             ) : null}
 
-            <div className=" w-full flex">
+            <div className=" w-full flex ">
               {JSON.parse(currentChatRoom.users).findIndex(officalCheck) ? (
                 <div className="flex flex-row  items-center  bottom-0 my-2 w-full">
                   <div className="ml-2 flex flex-row border-gray bg-white items-center w-full border rounded-3xl h-12 px-2">
