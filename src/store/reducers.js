@@ -50,6 +50,16 @@ const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
 const ADD_MEMO = 'ADD_MEMO'
 const CHAT_SIDE_OPEN = 'CHAT_SIDE_OPEN'
 const CHAT_SIDE_CLOSE = 'CHAT_SIDE_CLOSE'
+const SET_CHAT_SIDE_DATAS = 'SET_CHAT_SIDE_DATAS'
+const ADD_CHAT_SIDE_FILES = 'ADD_CHAT_SIDE_FILES'
+const ADD_CHAT_SIDE_IMAGES = 'ADD_CHAT_SIDE_IMAGES'
+const ADD_CHAT_SIDE_MEMOS = 'ADD_CHAT_SIDE_MEMOS'
+const CHAT_INVITE_MODAL_OPEN = 'CHAT_INVITE_MODAL_OPEN'
+const CHAT_INVITE_MODAL_CLOSE = 'CHAT_INVITE_MODAL_CLOSE'
+const GET_CURRENT_ROOM_PENDING = 'GET_CURRENT_ROOM_PENDING'
+const GET_CURRENT_ROOM_SUCCESS = 'GET_CURRENT_ROOM_SUCCESS'
+const GET_CURRENT_ROOM_FAILURE = 'GET_CURRENT_ROOM_FAILURE'
+const SET_ROOM_USERS = 'SET_ROOM_USERS'
 const initialState = {
   user: null,
   pending: false,
@@ -61,6 +71,8 @@ const initialState = {
   chat_current_page: 1,
   chat_inf_handle: true,
   chat_side: false,
+  chat_invite_modal: false,
+  current_room_users: null,
 }
 
 export default handleActions(
@@ -312,6 +324,7 @@ export default handleActions(
         ...state,
         // rooms:[...state.rooms,action.payload.room]
         currentRoom: action.payload.room,
+        current_room_users: action.payload.room.users,
         chat_inf_handle: true,
       }
     },
@@ -419,6 +432,61 @@ export default handleActions(
       return {
         ...state,
         chat_side: false,
+      }
+    },
+    [CHAT_INVITE_MODAL_OPEN]: (state, action) => {
+      return {
+        ...state,
+        chat_invite_modal: true,
+      }
+    },
+    [CHAT_INVITE_MODAL_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        chat_invite_modal: false,
+      }
+    },
+    [SET_CHAT_SIDE_DATAS]: (state, action) => {
+      return {
+        ...state,
+        room_files: action.payload.files,
+        room_images: action.payload.images,
+        room_memos: action.payload.memos,
+      }
+    },
+    [ADD_CHAT_SIDE_FILES]: (state, action) => {
+      return {
+        ...state,
+        room_files: [...state.room_files, action.payload.files],
+      }
+    },
+    [ADD_CHAT_SIDE_IMAGES]: (state, action) => {
+      return {
+        ...state,
+        room_images: [...state.room_images, action.payload.images],
+      }
+    },
+    [ADD_CHAT_SIDE_MEMOS]: (state, action) => {
+      return {
+        ...state,
+        room_memos: [...state.room_memos, action.payload.memos],
+      }
+    },
+    [GET_CURRENT_ROOM_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        current_room_users: action.payload,
+        rooms: [
+          ...state.rooms.filter(room => {
+            if (room.id == state.currentRoom.id) {
+              room.users = action.payload
+            }
+            return room.id == state.currentRoom.id
+          }),
+          ...state.rooms.filter(room => {
+            return room.id != state.currentRoom.id
+          }),
+        ],
       }
     },
   },

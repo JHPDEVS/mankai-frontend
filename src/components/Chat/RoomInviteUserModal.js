@@ -14,12 +14,17 @@ import { Dialog, Transition } from '@headlessui/react'
 import { getFollows } from '../../store/modules/getFollows'
 import { Users } from '../../store/modules/getUsers'
 import { AccountCircle } from '@mui/icons-material'
-function ChatInviteModal(props) {
+import { getCurrentRoom } from '../../store/modules/getCurrentRoom'
+function RoomInviteUserModal(props) {
   const { t } = useTranslation(['lang'])
   const [checkedInviteUsers, setCheckedInviteUsers] = useState([])
   const [complete, setComplete] = useState(false)
   const rooms = useSelector(state => state.Reducers.rooms)
   const currentUser = useSelector(state => state.Reducers.user)
+  const currentRoom = useSelector(state => state.Reducers.currentRoom)
+  const currentRoomUsers = useSelector(
+    state => state.Reducers.current_room_users
+  )
   const loading = useSelector(state => state.Reducers.follows_pending)
   const follows = useSelector(state => state.Reducers.follows)
   const dispatch = useDispatch()
@@ -34,33 +39,31 @@ function ChatInviteModal(props) {
       console.log('체크 해제')
     }
   }
-  function newRoomList(newRoom) {
-    if (rooms.find(room => room.id === newRoom.id)) {
-      return
-    } else {
-      dispatch({ type: 'ADD_ROOM', payload: { room: newRoom } })
-    }
-  }
+
   React.useEffect(() => {
-    // console.log(checkedInviteUsers);
     if (complete) {
+      console.log(complete)
+
       axios
-        .post('/api/room/create', {
-          users: checkedInviteUsers,
+        .post('api/user/invite', {
+          room: currentRoom,
+          user: currentUser,
+          inviteUsers: checkedInviteUsers,
         })
         .then(res => {
-          newRoomList(res.data)
+          // props.newRoomList(res.data);
           console.log(res.data)
           setComplete(false)
+          dispatch(getCurrentRoom(currentRoom.id))
           setCheckedInviteUsers([])
         })
     }
-  }, [checkedInviteUsers])
+  }, [checkedInviteUsers, complete])
 
-  const roomCreate = e => {
-    setCheckedInviteUsers([...checkedInviteUsers, currentUser])
+  const roomInvite = e => {
+    // setCheckedInviteUsers([...checkedInviteUsers]);
     setComplete(true)
-    props.handleClose(e)
+    dispatch({ type: 'CHAT_INVITE_MODAL_CLOSE' })
   }
 
   useEffect(() => {
@@ -77,7 +80,7 @@ function ChatInviteModal(props) {
       <Dialog
         as="div"
         className="fixed inset-0 z-10 overflow-y-auto"
-        onClose={props.handleClose}
+        onClose={() => dispatch({ type: 'CHAT_INVITE_MODAL_CLOSE' })}
       >
         <div className="min-h-screen px-4 text-center">
           <Transition.Child
@@ -112,7 +115,7 @@ function ChatInviteModal(props) {
               <div className="flex justify-end ">
                 <button
                   type="button"
-                  onClick={props.handleClose}
+                  onClick={() => dispatch({ type: 'CHAT_INVITE_MODAL_CLOSE' })}
                   className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
                   data-modal-toggle="authentication-modal"
                 >
@@ -132,12 +135,12 @@ function ChatInviteModal(props) {
               </div>
               <div className="container mx-auto">
                 <div className="font-bold text-xl p-2 oveflow-x-auto">
-                  대화상대선택
+                  초대하기
                 </div>
                 <div className="flex overflow-x-auto py-3">
                   {checkedInviteUsers.map((user, index) => (
                     <div className="w-20 h-20" key={user + index}>
-                      <div class=" justify-center text-center">
+                      <div className=" justify-center text-center">
                         <IconButton
                           className="inline-flex justify-center items-center group"
                           aria-haspopup="true"
@@ -170,7 +173,7 @@ function ChatInviteModal(props) {
                   }}
                 />
                 <div className="flex flex-col overflow-y-auto h-96 px-2">
-                  {!loading && follows ? (
+                  {!loading && follows && currentRoom && currentRoomUsers ? (
                     follows
                       .filter(follow => {
                         if (search == '') {
@@ -183,39 +186,82 @@ function ChatInviteModal(props) {
                           return follow
                         }
                       })
-                      .map((follow, index) => (
-                        <div key={index} className="flex w-full  items-center">
-                          <div class="flex-shrink-0">
-                            <IconButton
-                              className="inline-flex justify-center items-center group"
-                              aria-haspopup="true"
-                            >
-                              <div className="flex flex-row items-center text-center">
-                                <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                                  <span>{follow.name.substr(0, 1)}</span>
+                      .map((follow, index) =>
+                        JSON.parse(currentRoomUsers).findIndex(
+                          user => user.user_id === follow.id
+                        ) === -1 ? (
+                          <div
+                            key={index}
+                            className="flex w-full  items-center"
+                          >
+                            <div className="flex-shrink-0">
+                              <IconButton
+                                className="inline-flex justify-center items-center group"
+                                aria-haspopup="true"
+                              >
+                                <div className="flex flex-row items-center text-center">
+                                  <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                                    <span>{follow.name.substr(0, 1)}</span>
+                                  </div>
                                 </div>
-                              </div>
-                            </IconButton>
-                          </div>
-                          <div class="flex-1 min-w-0">
-                            <p class="text-xl font-medium text-gray-900 truncate dark:text-white">
-                              {follow.name}
-                            </p>
-                          </div>
+                              </IconButton>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xl font-medium text-gray-900 truncate dark:text-white">
+                                {follow.name}
+                              </p>
+                            </div>
 
-                          <input
-                            type="checkbox"
-                            id={'check' + index}
-                            className="rounded-full w-6 h-6"
-                            onChange={e => {
-                              changeHandler(e.currentTarget.checked, follow)
-                            }}
-                            checked={
-                              checkedInviteUsers.includes(follow) ? true : false
-                            }
-                          />
-                        </div>
-                      ))
+                            <input
+                              type="checkbox"
+                              id={'check' + index}
+                              className="rounded-full w-6 h-6"
+                              onChange={e => {
+                                changeHandler(e.currentTarget.checked, follow)
+                              }}
+                              checked={
+                                checkedInviteUsers.includes(follow)
+                                  ? true
+                                  : false
+                              }
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            key={index}
+                            className="flex w-full  items-center"
+                          >
+                            <div className="flex-shrink-0">
+                              <IconButton
+                                className="inline-flex justify-center items-center group"
+                                aria-haspopup="true"
+                              >
+                                <div className="flex flex-row items-center text-center">
+                                  <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                                    <span>{follow.name.substr(0, 1)}</span>
+                                  </div>
+                                </div>
+                              </IconButton>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xl font-medium text-gray-900 truncate dark:text-white">
+                                {follow.name}
+                              </p>
+                            </div>
+
+                            <input
+                              type="checkbox"
+                              id={'check' + index}
+                              className="rounded-full w-6 h-6"
+                              onChange={e => {
+                                changeHandler(e.currentTarget.checked, follow)
+                              }}
+                              disabled
+                              checked={true}
+                            />
+                          </div>
+                        )
+                      )
                   ) : (
                     <div className="">
                       <CircularProgress size={48} />
@@ -226,15 +272,15 @@ function ChatInviteModal(props) {
               <div className="flex justify-center py-2">
                 <button
                   disabled={disabled}
-                  onClick={roomCreate}
+                  onClick={roomInvite}
                   className=" px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                 >
-                  생성하기
+                  초대하기
                 </button>
                 <button
                   type="button"
                   className="ml-2 px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                  onClick={props.handleClose}
+                  onClick={() => dispatch({ type: 'CHAT_INVITE_MODAL_CLOSE' })}
                 >
                   취소
                 </button>
@@ -246,4 +292,4 @@ function ChatInviteModal(props) {
     </Transition>
   )
 }
-export default ChatInviteModal
+export default RoomInviteUserModal
