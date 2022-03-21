@@ -62,14 +62,12 @@ function GroupList (){
                                 <Link href="/grouppage" underline="none">
                                 <h2 class="text-gray-800 text-xl font-bold">그룹명</h2> 
                                 </Link>
-                                
-                                
-                                    
                                     <h5 className="text-slate-500 text-sm">멤버 수 : </h5>                               
                                 </div>
                                 <hr class="mt-6" />
                             </div>
                         </div>
+                        
                     {/* 컴포넌트 */}
                 </div>
             </div>
