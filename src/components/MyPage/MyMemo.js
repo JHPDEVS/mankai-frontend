@@ -5,6 +5,7 @@ import axios from "axios";
 import {useSelector} from "react-redux";
 
 export default function MyPage() {
+<<<<<<< HEAD
 
     const user = useSelector((state) => state.Reducers.user)
     const [memos, setMemos] = useState([]);

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
+=======
+import React, {useState} from "react";
+>>>>>>> 6f6cf6fff025a80a01006e10ec786f332eebf4d6
 import Sidebar from "../admin/layout/Sidebar"
 import Header from "../admin/layout/Header"
 
@@ -9,7 +13,10 @@ function Mypage() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     return (
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6f6cf6fff025a80a01006e10ec786f332eebf4d6
         <div>
             <div className="flex h-screen">
                 <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>

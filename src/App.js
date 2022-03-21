@@ -29,6 +29,8 @@ import MyNewMemo from './components/MyPage/MyNewMemo';
 import Profile from './components/MyPage/Profile';
 import Youpage from './components/MyPage/YouPage'
 import MymemoCreate from './components/MyPage/MymemoCreate'
+import GroupMain from './components/Groups/GroupMain';
+import GroupPage from './components/Groups/GroupPage';
 
 axios.defaults.baseURL = 'http://localhost:8000/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -75,6 +77,9 @@ function App() {
 
 
         <Route exact path="/board" component={BoardCopy}></Route>
+
+        <Route exact path="/group" component={GroupMain}></Route>
+        <Route exact path="/grouppage" component={GroupPage}></Route>
           
         <Route path="*" component={Empty}></Route>
       </Switch>

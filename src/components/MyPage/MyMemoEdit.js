@@ -7,6 +7,8 @@ import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 export default function App({match}) {
   const dispatch = useDispatch()
+  
+  const url = "/api/post/memo";
   // 메모 아이디 값에따라 받아 와야 함
   useEffect(() => {
     axios
@@ -21,6 +23,7 @@ export default function App({match}) {
   const user = useSelector((state)=>state.Reducers.user)
   const[data, setData] = useState("")
   
+
   function handle(e){
     setMemos(e.target.value)
   }
@@ -58,6 +61,13 @@ export default function App({match}) {
   //   writer : user.id,
   //   memo_id : data.id
   // });
+  function submit(){
+    axios.post(url, {
+      content : data,
+      writer : user.id
+    })
+  }
+
 
   return (
       
@@ -84,7 +94,7 @@ export default function App({match}) {
               focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               onChange={(e)=> handle(e)}
               value={memos}>
-
+              {/* value={memos.memo} */}
             </textarea>
             
             
