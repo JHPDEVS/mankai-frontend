@@ -23,8 +23,10 @@ import 'moment-timezone'
 import moment from 'moment'
 import { now } from 'moment'
 import ChatDrawer from './ChatDrawer'
+import RoomInviteUserModal from './RoomInviteUserModal'
 function Chat() {
   const isOpen = useSelector(state => state.Reducers.chat_side)
+  const [search, setSearch] = useState('')
   const [index, setIndex] = useState(0)
   const currentUser = useSelector(state => state.Reducers.user)
   const state = useSelector(state => state.Reducers.user)
@@ -32,6 +34,7 @@ function Chat() {
   const loading = useSelector(state => state.Reducers.room_pending)
   const currentRoom = useSelector(state => state.Reducers.currentRoom)
   const [open, setOpen] = React.useState(false)
+  const inviteOpen = useSelector(state => state.Reducers.chat_invite_modal)
   const handleOpen = () => setOpen(true)
   const { t } = useTranslation(['lang'])
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -52,14 +55,7 @@ function Chat() {
   useEffect(() => {
     if (currentUser) {
       const channel = window.Echo.channel('user.' + currentUser.id) // 채팅방 참여
-        .listen('.send-message', e => {
-          dispatch({
-            type: 'ADD_MESSAGE_REVERSE',
-            payload: {
-              message: e.message,
-            },
-          })
-
+        .listen('.user-connect', e => {
           dispatch({
             type: 'SET_ROOM_UPDATED_AT',
             payload: {
@@ -69,9 +65,12 @@ function Chat() {
             },
           })
         })
+        .listen('.invite-event', e => {
+          console.log(e.room)
+        })
       return () => {
         channel.subscription.unbind(
-          channel.eventFormatter.format('.send-message')
+          channel.eventFormatter.format('.user-connect')
         )
       }
     }
@@ -128,79 +127,104 @@ function Chat() {
 
   const roomList = types => (
     <div className="w-full h-full ">
+      <input
+        className="my-2 bg-gray-200 appearance-none border-2 border-gray-200 rounded-xl w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+        placeholder="검색어를 입력해주세요"
+        value={search}
+        onChange={e => {
+          setSearch(e.target.value)
+        }}
+      />
       {rooms && !loading
-        ? rooms.map((room, index) => (
-            <div
-              className={
-                room.type === types
-                  ? room == currentRoom
-                    ? 'room border-b flex w-full bg-active p-2 hover:bg-gray-100'
-                    : 'room border-b flex w-full p-2 hover:bg-gray-100'
-                  : 'hidden'
+        ? rooms
+            .filter(room => {
+              if (search == '') {
+                return room
+              } else if (
+                room.title &&
+                room.title.toLowerCase().includes(search.toLowerCase())
+              ) {
+                return room
+              } else if (
+                userName(types, room.users)
+                  .toLowerCase()
+                  .includes(search.toLowerCase())
+              ) {
+                return room
               }
-              id={'room' + index}
-              onClick={e => {
-                selectChatRoom(e, room)
-              }}
-              key={room.id}
-            >
-              <div className="room flex w-4/5  ">
-                <IconButton
-                  className="inline-flex justify-center items-center group"
-                  aria-haspopup="true"
-                >
-                  <div className="flex flex-row items-center text-center">
-                    <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                      <span> {userName(types, room.users).substr(0, 1)}</span>
+            })
+            .map((room, index) => (
+              <div
+                className={
+                  room.type === types
+                    ? room == currentRoom
+                      ? 'room border-b flex w-full bg-active p-2 hover:bg-gray-100'
+                      : 'room border-b flex w-full p-2 hover:bg-gray-100'
+                    : 'hidden'
+                }
+                id={'room' + index}
+                onClick={e => {
+                  selectChatRoom(e, room)
+                }}
+                key={room.id}
+              >
+                <div className="room flex w-4/5  ">
+                  <IconButton
+                    className="inline-flex justify-center items-center group"
+                    aria-haspopup="true"
+                  >
+                    <div className="flex flex-row items-center text-center">
+                      <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
+                        <span> {userName(types, room.users).substr(0, 1)}</span>
+                      </div>
                     </div>
-                  </div>
-                </IconButton>
-                <div className="room truncate flex flex-col text-left">
-                  <div className="flex">
-                    {room.type === types ? (
-                      room.title ? (
-                        room.title
+                  </IconButton>
+                  <div className="room truncate flex flex-col text-left">
+                    <div className="flex">
+                      {room.type === types ? (
+                        room.title ? (
+                          room.title
+                        ) : (
+                          <span className="mr-1 block overflow-hidden text-ellipsis whitespace-nowrap font-bold">
+                            {userName(types, room.users)}
+                          </span>
+                        )
                       ) : (
-                        <span className="mr-1 block overflow-hidden text-ellipsis whitespace-nowrap font-bold">
-                          {userName(types, room.users)}
-                        </span>
-                      )
-                    ) : (
-                      ''
-                    )}{' '}
-                    <span className=" mr-1 text-gray-400 font-semibold">
-                      {types === 'group' ? JSON.parse(room.users).length : ''}
+                        ''
+                      )}{' '}
+                      <span className=" mr-1 text-gray-400 font-semibold">
+                        {types === 'group' ? JSON.parse(room.users).length : ''}
+                      </span>
+                    </div>
+
+                    <span className="room text-sm text-left block overflow-hidden text-ellipsis whitespace-nowrap">
+                      {room.last_message}
                     </span>
                   </div>
+                </div>
+                <div className="flex flex-col  w-1/5 text-xs font-semibold">
+                  {moment(room.updated_at)
+                    .startOf('day')
+                    .diff(moment().startOf('day'), 'days') == 0 ? (
+                    <Moment format="H:mm" local className="">
+                      {room.updated_at}
+                    </Moment>
+                  ) : (
+                    <Moment format="MMMM Do" local className="">
+                      {room.updated_at}
+                    </Moment>
+                  )}
 
-                  <span className="room text-sm text-left block overflow-hidden text-ellipsis whitespace-nowrap">
-                    {room.last_message}
-                  </span>
+                  {/* <div className="flex flex-grow justify-center items-center">
+                    <Badge
+                      badgeContent={5}
+                      color="error"
+                      invisible={5 != 0 ? false : true}
+                    ></Badge>
+                  </div> */}
                 </div>
               </div>
-              <div className="flex flex-col  w-1/5 text-xs font-semibold">
-                {moment(room.updated_at)
-                  .startOf('day')
-                  .diff(moment().startOf('day'), 'days') == 0 ? (
-                  <Moment format="H:mm" local className="">
-                    {room.updated_at}
-                  </Moment>
-                ) : (
-                  <Moment format="MMMM Do" local className="">
-                    {room.updated_at}
-                  </Moment>
-                )}
-
-                <div className="flex flex-grow justify-center items-center">
-                  <Badge
-                    badgeContent={5}
-                    color="error"
-                    invisible={5 != 0 ? false : true}
-                  ></Badge>
-                </div>
-              </div>
-            </div>
-          ))
+            ))
         : null}
     </div>
   )
@@ -291,13 +315,14 @@ function Chat() {
                 <ChatContainer />
               </div>
               {isOpen ? (
-                <div className="transition-opacity hidden duration-200 flex w-2/5  shrink  rounded-3xl sm:flex-col p-4 hidden mx-5 my-2 text-gray-800 relative sm:flex items-center text-center  bg-white shrink sm:block">
+                <div className="transition-opacity hidden duration-200 flex w-2/5  shrink  rounded-3xl sm:flex-col  hidden mx-5 my-2 text-gray-800 relative sm:flex items-center text-center  bg-white shrink sm:block">
                   <ChatDrawer />
                 </div>
               ) : null}
             </div>
           </div>
           <ChatInviteModal open={open} handleClose={handleClose} />
+          <RoomInviteUserModal open={inviteOpen} handleClose={handleClose} />
         </div>
       </div>
     </>

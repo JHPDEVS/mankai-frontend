@@ -3,6 +3,7 @@ import { indigo } from '@mui/material/colors'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import DownloadIcon from '@mui/icons-material/Download'
+
 import Moment from 'react-moment'
 import 'moment-timezone'
 import { FileIcon, defaultStyles } from 'react-file-icon'
@@ -117,12 +118,21 @@ function Message({ message: msg }) {
                     ) : message.file.startsWith('[') ? (
                       <div className="flex text-left mr-2 p-2 flex-wrap rounded-xl border-2  max-w-[50%]">
                         {JSON.parse(message.file).map((image, index) => (
-                          <img
-                            key={index}
-                            className="w-1/2"
-                            src={'http://localhost:8000/storage/' + image}
-                            onClick={() => setOpen(true)}
-                          ></img>
+                          <>
+                            <img
+                              key={index}
+                              className="w-1/2"
+                              src={'http://localhost:8000/storage/' + image}
+                              onClick={() => setOpen(true)}
+                            ></img>
+                            <ReactImageViewer
+                              imgs={
+                                'http://localhost:8000/storage/' + message.file
+                              }
+                              isOpen={isOpen}
+                              onClose={() => setOpen(false)}
+                            />
+                          </>
                         ))}
                       </div>
                     ) : (
@@ -177,7 +187,7 @@ function Message({ message: msg }) {
                   </Moment>
                 </span>
                 <span>
-                  <div className="text-primarytext text-sm mr-2">7</div>
+                  <div className="text-primarytext text-sm mr-2 ">7</div>
                 </span>
               </div>
               {message.file ? (
@@ -251,7 +261,7 @@ function Message({ message: msg }) {
               ) : (
                 <div
                   onDoubleClick={e => translation(message.message)}
-                  className="text-left mr-2 py-3 px-4 bg-primary   text-white  rounded-xl border max-w-[50%]"
+                  className="text-left mr-2 py-3 px-4 bg-primary opacity-75   text-white  rounded-xl border max-w-[50%]"
                 >
                   <span className="break-all break-word">
                     {message.message}

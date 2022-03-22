@@ -39,7 +39,12 @@ function ChatContainer() {
   const loadMessage = () => {
     axios
       .get(
-        '/api/messages/' + currentChatRoom.id + '?page=' + (chatCurrentPage + 1)
+        '/api/messages/' +
+          currentChatRoom.id +
+          '/' +
+          currentUser.id +
+          '?page=' +
+          (chatCurrentPage + 1)
       )
       .then(res => {
         // if (Array.isArray(res.data.data) && res.data.data.length === 0) {
@@ -61,6 +66,59 @@ function ChatContainer() {
         }
       })
   }
+  useEffect(() => {
+    if (currentChatRoom) {
+      const channel = window.Echo.channel('room.' + currentChatRoom.id) // 채팅방 참여
+        .listen('.send-message', e => {
+          // e.message.read_users = "[]";
+          dispatch({
+            type: 'ADD_MESSAGE_REVERSE',
+            payload: {
+              message: e.message,
+            },
+          })
+
+          dispatch({
+            type: 'SET_ROOM_UPDATED_AT',
+            payload: {
+              updated_at: e.message.updated_at,
+              last_message: e.message.message,
+              room_id: e.message.room_id,
+            },
+          })
+
+          if (e.message.file || e.message.memos) {
+            if (e.message.file.startsWith('[{')) {
+              dispatch({
+                type: 'ADD_CHAT_SIDE_FILES',
+                payload: {
+                  files: e.message,
+                },
+              })
+            } else if (e.message.file.startsWith('[') || e.message.file) {
+              dispatch({
+                type: 'ADD_CHAT_SIDE_IMAGES',
+                payload: {
+                  images: e.message,
+                },
+              })
+            } else {
+              dispatch({
+                type: 'ADD_CHAT_SIDE_MEMOS',
+                payload: {
+                  memos: e.message,
+                },
+              })
+            }
+          }
+        })
+      return () => {
+        channel.subscription.unbind(
+          channel.eventFormatter.format('.send-message')
+        )
+      }
+    }
+  }, [currentChatRoom])
   const [toUser, setToUser] = useState({})
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
@@ -312,11 +370,6 @@ function ChatContainer() {
                   }} //To put endMessage and loader to the top.
                   inverse={true} //
                   hasMore={chatInfHandle}
-                  endMessage={
-                    <p style={{ textAlign: 'center' }}>
-                      <b>채팅 내역 없음</b>
-                    </p>
-                  }
                   loader={
                     <CircularProgress
                       size={48}
@@ -337,16 +390,14 @@ function ChatContainer() {
                           <div>
                             {index == messages.length - 1 ? (
                               <div
-                                className="relative flex items-center"
+                                className="flex justify-center"
                                 key={messages[index].created_at + index}
                               >
-                                <div className="flex-grow border-t border-gray-400"></div>
-                                <span className="flex-shrink mx-4 text-gray-400">
+                                <span className=" flex-shrink p-1 text-white  bg-primary opacity-70 font-bold rounded-xl text-center">
                                   <Moment format="yyyy-MM-DD dddd" local>
                                     {messages[index].created_at}
                                   </Moment>
                                 </span>
-                                <div className="flex-grow border-t border-gray-400"></div>
                               </div>
                             ) : null}
                           </div>
@@ -369,7 +420,7 @@ function ChatContainer() {
                               >
                                 <div className="relative flex py-5 items-center">
                                   <div className="flex-grow border-t border-gray-400"></div>
-                                  <span className="flex-shrink mx-4 text-gray-400">
+                                  <span className="fon-bold flex-shrink p-1 text-white  bg-primary opacity-70 rounded-xl">
                                     <Moment format="yyyy-MM-DD dddd" local>
                                       {messages[index - 1].created_at}
                                     </Moment>

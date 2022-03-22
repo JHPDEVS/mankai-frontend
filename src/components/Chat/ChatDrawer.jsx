@@ -1,4 +1,10 @@
-import { Icon, IconButton } from '@mui/material'
+import {
+  Icon,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+} from '@mui/material'
 import axios from 'axios'
 import prettyBytes from 'pretty-bytes'
 import { useEffect, useState } from 'react'
@@ -11,6 +17,9 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt'
 import { Add, AddCircleOutlined } from '@mui/icons-material'
 import { blue, green, red } from '@mui/material/colors'
+import { getCurrentRoom } from '../../store/modules/getCurrentRoom'
+import { getFollows } from '../../store/modules/getFollows'
+
 function ChatDrawer() {
   const dispatch = useDispatch()
   const currentRoom = useSelector(state => state.Reducers.currentRoom)
@@ -24,6 +33,18 @@ function ChatDrawer() {
   const inviteOpen = useSelector(state => state.Reducers.chat_invite_modal)
   const follows = useSelector(state => state.Reducers.follows)
   const [isOpen, setOpen] = useState(false)
+  const follow = user_id => {
+    axios
+      .post('/api/user/follow', {
+        user_id: currentUser.id,
+        to_user_id: user_id,
+      })
+      .then(res => {
+        dispatch(getFollows(currentUser.id))
+        dispatch(getCurrentRoom(currentRoom.id))
+        // setCurrentChatRoom('')
+      })
+  }
   const deleteRoom = e => {
     axios
       .post('/api/room/check', {
@@ -33,7 +54,7 @@ function ChatDrawer() {
       .then(res => {
         // dispatch(getRooms(currentUser.id))
         dispatch({ type: 'DELETE_ROOM', payload: { room: res.data } })
-        dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: null } })
+        dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: '' } })
         dispatch({ type: 'CHAT_SIDE_CLOSE' })
         // setCurrentChatRoom('')
       })
@@ -74,74 +95,119 @@ function ChatDrawer() {
       <div className="primary-bg w-full h-[calc(100vh-170px)]  overflow-y-auto">
         <div className="text-sm text-left font-bold">
           <div className="text-sm p-2">
-            파일
+            <div className="flex w-full">
+              <span className="px-2 py-1 text-sm  text-blue-900  rounded-md ">
+                파일
+              </span>
+              <button className="ml-auto px-2 py-1 text-sm font-bold text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+                더보기
+              </button>
+            </div>
+
             {files
-              ? files.map(message =>
-                  JSON.parse(message.file).map((file, index) => (
-                    <div
-                      className="flex text-left mr-2 py-3 px-4   rounded-xl border-2 "
-                      key={file + index}
-                    >
-                      <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center mr-1">
-                        <a
-                          className="p-3 w-12 h-12"
-                          download
-                          href={'http://localhost:8000/storage/' + file.path}
+              ? files.map((message, index) =>
+                  JSON.parse(message.file).map(file => (
+                    <>
+                      {index <= 2 ? (
+                        <div
+                          className="flex text-left m-2 py-3 px-4   rounded-xl border-2 "
+                          key={file + index}
                         >
-                          <FileIcon
-                            extension={file.type}
-                            {...defaultStyles[file.type]}
-                          ></FileIcon>
-                        </a>
-                      </div>
-                      <div className="flex flex-col">
-                        <div>
-                          <a
-                            href={'http://localhost:8000/storage/' + file.path}
-                            download
-                            className="font-bold break-all"
-                          >
-                            {file.name}
-                          </a>
+                          <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center mr-1">
+                            <a
+                              className="p-3 w-12 h-12"
+                              download
+                              href={
+                                'http://localhost:8000/storage/' + file.path
+                              }
+                            >
+                              <FileIcon
+                                extension={file.type}
+                                {...defaultStyles[file.type]}
+                              ></FileIcon>
+                            </a>
+                          </div>
+                          <div className="flex flex-col mr-2">
+                            <div>
+                              <a
+                                href={
+                                  'http://localhost:8000/storage/' + file.path
+                                }
+                                download
+                                className="font-bold break-all"
+                              >
+                                {file.name}
+                              </a>
+                            </div>
+                            <span>{prettyBytes(file.size)}</span>
+                          </div>
+                          <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-auto ">
+                            <a
+                              className="p-3"
+                              download
+                              href={
+                                'http://localhost:8000/storage/' + file.path
+                              }
+                            >
+                              <span className="text-primarytext">
+                                <DownloadIcon />
+                              </span>
+                            </a>
+                          </div>
                         </div>
-                        <span>{prettyBytes(file.size)}</span>
-                      </div>
-                      <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-auto ">
-                        <a
-                          className="p-3"
-                          download
-                          href={'http://localhost:8000/storage/' + file.path}
-                        >
-                          <span className="text-primarytext">
-                            <DownloadIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
+                      ) : null}
+                    </>
                   ))
                 )
               : null}
           </div>
         </div>
-        <div className="font-bold text-left p-2 text-sm">이미지</div>
-        {images
-          ? images.map((image, index) => (
-              <div className="flex" key={index}>
-                <img
-                  className="w-1/2"
-                  src={'http://localhost:8000/storage/' + image.file}
-                  onClick={() => setOpen(true)}
-                ></img>
-                <ReactImageViewer
-                  imgs={'http://localhost:8000/storage/' + image.file}
-                  isOpen={isOpen}
-                  onClose={() => setOpen(false)}
-                />
-              </div>
-            ))
-          : null}
-        <div className=" font-bold text-sm text-left">
-          <span className="p-2">대화상대</span>
+        <div className="flex w-full p-2">
+          <span className="px-2 py-1 text-sm  font-bold text-blue-900  rounded-md ">
+            이미지
+          </span>
+          <button className="ml-auto px-2 py-1 text-sm font-bold text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+            더보기
+          </button>
+        </div>
+
+        {images ? (
+          <div className="flex">
+            <ImageList variant="quilted" cols={2} gap={8}>
+              {images.map((image, index) => (
+                <>
+                  {index < 4 ? (
+                    image.file.startsWith('[') ? (
+                      JSON.parse(image.file).map((image, file) => (
+                        <ImageListItem key={image}>
+                          <img
+                            src={`http://localhost:8000/storage/${image}?w=161&fit=crop&auto=format`}
+                            srcSet={`http://localhost:8000/storage/${image}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                            loading="lazy"
+                          />
+                        </ImageListItem>
+                      ))
+                    ) : (
+                      <ImageListItem key={image.file}>
+                        <img
+                          src={`http://localhost:8000/storage/${image.file}?w=161&fit=crop&auto=format`}
+                          srcSet={`http://localhost:8000/storage/${image.file}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                          loading="lazy"
+                        />
+                      </ImageListItem>
+                    )
+                  ) : null}
+                </>
+              ))}
+            </ImageList>
+          </div>
+        ) : null}
+        <div className=" font-bold text-sm text-left p-2">
+          <div className="flex w-full">
+            <span className="px-2 py-1 text-sm font-bold text-blue-900  rounded-md ">
+              대화상대
+            </span>
+          </div>
           <div className="text-sm  ">
             <div className="flex items-center w-full">
               <IconButton
@@ -155,7 +221,9 @@ function ChatDrawer() {
                 </div>
               </IconButton>
 
-              <div className="text-xl">{currentUser.name}</div>
+              <div className="text-xl block overflow-hidden text-ellipsis whitespace-nowrap ">
+                {currentUser.name}
+              </div>
               {/* <div className="rounded-2xl bg-gray-500 text-white ml-auto p-1 mr-2">
                 ME
               </div> */}
@@ -180,7 +248,7 @@ function ChatDrawer() {
                       {follows.findIndex(
                         follow => user.user_id === follow.id
                       ) === -1 ? (
-                        <IconButton>
+                        <IconButton onClick={() => follow(user.user_id)}>
                           <PersonAddAltIcon fontSize="large" />
                         </IconButton>
                       ) : null}
