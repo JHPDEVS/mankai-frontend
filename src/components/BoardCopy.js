@@ -10,7 +10,9 @@ import {Provider, useSelector, useDispatch, connect} from 'react-redux';
 import { BoardUpdate } from '../store/actions';
 import Sidebar from '../admin/layout/Sidebar';
 import Header from '../admin/layout/Header';
-import { Avatar, Card, Skeleton } from '@mui/material';
+import { Avatar, Card, Skeleton, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+
 
 
 
@@ -29,10 +31,8 @@ function BoardCopy(props)
     
      // 라라벨 에서 데이터 받아 state 저장
     const ShowBoard = () =>{
-        // console.log("showboard")
         axios.post('/api/board/show/'+category+"?page="+currentPage)
         .then(res=>{
-            // console.log(res.data.data)
             if(res.data.last_page === currentPage){
                 setInfHandle(infHandle=>false)
             }
@@ -74,7 +74,7 @@ function BoardCopy(props)
 
     
     const editPostMemo = () => {
-        axios.post('/api/editmypostmemos/41',{
+        axios.post('/api/editpostmemos/41',{
             content_text:"props로 받을 예정인 content_text"
         })
         .then((res)=>{
@@ -112,11 +112,24 @@ function BoardCopy(props)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[category])
 
+    useEffect(()=>{
+        ShowBoard();
+    },[])
+
+    const modalOpen = () => {
+        dispatch({ type: "MODAL_OPEN" });
+    }
+
+
+
+    
+
     // redux state 받아옴
     const boards = useSelector((state)=>state.Reducers.boardData); 
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const isOpen = useSelector((state)=>state.Reducers.isOpen);
     const likeData = useSelector((state)=>state.Reducers.likeData)
+
         return(
             <div className="flex bg-byuncolor2">
                 {/* Sidebar */}  
@@ -230,9 +243,13 @@ function BoardCopy(props)
                             </div>
                             
                         }
+                        
+                <BoardWriteModal/>
+
                         </div>
-                    
+
                 </div>
+                {/* 여기에 버튼하고 BoardWriteModal추가하고 누르면 modal_open이라는 action의 dispatch를 보내게. */}
             </div>
             
         )

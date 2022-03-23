@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState, useEffect} from 'react'
+import {useState, useEffect, forwardRef, useImperativeHandle} from 'react'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
 import TextField from '@mui/material/TextField'
@@ -18,7 +18,7 @@ import { MdAddPhotoAlternate } from "react-icons/md";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { IoMdPhotos } from "react-icons/io";
 import axios from 'axios'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import '../App.css'
 
 const style = {
@@ -36,19 +36,24 @@ const style = {
 };
 
 
-export default function BasicModal() {
-  const [muiSelectValue, setMuiSelectValue] = useState("전체");
-  const [open, setOpen] = React.useState(false);
+export default function MyMemoWriteModal(props) {
   const [textfieldvalue,setTextFieldValue] = useState("");
   const [selectedImages, setSelectedImage] = useState([])
   const [imageContainer, setImageContainer] = useState(false); 
   const [fileType, setFileType] = useState([]);
   const [imageToServer, setImageToServer] = useState([]);
   const [dragIn, setDragIn] = useState(false);
+  const [openMemoTitle, setOpenMemoTitle] = useState(false);
+  // 이 값에 따라서 메모제목을 정하는 창이 올라오거나 내려오거나
+  const [memoTitleValue, setMemoTitleValue] = useState("");
   const user = useSelector(state=> state.Reducers.user);
-  const [username, setUsername] = useState('');
+  const [modalOpen,setModalOpen] = useState(false);
+  // 이 값에 따라서 1차 modal이 올라오거나 내려오거나
+
+  // 그리고 reducers.js에서 함수 2개 지우고 isModalOpen이라는 변수도 지우기
+  const dispatch = useDispatch()
+
   const imageHandleChange = (e) => {
-    // console.log(e.target.files)
   if(e.target.files){
     const targetImages = Array.from(e.target.files).map((file) => file);
     setImageToServer([...imageToServer, ...targetImages]);
@@ -63,7 +68,7 @@ export default function BasicModal() {
   e.target.value="";
   }    
   }
-  
+ 
 
 
   const dndHandleChange = (files) => {
@@ -122,13 +127,10 @@ const fileDrop = (e) => {
 }
 
 
-  const handleOpen = () => {
-    setUsername(user.name);
-    setOpen(true)
-  };
-  const handleClose = () => setOpen(false);
+  
 
   const isOpen = useSelector((state=>state.Reducers.isOpen))
+  // BoardSide가 열렸을 경우를 생각해서 있는 건가?
 
   const deleteImage = (index) => {
     const copiedSelectedImage = [...selectedImages]
@@ -147,44 +149,70 @@ const fileDrop = (e) => {
 
   }
 
-  const SelectChange = (event) => {
-    setMuiSelectValue(event.target.value);
-  };
-
   const data = {
     textfieldvalue : textfieldvalue,
     selectedImages : selectedImages,
-    muiSelectValue : muiSelectValue,
     user : user,
   }
   
 
   const toServer = (e) => {
-    e.preventDefault();
     const formData = new FormData();
     for(let i = 0 ; i < imageToServer.length ; i++){
       formData.append(`images${i}`, imageToServer[i])
     }
-
-    axios.post('/api/upload_post', data)
-    .then(function (response) {
-      formData.append('post_id',response.data["id"]);
-      console.log(response.data["id"]);
-      axios.post('/api/upload_image', formData)
-      .then(function(response) {
-        console.log(response.data)
-         handleClose();
-        window.location.reload();
-
-      }).catch(function(error){
-        console.log(error);
+    formData.append('user_id',user.id);
+    formData.append('content_text',textfieldvalue);
+    formData.append('memo_title',memoTitleValue);
+      axios.post('/api/storememo',formData)      
+      .then((res)=>{
+        dispatch({
+          type: 'ADD_MEMO',
+          payload: { memo: res.data },
+        })
+        handleClose2();
+        setTextFieldValue("");
+        setMemoTitleValue("");
+        setSelectedImage([]);
+        setImageToServer([]);
       })
-
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+      .catch((err)=>{
+        console.log(err);
+      })
+    
+    
   }
+
+  const setMemoTitleOpen = () => {
+    console.log("제목을 띄우는 모달을 띄우기")
+    setOpenMemoTitle(true)
+  }
+  // memo_title을 입력하기 위한 모달을 띄움
+
+  const handleClose2 = () => {
+    setOpenMemoTitle(false);
+    setModalOpen(false);
+  }
+  // memo_title입력을 위한 모달을 끔.
+
+  const memoTitleChange = (e) => {
+    setMemoTitleValue(e.target.value);
+  };
+  // memo_title입력할 때 바인딩하기 위한 함수
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  }
+
+  const modalOpenFunc = () => {
+    setModalOpen(true);
+  }
+  // content_text와 images를 입력하기 위한 모달을 띄움
+
+  const handleClose = () => {
+    setModalOpen(false);
+  };
+  // content_text와 images를 입력하기 위한 모달을 닫음
 
 
   return (
@@ -194,19 +222,17 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
-<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
+{/* <div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
             <Fab color="primary" onClick={handleOpen}> <AddIcon /></Fab>
-        </div>
+        </div> */}
 
 
       <Modal
-        open={open}
+        open={modalOpen}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        
-       
 
         <Box sx={style}>
         <div className="flex justify-start pb-3">
@@ -215,38 +241,15 @@ const fileDrop = (e) => {
                 alt="username"/>
             <div className="ml-4 mt-2">
                 <div className="flex items-center">
-                    <h2 style={{ fontWeight:'bold' }}>{username}</h2>
+                    {/* <h2 style={{ fontWeight:'bold' }}>{user.name}</h2> */}
+                    {/* user를 갖고오기 전에 user.name을 부르려고 해서 가끔 오류가 난다. */}
                 </div>
 
                 <ul className="flex justify-content-around items-center">
                 </ul>
                 <br/>
             </div>
-            <FormControl sx={{ ml:2, mt:0.7 }}>
-  <InputLabel
-  size="small"
-  id="demo-simple-select-label">category</InputLabel>
-  <Select 
-    labelId="demo-simple-select-label"
-    id="demo-simple-select"
-    sx={{ minWidth: 110, maxHeight:35 }}
-    label="Age"
-    value={muiSelectValue}
-    onChange={SelectChange}
-  >
-    
-    <MenuItem value={"전체"}>전체</MenuItem>
-    <MenuItem value={"영화"}>영화</MenuItem>
-    <MenuItem value={"음식"}>음식</MenuItem>
-    <MenuItem value={"여행"}>여행</MenuItem>
-    <MenuItem value={"자동차"}>자동차</MenuItem>
-    <MenuItem value={"IT"}>IT</MenuItem>
-    <MenuItem value={"패션"}>패션</MenuItem>
-    <MenuItem value={"취업"}>취업</MenuItem>
-    <MenuItem value={"가상화폐"}>가상화폐</MenuItem>
-    <MenuItem value={"홍보"}>홍보</MenuItem>
-  </Select>
-</FormControl>
+            
          </div>
 
           <TextField 
@@ -256,7 +259,7 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="무슨 생각을 하고 있나요?" 
+          label="메모를 적으세요"
           variant="standard"
           />
       <div>
@@ -312,14 +315,13 @@ const fileDrop = (e) => {
     }
     {/* 그리고 사진지울 때 자꾸 사진 드래그 되는 거 없애야 된다. */}
     </ImageList>
-    
      : null}
     
 
     <form
   name="images"
   encType="multipart/form-data"
-  onSubmit={toServer}
+  onSubmit={handleSubmit}
     >
     <input 
       type="file" 
@@ -331,10 +333,39 @@ const fileDrop = (e) => {
       onChange={imageHandleChange}/>
     <Button type="submit" sx={{ ":hover":{
             backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">제출</Button>
+          }, backgroundColor:'#4D2BF4', }} onClick = {setMemoTitleOpen} variant="contained" className="submit_button">메모저장</Button>
         </form>
         </Box>
       </Modal>
+
+      
+      <Modal
+        open={openMemoTitle}
+        onClose={handleClose2}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+          <Box sx={style}>
+           <TextField 
+          fullWidth 
+          value={memoTitleValue}
+          onChange={memoTitleChange}
+          multiline 
+          maxRows={5}
+          id="standard-basic" 
+          label="메모 제목을 적어주세요" 
+          variant="standard"
+          />
+
+          <Button onClick={toServer} sx={{ ":hover":{
+            backgroundColor:'#6f53f0'
+          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
+          </Box>
+      </Modal>
+      
+       <Fab color="primary" > <AddIcon onClick={modalOpenFunc}/></Fab>
     </div>
-  );
-}
+   
+  )}
+
+  

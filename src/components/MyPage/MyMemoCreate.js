@@ -19,7 +19,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { IoMdPhotos } from "react-icons/io";
 import axios from 'axios'
 import { useSelector } from 'react-redux';
-import '../App.css'
+import '../../App.css'
 
 const style = {
   position: 'absolute',
@@ -36,7 +36,7 @@ const style = {
 };
 
 
-export default function BasicModal() {
+export default function BoardWriteModal() {
   const [muiSelectValue, setMuiSelectValue] = useState("전체");
   const [open, setOpen] = React.useState(false);
   const [textfieldvalue,setTextFieldValue] = useState("");
@@ -47,6 +47,11 @@ export default function BasicModal() {
   const [dragIn, setDragIn] = useState(false);
   const user = useSelector(state=> state.Reducers.user);
   const [username, setUsername] = useState('');
+
+  useEffect(() => {
+
+  }, [])
+
   const imageHandleChange = (e) => {
     // console.log(e.target.files)
   if(e.target.files){
@@ -64,7 +69,7 @@ export default function BasicModal() {
   }    
   }
   
-
+  
 
   const dndHandleChange = (files) => {
     const dndFileTypes = []
@@ -122,11 +127,6 @@ const fileDrop = (e) => {
 }
 
 
-  const handleOpen = () => {
-    setUsername(user.name);
-    setOpen(true)
-  };
-  const handleClose = () => setOpen(false);
 
   const isOpen = useSelector((state=>state.Reducers.isOpen))
 
@@ -165,7 +165,6 @@ const fileDrop = (e) => {
     for(let i = 0 ; i < imageToServer.length ; i++){
       formData.append(`images${i}`, imageToServer[i])
     }
-
     axios.post('/api/upload_post', data)
     .then(function (response) {
       formData.append('post_id',response.data["id"]);
@@ -173,8 +172,8 @@ const fileDrop = (e) => {
       axios.post('/api/upload_image', formData)
       .then(function(response) {
         console.log(response.data)
-         handleClose();
-        window.location.reload();
+        //  handleClose();
+        // window.location.reload();
 
       }).catch(function(error){
         console.log(error);
@@ -184,6 +183,8 @@ const fileDrop = (e) => {
     .catch(function (error) {
       console.log(error);
     });
+
+    
   }
 
 
@@ -194,17 +195,9 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
-<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
-            <Fab color="primary" onClick={handleOpen}> <AddIcon /></Fab>
-        </div>
 
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+
         
        
 
@@ -334,7 +327,6 @@ const fileDrop = (e) => {
           }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">제출</Button>
         </form>
         </Box>
-      </Modal>
     </div>
   );
 }

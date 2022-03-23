@@ -15,7 +15,7 @@ function Mypage() {
                 <div className="relative  flex-col flex-1">
                     {/*  Site header */}
                     <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
-                    <div className="w-full">
+                <div className="w-full">
                         <div className="bg-gray-200 flex relative ">
 
                             {/* 화면에서 왼쪽 : 내 정보 간략히 보여주는 컴포넌트 */}

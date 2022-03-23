@@ -1,7 +1,8 @@
-import  React, { Component , useCallback, useEffect, useState}from 'react';
+import React, { Component , useCallback, useEffect, useState}from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import BoardCard from './BoardCard';
+import Modal from '@mui/material/Modal'
 import { Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -33,6 +34,8 @@ function BoardSide(props){
     const [isMenuOpen,setIsMenuOpen] = useState(false);
     const [transComment,setTransComment] = useState([]);
     const anchorRef = React.useRef(null);
+    const [open,setOpen] = useState(false);
+    const [titlefieldvalue,setTitleFieldValue] = useState("");
         
 
     const isOpen = useSelector((state=>state.Reducers.isOpen))
@@ -42,6 +45,20 @@ function BoardSide(props){
         dispatch({type:"SIDE_CLOSE"})
     };
  
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 600,
+        maxHeight: 630,
+        borderRadius:'10px',
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+      };
+
     // 클릭한 board_id 값바뀌면 새로운 댓글 출력
     useEffect(()=>{
         if(sideData != null){
@@ -169,23 +186,72 @@ function BoardSide(props){
         })
     }
     // 설정 오픈여부 확인
-    const handleToggle = (clickCategory) =>{
 
+    const textChange = (e) => {
+        setTitleFieldValue(e.target.value);
+      };
+
+    const submitMemo = (titlefieldvalue) => {
+        axios.post("/api/storememo",{
+            content_text:{sideData}.sideData.content_text,
+            memo_title : titlefieldvalue,
+            user_id : user.id,
+            post_memo_id : {sideData}.sideData.id
+        })
+        // post_memo_id를 보낸게 MemoController에서 게시글에 딸린 이미지를 저장할 수 있게 해준다. 
+        .then((res)=>{
+            console.log(res);
+            handleClose();
+            dispatch({
+                type: 'ADD_MEMO',
+                payload: { memo: res.data },
+              })
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+        setTitleFieldValue("")
+    }
+
+    // 
+
+    const handleClose = () => {
+        setOpen(false);
+    }
+
+    const handleToggle = (clickCategory) =>{
         setIsMenuOpen(isMenuOpen => !isMenuOpen)
         if(clickCategory === 'memo'){
-            axios.post("/api/postmemo/"+{sideData}.sideData.id+"/"+user.id+"/"+{sideData}.sideData.user_id,{
-                category:{sideData}.sideData.category,
-                content_text:{sideData}.sideData.content_text,
-            })
-            .then((res)=>{
-                console.log(res);
-            })
-            .catch((err)=>{
-                console.log(err);
-            })
+            setOpen(true);
         }
     }
     return (
+       <>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+          <Box sx={style}>
+           <TextField 
+          fullWidth 
+          value={titlefieldvalue}
+          onChange={textChange}
+          multiline 
+          maxRows={5}
+          id="standard-basic" 
+          label="메모 제목을 적어주세요" 
+          variant="standard"
+          />
+
+          <Button onClick={() => {submitMemo(titlefieldvalue)}} sx={{ ":hover":{
+            backgroundColor:'#6f53f0'
+          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
+          </Box>
+      </Modal>
+
+
         <Box className="justify-between flex">
             <Drawer
                 sx={{
@@ -287,7 +353,7 @@ function BoardSide(props){
                         <Divider light>Comment</Divider>
                        
                         {/* 댓글 데이터 로딩중 */}
-                        {comments.length == 0 &&
+                        {comments.length === 0 &&
                             <div>
                                 <div className='w-full p-3'>
                                      <div className='flex mb-2'>
@@ -313,7 +379,7 @@ function BoardSide(props){
                             </div>
                         }
                         {/* axios 값없으면 보여줌 */}
-                        {comments[0] == "No Data" &&  
+                        {comments[0] === "No Data" &&  
                             <div>
                                 <p>댓글이 없습니다.</p>
                             </div>
@@ -397,6 +463,7 @@ function BoardSide(props){
             }
             </Drawer>
         </Box>
+        </>
         ); 
 }
 export default BoardSide;

@@ -1,10 +1,11 @@
 import React, { Component, useEffect, useState } from 'react';
 import BoardModal from './BoardModal';
-import { Avatar, Button, Card, IconButton } from '@mui/material';
+import { Avatar, Button, Card, IconButton, Skeleton } from '@mui/material';
 import BoardSide from './BoardSide';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import ShareIcon from '@mui/icons-material/Share';
 import SvgIcon from '@mui/material/SvgIcon';
 import ChatIcon from '@mui/icons-material/Chat';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -19,74 +20,108 @@ function BoardCard(props){
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
     const sideBoard = useSelector(state=>state.Reducers.sideData)
-    const likeData = useSelector(state=>state.Reducers.likeData)
     const isOpen = useSelector(state=>state.Reducers.isOpen)
+    const likeUpdate = useSelector(state=>state.Reducers.likeUpdate)
+    const likeId = useSelector(state=>state.Reducers.likeId)
+
     const [imageList, setImageList] = useState([]);
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
     const [likeCount,setLikeCount] = useState(0)
-
-    useEffect(()=>{
-        let array = likeData[props.idx]
-        setLikes(likeData[props.idx]);
-        if(array !=null){
-            array.forEach(element => {
-                if(user.id == element.user_id){
-                    setIsLike(true)
-                }
-            });
-        }
-            // console.log(likeData[props.idx])     
-    },[likeData,props])
+    const [sampleComment, setSampleComment] = useState([])
+    const [commentLength, setCommentLength] = useState("")
     const BoardToSideData = (e) =>{
+        console.log(likes)
         dispatch({
             type:"BOARD_CLICK",
             payload:{
-                sideData:props.board
+                sideData:props.board,
+                sideLikeData:likes,
+                sideImageList:imageList
             }
         })
         dispatch({type:"SIDE_OPEN"})
     }
     const ClickLike = () => {
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
+        })
         setIsLike(true)
-        setLikeCount(likeCount+1)
         axios.post('/api/post/like',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
-            console.log(res)
+            setLikes(res.data)
         })
     }
     const ClickDisLike =() => {
+        dispatch({
+            type:"LIKE_UPDATE",
+            payload:{
+                board_id:props.board.id
+            }
+        })
         setIsLike(false)
-        setLikeCount(likeCount-1)
         axios.post('/api/delete/like',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
-            console.log(res.data)
+            setLikes(res.data)
         })
     }
-    
-    useEffect(() => {
-        console.log(props.board.id)
-        // axios.get('/api/upload_image/'+props.board.id)
-        // .then(function(response){
-        //     for(let i = 0 ; i<response.data.length ; i++){
-        //         // copiedImageList.push(response.data[i].url);
-        //         setImageList((imageList)=>[...imageList,response.data[i].url])
-        //     }
 
-        // })
-        // .catch(function(error){
-        //     console.log(error);
-        // })
-        // 여기에 데이터베이스에서 url column값을 받고 useState에 저장을 한다. 
-        // 그리고 mui imagelist에다가 렌더링한다.
+    useEffect(()=>{
+        if(likeId == props.board.id){
+            axios.get('/api/show/like/'+props.board.id)
+            .then(res=>{
+                console.log(res.data)
+                setLikes(res.data)
+            })
+        }
+    },[likeUpdate])
+
+    useEffect(()=>{
+        setIsLike(false)
+        likes.forEach(like=>{
+            if(user.id == like.user_id)
+            {
+                setIsLike(true)
+            }
+        })
+    },[likes])
+
+    useEffect(() => {
+        let check = 0 
+        if(check == 0){
+            axios.get('/api/upload_image/'+props.board.id)
+            .then(function(res){
+                console.log("res.data.image:",res.data);
+                check = 1
+                if(res.data.images.length === 0)
+                // images.length오류가 남.
+                    setImageList("No Data")
+                else
+                    for(let i = 0 ; i<res.data.images.length ; i++){
+                        setImageList((imageList)=>[...imageList,res.data.images[i].url])
+                    }
+                setSampleComment(res.data.comments)
+                // upload_image에서 다 받아올 수 있게 ImageController에 Store를 그렇게 설계해야 됨
+                setCommentLength(res.data.comment_length)
+                setLikes(res.data.likes)
+            })
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+
+       
     },[])
 
     return (  
-        <div className ="w-full mx-auto max-w-3xl px-3">
+        <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
             <div>
                 <div className="bg-white w-full rounded-md shadow-md mt-2">
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
@@ -101,41 +136,66 @@ function BoardCard(props){
                             <p className='text-md font-bold'>{props.board.category}</p>
                         </div>
                     </div>
-                    <div className='w-full '>
-                        <div className='mt-10 mb-5 mx-auto'>
-                            <BoardImages/>
-                            <div className=' pb-4'>
+                    <div className='w-full mt-10 '>
+                        <div className='w-full mx-auto xl:px-16 px-10'>
+                            {/* 게시글 사진및 본문내용 */}
+                            <p className='font-bold'>{props.board.content_text}</p>
+                            {imageList == ''
+                                ?<Skeleton variant="rectangular" width={550} height={550} />
+                                :imageList != 'No Data'
+                                    ?<div className='mt-3'><BoardImages imageList={props.board.images}/></div>   
+                                    :<div></div>
+                            }
+                        </div>  
+                        {/* Down */}
+                        <div className='mx-auto px-10 mt-5' >    
+                            <div className='pb-4'>
                                 <div className='flex'>
-                                    <div className='w-full grid grid-cols-3 border-2 mt-2 border-gray-300'> 
+                                    <div className='w-1/3 grid grid-cols-2'> 
                                         {isLike
-                                            ?<Button color="error" onClick={ClickDisLike}><SvgIcon color='error'  className='mx-auto' component={FavoriteIcon} fontSize="large"></SvgIcon></Button>
-                                            :<Button color="error" onClick={ClickLike}><SvgIcon color='error' className='mx-auto' component={FavoriteBorderIcon} fontSize="large"></SvgIcon></Button>
+                                            ?<Button color="error" onClick={ClickDisLike}>
+                                                <SvgIcon color='error'  className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
+                                                <p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+
+                                            :<Button color='error' onClick={ClickLike}>
+                                                <SvgIcon color='action' className='mx-auto' component={FavoriteBorderIcon} fontSize="large">
+                                                    </SvgIcon><p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
                                         }    
                                         {/* <Button color="error"><SvgIcon color='error' className='mx-auto' component={FavoriteBorderIcon} fontSize="large"></SvgIcon></Button> */}
-                                        
                                             {(sideBoard.id === props.board.id && isOpen === true
-                                                ?<Button variant='contained' disabled onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button>
+                                                ?<Button variant='contained' disabled><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button>
                                                 :<Button onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatBubbleOutlineOutlinedIcon} fontSize="large"></SvgIcon></Button>
                                             )}
-            
                                         {/* <Button onClick={BoardToSideData} ><SvgIcon color='action' className='mx-auto' component={ChatIcon} fontSize="large"></SvgIcon></Button> */}
-                                        <Button ><SvgIcon color='action' className='mx-auto' component={StarBorderIcon} fontSize="large"></SvgIcon></Button>
-                                    </div>
-                                    
-                                </div>
 
-                                <div className='w-full flex text-lg px-4 py-4 justify-end'>
-                                        <SvgIcon color='action' className='my-auto' component={VisibilityIcon} fontSize="small"></SvgIcon>117 
-                                        <p className='ml-5'>❤ {likes ? likes.length+likeCount : 0 + likeCount }</p>      
+                                    </div>
+                                    <div className='w-2/3 text-right'>
+                                        <Button>
+                                                <SvgIcon color='action' className='mx-auto' component={ShareIcon} fontSize="large"/>
+                                        </Button>
+                                    </div>
                                 </div>
                               
-                                <div className='px-4 py-2 break-words '>
-                                    {props.board.content_text}
+                                <div className='px-12 mt-5  break-words'>
+                                    {sampleComment.length > 0 
+                                        ? <div>
+                                            {sampleComment.map((sample)=>{
+                                                return(
+                                                    <div className='text-md text-gray-500'>
+                                                        {sample.user_name +" : "+sample.comment}
+                                                    </div>
+                                                )
+                                             })}
+                                            <div className='text-center o text-sm mt-5  text-gray-500'>
+                                                총 {commentLength}개의 댓글이 있습니다...
+                                            </div>
+                                        </div>
+                                        :<div className='text-center text-sm text-gray-500'>
+                                            댓글이 없습니다.
+                                        </div>
+                                    }
                                 </div>
-                                
-                                
                             </div>
-                            
                         </div>
                         
                     </div>

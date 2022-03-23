@@ -3,22 +3,15 @@ import {useState, useEffect} from 'react'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
 import TextField from '@mui/material/TextField'
-import Icon from '@mui/material/Icon'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import { Fab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import Button from '@mui/material/Button'
 import { IoIosCloseCircle } from "react-icons/io";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { IoMdPhotos } from "react-icons/io";
 import axios from 'axios'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import '../App.css'
 
 const style = {
@@ -36,23 +29,84 @@ const style = {
 };
 
 
-export default function BasicModal() {
-  const [muiSelectValue, setMuiSelectValue] = useState("전체");
-  const [open, setOpen] = React.useState(false);
+export default function MyMemoWriteModal(props) {
   const [textfieldvalue,setTextFieldValue] = useState("");
   const [selectedImages, setSelectedImage] = useState([])
   const [imageContainer, setImageContainer] = useState(false); 
   const [fileType, setFileType] = useState([]);
   const [imageToServer, setImageToServer] = useState([]);
   const [dragIn, setDragIn] = useState(false);
+  const [openMemoTitle, setOpenMemoTitle] = useState(false);
+  // 이 값에 따라서 메모제목을 정하는 창이 올라오거나 내려오거나
+  // 수정할때는 제목값이 떠 있어야 된다. 
+  const [memoTitleValue, setMemoTitleValue] = useState("");
   const user = useSelector(state=> state.Reducers.user);
-  const [username, setUsername] = useState('');
+  const [modalOpen,setModalOpen] = useState(props.editModalOpen);
+  const [memoId,setMemoId] = useState(props.memo_id)
+  // 이 값에 따라서 1차 modal이 올라오거나 내려오거나
+
+  // 그리고 reducers.js에서 함수 2개 지우고 isModalOpen이라는 변수도 지우기
+  const dispatch = useDispatch()
+
+  useEffect(()=>{
+    setTextFieldValue(props.memoContentText);
+  },[props.memoContentText])
+
+  useEffect(()=>{
+    setMemoTitleValue(props.memoTitle);
+  },[props.memoTitle])
+  
+  useEffect(()=>{
+    setMemoId(props.memo_id);
+  },[props.memo_id])
+
+  useEffect(()=>{
+    if(modalOpen === true){
+    axios.get('/api/getmemoimages/'+memoId)
+      .then((res)=>{
+          if(res.data.length >= 1 ){
+          showImageContainer()
+          for(let i = 0 ; i < res.data.length ; i++){
+            if(res.data[i].url.includes('.jpg')){
+              setFileType(file => [...file,'image/jpeg'])
+            }
+            setSelectedImage(images => [...images, res.data[i].url]);
+            setImageToServer(images => [...images, res.data[i].url])
+          }            
+          }
+          console.log(res.data)
+      })
+      .catch((err)=>{
+          console.log(err)
+      })
+    } else{
+      setSelectedImage([])
+      setImageToServer([])
+    }
+  },[modalOpen])
+
+  useEffect(()=>{ 
+    console.log("fileType:",fileType)
+  },[fileType])
+  
+  
+
+  useEffect(()=>{
+    console.log("selectedImages:",selectedImages);
+    // selectedImages확인
+  },[selectedImages]) 
+
+  useEffect(()=>{
+    setModalOpen(props.editModalOpen);
+    // 부모의 modalOpen이 바뀜에 따라 창이 열리고 닫힌다.
+  },[props.editModalOpen])
+
+
   const imageHandleChange = (e) => {
-    // console.log(e.target.files)
   if(e.target.files){
     const targetImages = Array.from(e.target.files).map((file) => file);
     setImageToServer([...imageToServer, ...targetImages]);
- 
+  
     const fileTypeArray = Array.from(e.target.files).map((file) =>file.type)
     setFileType((prevFileType)=>prevFileType.concat(fileTypeArray));
     
@@ -63,6 +117,10 @@ export default function BasicModal() {
   e.target.value="";
   }    
   }
+
+  useEffect(()=>{
+    console.log("imageToServer:",imageToServer);
+  },[imageToServer])
   
 
 
@@ -122,13 +180,7 @@ const fileDrop = (e) => {
 }
 
 
-  const handleOpen = () => {
-    setUsername(user.name);
-    setOpen(true)
-  };
-  const handleClose = () => setOpen(false);
-
-  const isOpen = useSelector((state=>state.Reducers.isOpen))
+  
 
   const deleteImage = (index) => {
     const copiedSelectedImage = [...selectedImages]
@@ -147,44 +199,92 @@ const fileDrop = (e) => {
 
   }
 
-  const SelectChange = (event) => {
-    setMuiSelectValue(event.target.value);
-  };
-
   const data = {
     textfieldvalue : textfieldvalue,
     selectedImages : selectedImages,
-    muiSelectValue : muiSelectValue,
     user : user,
   }
   
 
   const toServer = (e) => {
-    e.preventDefault();
+
     const formData = new FormData();
-    for(let i = 0 ; i < imageToServer.length ; i++){
-      formData.append(`images${i}`, imageToServer[i])
+
+    // 아무것도 안보내면 ""인 요소를 갖고 있는 애 하나를 보낸다.
+    var url_images = []
+    var i  = 0;
+    while(typeof imageToServer[i] == "string"){
+      url_images.push(imageToServer[i])
+      i++;
     }
+    formData.append("url_images", url_images);
+    // 이건 기존의 사진들을 저장하기 위함
 
-    axios.post('/api/upload_post', data)
-    .then(function (response) {
-      formData.append('post_id',response.data["id"]);
-      console.log(response.data["id"]);
-      axios.post('/api/upload_image', formData)
-      .then(function(response) {
-        console.log(response.data)
-         handleClose();
-        window.location.reload();
-
-      }).catch(function(error){
-        console.log(error);
-      })
-
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    var z = i;
+    var j = 0;
+    while(j < imageToServer.length-i){
+      formData.append(`file_images${j}`, imageToServer[z])
+      z++;
+      j++;
+    // 이건 새로운 사진들을 저장하기 위함
   }
+
+    formData.append('content_text',textfieldvalue);
+    formData.append('memo_title',memoTitleValue);
+    formData.append('memo_id',memoId);
+    formData.append('user_id',user.id)
+
+    if((memoTitleValue != null) && ((textfieldvalue != null) || (imageToServer != null))){
+      axios.post('/api/updatememo',formData)      
+      .then((res)=>{
+        dispatch({
+        type: 'UPDATE_MEMO',
+          payload: { content_text:textfieldvalue, memo_title:memoTitleValue, memo_id:memoId },
+        })
+        console.log("res.data:",res.data);
+        props.openEditModal(false);
+        handleClose2();
+      })
+      .catch((err)=>{
+        console.log(err);
+      })
+    }
+    
+    // if((memoTitleValue != null) && ((textfieldvalue != null) || (imageToServer != null))) if조건은 MyMemoWriteModal에도 넣는다. 그리고 나중에 넣어보기로 한다.
+    
+  }
+
+  const setMemoTitleOpen = () => {
+    console.log("제목을 띄우는 모달을 띄우기")
+    setOpenMemoTitle(true)
+  }
+  // memo_title을 입력하기 위한 모달을 띄움
+
+  const handleClose2 = () => {
+    setOpenMemoTitle(false);
+    setMemoTitleValue(props.memoTitle)
+  }
+  // memo_title입력을 위한 모달을 끔.
+
+  const memoTitleChange = (e) => {
+    setMemoTitleValue(e.target.value);
+  };
+  // memo_title입력할 때 바인딩하기 위한 함수
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  }
+
+  // content_text와 images를 입력하기 위한 모달을 띄움
+
+  const handleClose = () => {
+    setModalOpen(false);
+    props.openEditModal(false);
+    setSelectedImage([])
+    setFileType([])
+    setImageToServer([])
+  };
+  // content_text와 images를 입력하기 위한 모달을 닫음
 
 
   return (
@@ -194,19 +294,14 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
-<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
-            <Fab color="primary" onClick={handleOpen}> <AddIcon /></Fab>
-        </div>
 
 
       <Modal
-        open={open}
+        open={modalOpen}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        
-       
 
         <Box sx={style}>
         <div className="flex justify-start pb-3">
@@ -215,38 +310,15 @@ const fileDrop = (e) => {
                 alt="username"/>
             <div className="ml-4 mt-2">
                 <div className="flex items-center">
-                    <h2 style={{ fontWeight:'bold' }}>{username}</h2>
+                    {/* <h2 style={{ fontWeight:'bold' }}>{user.name}</h2> */}
+                    {/* user를 갖고오기 전에 user.name을 부르려고 해서 가끔 오류가 난다. */}
                 </div>
 
                 <ul className="flex justify-content-around items-center">
                 </ul>
                 <br/>
             </div>
-            <FormControl sx={{ ml:2, mt:0.7 }}>
-  <InputLabel
-  size="small"
-  id="demo-simple-select-label">category</InputLabel>
-  <Select 
-    labelId="demo-simple-select-label"
-    id="demo-simple-select"
-    sx={{ minWidth: 110, maxHeight:35 }}
-    label="Age"
-    value={muiSelectValue}
-    onChange={SelectChange}
-  >
-    
-    <MenuItem value={"전체"}>전체</MenuItem>
-    <MenuItem value={"영화"}>영화</MenuItem>
-    <MenuItem value={"음식"}>음식</MenuItem>
-    <MenuItem value={"여행"}>여행</MenuItem>
-    <MenuItem value={"자동차"}>자동차</MenuItem>
-    <MenuItem value={"IT"}>IT</MenuItem>
-    <MenuItem value={"패션"}>패션</MenuItem>
-    <MenuItem value={"취업"}>취업</MenuItem>
-    <MenuItem value={"가상화폐"}>가상화폐</MenuItem>
-    <MenuItem value={"홍보"}>홍보</MenuItem>
-  </Select>
-</FormControl>
+            
          </div>
 
           <TextField 
@@ -256,11 +328,11 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="무슨 생각을 하고 있나요?" 
+          label="메모 수정"
           variant="standard"
           />
       <div>
-          <IoMdPhotos className={(imageContainer) ? "added_photo_icon": "not_added_photo_icon" } onClick={showImageContainer} size="48"></IoMdPhotos>
+          <IoMdPhotos  onClick={showImageContainer} className={(imageContainer) ? "added_photo_icon": "not_added_photo_icon" } size="48"></IoMdPhotos>
           { (selectedImages.length>=1) ?
       <label htmlFor="file">
           <AddPhotoAlternateIcon sx={{ fontSize: 55 }} className="add_photo_alternateIcon"></AddPhotoAlternateIcon>
@@ -289,7 +361,6 @@ const fileDrop = (e) => {
       sx={{ width: 535, height: 235, border:6, borderRadius:5, borderColor:(dragIn) ? '#826cf5' : '#808080', backgroundColor: (dragIn) ? '#E2E2E2' : null }} cols={ (selectedImages.length>=1) ? 3 : 1  } rowHeight={164}>
         { (selectedImages.length>=1) ?
      <>
-     
           {
         selectedImages.map((item, index) => (
         <ImageListItem key={index}>
@@ -312,14 +383,13 @@ const fileDrop = (e) => {
     }
     {/* 그리고 사진지울 때 자꾸 사진 드래그 되는 거 없애야 된다. */}
     </ImageList>
-    
      : null}
     
 
     <form
   name="images"
   encType="multipart/form-data"
-  onSubmit={toServer}
+  onSubmit={handleSubmit}
     >
     <input 
       type="file" 
@@ -331,10 +401,41 @@ const fileDrop = (e) => {
       onChange={imageHandleChange}/>
     <Button type="submit" sx={{ ":hover":{
             backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">제출</Button>
+          }, backgroundColor:'#4D2BF4', }} onClick = {setMemoTitleOpen} variant="contained" className="submit_button">메모수정</Button>
         </form>
         </Box>
       </Modal>
+
+      
+      <Modal
+        open={openMemoTitle}
+        onClose={handleClose2}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+          <Box sx={style}>
+           <TextField 
+          fullWidth 
+          value={memoTitleValue}
+          onChange={memoTitleChange}
+          multiline 
+          maxRows={5}
+          id="standard-basic" 
+          label="메모 제목을 적어주세요" 
+          variant="standard"
+          />
+
+          <Button onClick={toServer} sx={{ ":hover":{
+            backgroundColor:'#6f53f0'
+          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모 수정</Button>
+          </Box>
+      </Modal>
+      
+      {/* 만약에 https로 시작하는 파일이 있다면 기존에 있었던것. 아니라면 blob로 시작하는 건데 */}
+      {/* 기존것을 삭제하고 추가하는 방향으로 한다. 그러면 memo_id를 이용해서 memo_image들을 삭제하고 반복문을 돌렸을 때 https로 시작하면 */}
+      {/* 그냥 그대로 저장, 그리고 blob로시작하면 s3에 저장후에 DB에 저장 */}
     </div>
-  );
-}
+   
+  )}
+
+  

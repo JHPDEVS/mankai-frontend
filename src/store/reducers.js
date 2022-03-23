@@ -19,12 +19,48 @@ const GET_NOTI_FAILURE = 'GET_NOTI_FAILURE'
 const GET_USERS_PENDING = 'GET_USERS_PENDING'
 const GET_USERS_SUCCESS = 'GET_USERS_SUCCESS'
 const GET_USERS_FAILURE = 'GET_USERS_FAILURE'
+const POST_USEREDIT_PENDING = 'POST_USEREDIT_PENDING'
+const POST_USEREDIT_SUCCESS = 'POST_USEREDIT_SUCCESS'
+const POST_USEREDIT_FAILURE = 'POST_USEREDIT_FAILURE'
+const POST_NOTI_PENDING = 'POST_NOTI_PENDING'
+const POST_NOTI_SUCCESS = 'POST_NOTI_SUCCESS'
+const POST_NOTI_FAILURE = 'POST_NOTI_FAILURE'
+const GET_MESSAGE_PENDING = 'GET_MESSAGE_PENDING'
+const GET_MESSAGE_SUCCESS = 'GET_MESSAGE_SUCCESS'
+const GET_MESSAGE_FAILURE = 'GET_MESSAGE_FAILURE'
+const GET_ROOM_PENDING = 'GET_ROOM_PENDING'
+const GET_ROOM_SUCCESS = 'GET_ROOM_SUCCESS'
+const GET_ROOM_FAILURE = 'GET_ROOM_FAILURE'
+const ADD_MESSAGE = 'ADD_MESSAGE'
+const ADD_ROOM = 'ADD_ROOM'
+const DELETE_ROOM = 'DELETE_ROOM'
+const SET_CURRENT_CHATROOM = 'SET_CURRENT_CHATROOM'
+const SORT_ROOM = 'SORT_ROOM'
+const SET_ROOM_UPDATED_AT = 'SET_ROOM_UPDATED_AT'
+const ADD_CHAT_PAGE = 'ADD_CHAT_PAGE'
+const CHAT_PAGE_ONE = 'CHAT_PAGE_ONE'
+const ADD_MESSAGE_REVERSE = 'ADD_MESSAGE_REVERSE'
+const CHAT_PAGE_IS = 'CHAT_PAGE_IS'
+const CHAT_PAGE_NOT = 'CHAT_PAGE_NOT'
+const GET_FOLLOWS_PENDING = 'GET_FOLLOWS_PENDING'
+const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
+const GET_FOLLOWS_FAILURE = 'GET_FOLLOWS_FAILURE'
+const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
+const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
+const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
+const DELETE_MEMO = 'DELETE_MEMO'
+const UPDATE_MEMO = 'UPDATE_MEMO'
 const BOARD_UPDATE = "BOARD_UPDATE"
 const BOARD_CLICK ="BOARD_CLICK"
 const BOARD_CLEAR ="BOARD_CLEAR"
 const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
+const GROUP_LIST = "GROUP_LIST"
+const ADD_MEMO = "ADD_MEMO"
+const MODAL_OPEN = "MODAL_OPEN"
+const MODAL_CLOSE = "MODAL_CLOSE"
+
 
 const initialState = {
   user: null,
@@ -33,12 +69,24 @@ const initialState = {
   noti: null,
   boardData:[],
   sideData:"",
+  sideLikeData:[],
+  sideImageList:[],
   isOpen:false,
-  likeData:[],
+  likeUpdate:0,
+  likeId:0,
+  groupChange:0,
+  rooms: null,
+  message: [],
+  memo : null,
+  follows : null,
+  currentRoom: null,
+  chat_current_page: 1,
+  chat_inf_handle: true,
+  isModalOpen : false,
 }
 
 export default handleActions(
-  { 
+  {
     [LOGIN]: (state, action) => {
       return {
         ...state, // 모든 states 복사
@@ -110,8 +158,9 @@ export default handleActions(
       return {
         ...state,
         users_pending: false,
-        users: action.payload,
+        users: action.payload.users,
         users_error: false,
+        users_message: action.payload.message,
       }
     },
     [GET_USERS_FAILURE]: (state, action) => {
@@ -166,44 +215,310 @@ export default handleActions(
         error: false,
       }
     },
+
     [BOARD_UPDATE]:(state,action)=>{
-        return{
-            ...state,
-            boardData:[...state.boardData,action.payload.boardData]
-        }
-    },
-    [BOARD_CLICK]:(state,action)=>{
-      return {
-        ...state,
-        sideData:action.payload.sideData        
-      }
-    },
-    [BOARD_CLEAR]:(state,action)=>{
-      return {
-        ...state,
-        boardData:[]
-      }
-    },
-    [SIDE_OPEN]:(state,action)=>{
-      return {
-        ...state,
-        isOpen:true
-      }
-    },
-    [SIDE_CLOSE]:(state,action)=>{
-      return {
-        ...state,
-        isOpen:false
-      }
-    },
-    [LIKE_UPDATE]:(state,action)=>{
       return{
-        ...state,
-        likeData:[...state.likeData,action.payload.likeData]
+          ...state,
+          boardData:[...state.boardData,action.payload.boardData]
       }
-    },  
   },
-  
+  [BOARD_CLICK]:(state,action)=>{
+    return {
+      ...state,
+      sideData:action.payload.sideData,
+      sideLikeData:action.payload.sideLikeData,
+      sideImageList:action.payload.sideImageList   
+    }
+  },
+  [BOARD_CLEAR]:(state,action)=>{
+    return {
+      ...state,
+      boardData:[]
+    }
+  },
+  [SIDE_OPEN]:(state,action)=>{
+    return {
+      ...state,
+      isOpen:true
+    }
+  },
+  [SIDE_CLOSE]:(state,action)=>{
+    return {
+      ...state,
+      isOpen:false
+    }
+  },
+
+  [MODAL_OPEN]:(state,action)=>{
+    return {
+      ...state,
+      isModalOpen:true
+    }
+  },
+  [MODAL_CLOSE]:(state,action)=>{
+    return {
+      ...state,
+      isModalOpen:false
+    }
+  },
+
+  [LIKE_UPDATE]:(state,action)=>{
+    return{
+      ...state,
+      likeUpdate:state.likeUpdate+1,
+      likeId:action.payload.board_id
+    }
+  },
+  [GROUP_LIST]:(state,action)=>{
+    return{
+      ...state,
+      groupChange:state.groupChange+1
+    }
+  },
+
+    [POST_USEREDIT_PENDING]: (state, action) => {
+      return {
+        ...state,
+        useredit_pending: true,
+        useredit_error: false,
+      }
+    },
+    [POST_USEREDIT_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        useredit_register_pending: false,
+        useredit: action.payload,
+      }
+    },
+    [POST_USEREDIT_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        useredit_pending: false,
+        useredit_error: action.payload,
+      }
+    },
+    [POST_NOTI_PENDING]: (state, action) => {
+      return {
+        ...state,
+        post_noti_pending: true,
+        post_noti_error: false,
+      }
+    },
+    [POST_NOTI_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        post_noti_pending: false,
+        post_noti: action.payload,
+      }
+    },
+    [POST_NOTI_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        post_noti_pending: false,
+        post_noti_error: action.payload,
+      }
+    },
+    [GET_MESSAGE_PENDING]: (state, action) => {
+      return {
+        ...state,
+        message_pending: true,
+        get_message_error: true,
+      }
+    },
+    [GET_MESSAGE_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        message_pending: false,
+        message: action.payload,
+        get_message_error: false,
+      }
+    },
+    [GET_MESSAGE_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        message_pending: false,
+        get_message_error: true,
+      }
+    },
+    [GET_ROOM_PENDING]: (state, action) => {
+      return {
+        ...state,
+        room_pending: true,
+        get_room_error: true,
+      }
+    },
+    [GET_ROOM_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        room_pending: false,
+        rooms: action.payload,
+        get_room_error: false,
+      }
+    },
+    [GET_ROOM_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        room_pending: false,
+        get_room_error: true,
+      }
+    },
+    [GET_FOLLOWS_PENDING]: (state, action) => {
+      return {
+        ...state,
+        follows_pending: true,
+        get_follows_error: true,
+      }
+    },
+    [GET_FOLLOWS_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        follows_pending: false,
+        follows: action.payload,
+        get_follows_error: false,
+      }
+    },
+    [GET_FOLLOWS_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        follows_pending: false,
+        get_follows_error: true,
+      }
+    },
+    [GET_MEMO_PENDING]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: true,
+        get_memo_error: true,
+      }
+    },
+    [GET_MEMO_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: false,
+        memo: action.payload,
+        get_memo_error: false,
+      }
+    },
+    [GET_MEMO_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        memo_pending: false,
+        get_memo_error: true,
+      }
+    },
+    [ADD_MEMO]: (state, action) => {
+      return {
+        ...state,
+        memo: [...state.memo, action.payload.memo],
+      }
+    },
+    [DELETE_MEMO]: (state, action) => {
+      return {
+        ...state,
+        memo: state.memo.filter((onememo, index) => {
+                    return onememo.id !== action.payload.memo_id
+        }),
+      }
+    },
+
+    [UPDATE_MEMO]:(state, action) => {
+      return { 
+        ...state,
+          memo: [
+            ...state.memo.filter(onememo => {
+              if(onememo.id === action.payload.memo_id){
+                onememo.memo_title = action.payload.memo_title  
+                onememo.content_text = action.payload.content_text
+              }
+              return onememo.id === action.payload.memo_id
+            }
+
+            ),
+            ...state.memo.filter(onememo => {
+              return onememo.id !== action.payload.memo_id
+            })
+          ]
+      }
+    },
+
+    [ADD_MESSAGE]: (state, action) => {
+      return {
+        ...state,
+        message: [...state.message, action.payload.message],
+      }
+    },
+    [ADD_MESSAGE_REVERSE]: (state, action) => {
+      return {
+        ...state,
+        message: [action.payload.message, ...state.message],
+      }
+    },
+    [ADD_ROOM]: (state, action) => {
+      return {
+        ...state,
+        rooms: [action.payload.room, ...state.rooms],
+      }
+    },
+    [DELETE_ROOM]: (state, action) => {
+      return {
+        ...state,
+        // rooms:[...state.rooms,action.payload.room]
+        rooms: state.rooms.filter((room, index) => {
+          return room.id !== action.payload.room.id
+        }),
+      }
+    },
+    [SET_CURRENT_CHATROOM]: (state, action) => {
+      return {
+        ...state,
+        // rooms:[...state.rooms,action.payload.room]
+        currentRoom: action.payload.room,
+        chat_inf_handle: true,
+      }
+    },
+    [SET_ROOM_UPDATED_AT]: (state, action) => {
+      return {
+        ...state,
+        rooms: [
+          ...state.rooms.filter(room => {
+            if (room.id == action.payload.room_id) {
+              room.updated_at = action.payload.updated_at
+              room.last_message = action.payload.last_message
+            }
+            return room.id == action.payload.room_id
+          }),
+          ...state.rooms.filter(room => {
+            return room.id != action.payload.room_id
+          }),
+        ],
+      }
+    },
+    [SORT_ROOM]: (state, action) => {
+      return {
+        ...state,
+        rooms: action.payload.rooms.sort((a, b) => {
+          return new Date(a.updated_at) - new Date(b.updated_at)
+        }),
+      }
+    },
+    [ADD_CHAT_PAGE]: (state, action) => {
+      return {
+        ...state,
+        chat_current_page: state.chat_current_page + 1,
+      }
+    },
+    [CHAT_PAGE_ONE]: (state, action) => {
+      return {
+        ...state,
+        chat_current_page: 1,
+      }
+    },
+    [CHAT_PAGE_NOT]: (state, action) => {
+      return {
+        ...state,
+        chat_inf_handle: false,
+      }
+    },
+  },
   initialState
 )
-

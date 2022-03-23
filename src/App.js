@@ -21,8 +21,7 @@ import Dashboard from './components/Dashboard'
 import DashboardUser from './admin/component/User'
 import './css/style.scss'
 
-import MyMemoEdit from './components/MyPage/MyMemoEdit';
-import MyNewMemo from './components/MyPage/MyNewMemo';
+import MyMemoCreate from './components/MyPage/MyMemoCreate'
 import Profile from './components/MyPage/Profile';
 import Youpage from './components/MyPage/YouPage'
 
@@ -60,8 +59,7 @@ function App() {
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
 
 
-          <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route>
-          <Route exact path="/my_new_memo" component={MyNewMemo}></Route>
+          <Route exact path="/my_memo_create" component={MyMemoCreate}></Route>
           <Route exact path="/profile" component={Profile}></Route>
           <Route exact path="/youProfile" component={Youpage}></Route>
 
