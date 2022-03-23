@@ -1,48 +1,43 @@
-import { Button, Fab } from "@mui/material";
-import React from "react";
-import { useState, useEffect } from "react";
-import EditIcon from '@mui/icons-material/Edit';
+import { Button, Fab, getImageListItemBarUtilityClass, Link } from "@mui/material";
 import axios from "axios";
+import MyMemoWriteModal from '../../layouts/MyMemoWriteModal'
+import MyMemoEditModal from '../../layouts/MyMemoEditModal'
+import AddIcon from '@mui/icons-material/Add';
+import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState, useRef} from "react";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function MyMemo(props){
-    const [postMemo, setPostMemo] = useState(props.postMemo);
-    const [messageMemo, setMessageMemo] = useState(props.messageMemo);
 
-
-    const [allMemo, setAllMemo] = useState([]);
-    const [allMemoExist, setAllMemoExist] = useState([]);
-
-    useEffect(()=>{
-       setAllMemo([...postMemo,...messageMemo])
-       console.log("allMemo:",allMemo);
-    },[])
-
-    useEffect(()=>{
-        var intoAllMemoExist = new Array(allMemo.length).fill(true)
-        setAllMemoExist(intoAllMemoExist);
-    },[allMemo])
+    const dispatch = useDispatch()
     
-const ChattingMemo = () => (
-    window.open("/chatting_memo", "", "width=500,height=600")
- )
+    const [memoContentText,setMemoContentText] = useState();
+    const [editModalOpen,setEditModalOpen] = useState(false)
+    const [memo_id,setMemoId] = useState("");
+    const [memoTitle,setMemoTitle] = useState("");
+    const memos = useSelector(state=> state.Reducers.memo);
+    // 추가를 했을 때 reducers.js의 memo에 추가가 되지만 useSelector를 이용해 memo를 가져왔을 때 값이 바로 바뀌지 않는다.
+    // 삭제도 마찬가지로 없어지지만 바로 렌더링이 되지 않는다.
 
- const PostMemo = () => (
-   window.open("/post_memo", "", "width=500,height=600")
-)
+    // 일단은 새로운 메모 저장으로 저장하고서 DB에 저장하고 dispatch에도 저장해야 한다. 
 
-const MyMemo = () => {
-    console.log({postMemo})
-    console.log({messageMemo})
-    console.log({allMemo})
-   
-   window.open("/my_new_memo", "", "width=500,height=600")
+
+
+
+
+function editPage(memo){
+    window.open("/my_memo_edit/"+memo.id, "bnhgn", "width=500,height=600")
 }
 
-const postMemoDelete = (memo_id,idx) => {
-    const copiedAllMemoExist = [...allMemoExist]
-    copiedAllMemoExist[idx] = false;
-    setAllMemoExist(copiedAllMemoExist)
-    axios.post('/api/deletemypostmemos/'+memo_id)
+
+
+const memoDelete = (memo_id,idx) => {
+    dispatch({
+        type: "DELETE_MEMO",
+        payload: {memo_id},
+      })
+    axios.post('/api/deletememos/'+memo_id)
     .then((res)=>{
         console.log("삭제성공")
     })
@@ -51,23 +46,24 @@ const postMemoDelete = (memo_id,idx) => {
     })
 }
 
-const messageMemoDelete = (memo_id,idx) => {
-    const copiedAllMemoExist = [...allMemoExist]
-    copiedAllMemoExist[idx] = false;
-    setAllMemoExist(copiedAllMemoExist)
-    axios.post('/api/deletemymessagememos/'+memo_id)
-    .then((res)=>{
-        console.log("삭제성공")
-    })
-    .catch((err)=>{
-        console.log(err);
-    })
+
+const editMemo = (memo_id, memo_content_text,memo_title) => {
+    setMemoContentText(memo_content_text);
+    setMemoId(memo_id)
+    setMemoTitle(memo_title);
 }
+
+
+
+const openEditModal = (opened) => {
+    setEditModalOpen(opened);
+}
+
+
+
+
     return( 
         <div>
-
-
-
 <div class="flex items-center max-w-md mx-auto bg-gray-200 rounded-lg" >
         <div class="w-full">
         
@@ -85,51 +81,57 @@ const messageMemoDelete = (memo_id,idx) => {
         </div>
         
     </div>
-    
-    
-
-    
+        
     
     {
-        allMemo.map((memo,idx)=>{
+        memos.map((memo,idx)=>{
             return(
             <>
             {
-             (memo.category) ?
-                    (allMemoExist[idx]) ?
-                    <div className="postballoon">
-                    <div>{memo.name}</div>
-                    {memo.content_text}
-                    <br/>
-                    <span>
-                        <Button onClick={MyMemo}>수정</Button>
-                        <Button onClick={() => {postMemoDelete(memo.id,idx)}}>삭제</Button></span>
-                    </div>
-                    :null
-                      : 
-             (memo.message) ?
-             (allMemoExist[idx]) ?
-             <div className="chatballoon">
-                    <div>{memo.name}</div>
-                    {memo.message}
-                    <br/>
-                    <Button onClick={MyMemo}>수정</Button><Button onClick={() => {messageMemoDelete(memo.id,idx)}}>삭제</Button>
-             </div>
-             :null
-                     :
-                     null
+                    // <div key={memo.id} className="postballoon">
+                    // <div className="oneline">{memo.memo_title}</div>
+                    // <br/>
+                    // <span>
+                    //     <Button onClick={() => {editMemo(memo.id,memo.content_text, memo.memo_title); openEditModal(true);}}>수정</Button>
+                    //     <Button onClick={()=>{memoDelete(memo.id,idx)}}>삭제</Button></span>
+                    // </div>
+
+<div key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
+<div
+   className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+</div>
+<div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl">
+   <div className="max-w-md mx-auto">
+      <div>
+         <h1 className="text-1xl font-semibold oneline">{memo.memo_title}</h1>
+      </div>
+      <div className="divide-y divide-gray-200">
+         <div className=" text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+            
+            <div className="relative">
+               <button onClick={() => {editMemo(memo.id,memo.content_text, memo.memo_title); openEditModal(true);}} className=" rounded-md py-1"><EditIcon/></button>
+        <button onClick={()=>{memoDelete(memo.id,idx)}} className=" rounded-md mx-3 py-1"><DeleteIcon/></button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
             }
             </>
             )
         })
     }
-    
-    
-    <Fab onClick={MyMemo} color="">
-        <EditIcon />
-        </Fab>
-   
+                    <MyMemoWriteModal/>
 
+                    
+                    <MyMemoEditModal editModalOpen={editModalOpen} memoTitle = {memoTitle} memoContentText={memoContentText} memo_id={memo_id} openEditModal={openEditModal}/>
+                    {/* editMemoInit은 모달 닫을 때 모달에 있던 정보 초기화하는 useState */}
+                    {/* editModalOpen이 true냐 아니냐에 따라 모달이 열리고 닫힌다 */}
+                    {/* oepnEditModal은 자식에서 editModalOpen을 조정하기 위해서 부모에서 자식으로 메소드를 준 것이다. */}
+                    {/* ??? 위치옮기기 */}
     </div>
     )
 }
+

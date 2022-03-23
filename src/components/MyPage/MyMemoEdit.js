@@ -1,20 +1,35 @@
-import React, { useState } from "react";
-import axios from 'axios'
+import React, { memo, useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
-
-export default function App() {
-
+export default function App({match}) {
+  
   const url = "/api/post/memo"
+
+  // 메모 아이디 값에따라 받아 와야 함
+  useEffect(() => {
+    axios
+        .get('/api/show/memos/' + match.params.id)
+        .then(res => {
+            console.log(res)
+            setMemos(res.data)
+        })
+  }, [])
+  
+  const [memos, setMemos] = useState([]);
+
   const user = useSelector((state)=>state.Reducers.user)
+
   const[data, setData] = useState("")
 
   function handle(e){
-    setData(e.target.value)
+    setMemos(e.target.value)
   }
 
+  // 저장요청
   function submit(){
     axios.post(url, {
       content : data,
@@ -22,14 +37,15 @@ export default function App() {
     })
   }
 
+  // 삭제 요청
+
   return (
-    <div className="MemoBackground">
+      
+      <div className="MemoBackground">
       <div >         
         
-        <h2 className="text-2xl block m-3">My Memo</h2>
-
-        <form onSubmit={(e)=>submit(e)}>
-            
+        <h2 className="text-2xl block m-3">My Memo Edit</h2>
+       
             <textarea className="form-control
               block
               w-full
@@ -47,7 +63,7 @@ export default function App() {
               m-0
               focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
               onChange={(e)=> handle(e)}
-              value={data.content}>
+              value={memos.memo}>
 
             </textarea>
             
@@ -59,12 +75,11 @@ export default function App() {
               </Button>
             </div>
             
-        </form> 
         
         
 
       </div>
     </div>
+      
 );
 }
-

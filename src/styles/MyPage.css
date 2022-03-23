@@ -10,6 +10,7 @@
 	position:relative; 
 	margin-right : 30px;
 	margin-top : 15px;
+	margin-left: 55px;
 	width:200px; 
 	height:140px;
 	 background:rgb(248, 136, 229); 
@@ -19,7 +20,7 @@
    }
 
    .postballoon:after { 
-	border-top:16px solid transparent; 
+	border-top:55px solid transparent; 
 	border-left: 25px solid transparent; 
 	border-right: 10px solid transparent; 
 	border-bottom: 10px solid rgb(248, 136, 229); 
@@ -29,25 +30,20 @@
 	left:-18px;
  }
 
- .chatballoon {  
-	position:relative; 
-	margin-right : 30px;
-	margin-top : 15px;
-	width:200px; 
-	height:140px;
-	 background:rgb(86, 145, 233); 
-	 border-radius: 10px;
-	 padding: 3%;
-	 display:inline-block;
-   }
+ .oneline{
+	white-space: nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+ }
 
-   .chatballoon:after { 
-	border-top:16px solid transparent; 
-	border-left: 25px solid transparent; 
-	border-right: 10px solid transparent; 
-	border-bottom: 10px solid rgb(86, 145, 233); 
-	content:""; 
-	position:absolute;
-	top:25px;
-	left:-18px;
+
+
+ #scroll{
+	height: 80%;
+	overflow-y: scroll;
+ }
+
+ #user_page{
+	 
+	height: 100%;
  }

@@ -1,7 +1,17 @@
-import * as React from 'react';
-import { Box,  Modal } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { Box,  Modal, Skeleton } from '@mui/material';
 import PostModal from './PostModal';
 import { BsThreeDots } from 'react-icons/bs';
+import { useSelector,useDispatch } from 'react-redux';
+import { BoardUpdate } from '../../store/actions';
+import axios from 'axios';
+import BoardCard from '../../layouts/BoardCard'
+
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
+import Stack from '@mui/material/Stack';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export default function PostList(props) {
 
@@ -16,20 +26,106 @@ export default function PostList(props) {
     p: 4,
   };
 
+  const dispatch = useDispatch();
+  const boards = useSelector((state)=>state.Reducers.boardData); 
+  const user = useSelector((state)=>state.Reducers.user)
+  const [myPostData, setMyPostData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
+  const likeData = useSelector((state)=>state.Reducers.likeData)
+
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => setOpen(false);
-  return (
-   <div>
-    <div className='border border-gray-300 rounded py-2 px-4 my-3'>
-                <img className="rounded-full border border-gray-100 w-12 h-12 inline-block" src="" alt="img" />
-                <span className='px-3' onClick={handleOpen} >유저이름</span>
-                <BsThreeDots className='float-right my-4 mx-4'/>    
-            </div>
+  
+  let array = [];
+  const [infHandle, setInfHandle] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
-            {/* 게시글 */}
+
+  const ShowBoard = () => {
+    axios.get('/api/myposts/'+user.id+"?page="+currentPage)
+    .then((res)=>{
+        console.log("myPost:",res.data)
+        //??? setCurrentPage(res.data.current_page+1);
+        //??? 이건 플러스버튼을 눌렀을 때 일어나야 되고
+        setLastPage(res.data.last_page);
+        const fakeMyPostData = [];
+        for(let i = 0; i<res.data.data.length; i++){
+            fakeMyPostData.push(res.data.data[i])
+            array.push(res.data.data[i].id)
+        }
+        setMyPostData(fakeMyPostData)
+
+        // axios.post("api/show/like",{
+        //     data:array
+        // })
+        // .then(res=>{
+        //     res.data.forEach(element => {
+        //         dispatch({
+        //             type:'LIKE_UPDATE',
+        //             payload:{
+        //                 likeData:element
+        //             }
+        //         })
+        //     })
+        // })
+        // .catch((err)=>{
+        //     console.log(err);
+        // })
+        
+
+    })
+    .catch((err)=>{
+        console.log(err);
+    })
+
+}
+
+const paginateHandle = (e) =>{
+  setCurrentPage(e.target.outerText);
+  console.log(e.target.outerText);
+}
+
+useEffect(()=>{
+  ShowBoard()
+},[currentPage])
+
+useEffect(()=>{
+  ShowBoard()
+},[])
+
+
+
+  return (
+  
+      <>
+      <Stack spacing={2}>
+
+      {myPostData.map((myPost,idx) =>{
+      return(   
+          <div key={idx}>
+              <BoardCard board={myPost} likeData={likeData} idx={idx}/>
+           </div>
+            )
+           })}
+
+      <Pagination
+        count={lastPage}
+        onChange={paginateHandle}
+        // ???previous, next할 때 다음페이지, 이전페이지로 이동해야한다.
+        // 그리고 페이지 이동할 때 가장 위에가 보이게 해야된다.
+        renderItem={(item) => (
+          <PaginationItem
+            components={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+            {...item}
+          />
+          //??? 얘 가운데에 놔야된다.
+          //??? 고정시키는게 좋을 것 같다.
+        )}
+      />
+      </Stack>
     
     <Modal
       open={open}
@@ -41,26 +137,8 @@ export default function PostList(props) {
         <PostModal/>
       </Box>
     </Modal>
-
-   </div>
+    </>
+   
   );
 }
 
-const postData = [
-    {
-        id:1,
-        title: "사진 동호회 회원 모집",
-        group:"사진 동호회",
-        image:""
-    },
-    {
-        id:2,
-        title: "직장인이 가장 좋아하는 요일은?",
-        group:"직장인은 힘들어",
-    },
-    {
-        id:3,
-        title: "비오는날.. 이노래 들어보세요",
-        group:"음악 추천",
-    },
-]
