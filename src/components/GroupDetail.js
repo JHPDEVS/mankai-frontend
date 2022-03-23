@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from "../admin/layout/Header";
 import GroupBoard from '../layouts/GroupBoard';
+import GroupDashBoard from '../layouts/GroupDashBoard';
 import GroupIntro from '../layouts/GroupIntro';
 
 
@@ -32,6 +33,8 @@ function GroupDetail({match}) {
              setGroupUsers(res.data)
              console.log("groupUser",res.data)
          })
+
+         //console.log(groupUsers) == null
     },[isGroupChange])
     
     const isOpen = useSelector(state=>state.Reducers.isOpen)
@@ -70,34 +73,33 @@ function GroupDetail({match}) {
         <div className='bg-gray-200'>
             <AppBar color="transparent" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 , boxShadow : 0 }}>
                 <Header/>
-                    <div className={'fixed mt-16 w-full shadow justify-center bg-white z-10 flex '+(isOpen ? "pr-192" : "")}>
-                <Tabs 
-                    onChange={optionHandle} 
-                    value={optionValue} 
-                    aria-label="lab API tabs example"        
-                > 
-                    <Tab value={"1"} label="그룹 소개"/>
-                    {isGroup  
-                        ?<Tab value={"2"} label="그룹 게시판"/>      
-                        :<Tab disabled value={"2"} label="가입해야 볼수 있습니다"/>
-                     }
-                    {isGroup  
-                        ?<Tab value={"3"} label="공지사항"/>
-                        :<Tab disabled value={"3"} label="가입해야 볼수 있습니다"/>
-                    
-                    }
-                    {isGroup  
-                        ?<Tab value={"4"} label="채팅"/>    
-                        :<Tab disabled value={"4"} label="가입해야 볼수 있습니다"/>
-                    }
-                    {isMaster  
-                        ?<Tab value={"4"} label="맴버 관리"/>    
-                        :<Tab disabled value={"4"} label="가입해야 볼수 있습니다"/>
-                    }
-                    
+                    <div className={'fixed mt-16 w-full shadow justify-center bg-white z-10 flex '}> 
+                        <div className=" font-bold h-fit my-auto px-2 py-1 mr-10 bg-gray-200 rounded-xl">{group_data.name}</div>
+                        <Tabs
+                            onChange={optionHandle} 
+                            value={optionValue} 
+                            aria-label="lab API tabs example"        
+                        > 
+                            <Tab value={"1"} label="그룹 소개"/>
+                            {isGroup  
+                                ?<Tab value={"2"} label="그룹 게시판"/>      
+                                :<Tab disabled value={"2"} label="가입해야 볼수 있습니다"/>
+                            }
+                            {isGroup  
+                                ?<Tab value={"3"} label="공지사항"/>
+                                :<Tab disabled value={"3"} label="가입해야 볼수 있습니다"/>
+                            }
+                            {isGroup  
+                                ?<Tab value={"4"} label="채팅"/>    
+                                :<Tab disabled value={"4"} label="가입해야 볼수 있습니다"/>
+                            }
+                            {isMaster  
+                                ?<Tab value={"5"} label="맴버 관리"/>    
+                                :<div></div>
+                            }
 
-                </Tabs>
-                </div>
+                        </Tabs>
+                        </div>
             </AppBar>
             
             {/* 레이아웃 용 */}
@@ -117,7 +119,7 @@ function GroupDetail({match}) {
                             맴버수 : 30
                         </div>
                     </div> */}
-                    <div className={'max-w-3xl mx-auto min-h-screen  rounded-xl bg-white '+(isOpen ? "mr-192" : "")}>
+                    <div className={'max-w-3xl mx-auto min-h-screen  rounded-xl bg-white '+(isOpen ? "mr-240" : "")}>
                         {optionValue == "1" 
                             && <GroupIntro group={group_data} isMaster={isMaster} group_user={groupUsers} isGroup={isGroup}/>
                         }
@@ -131,6 +133,7 @@ function GroupDetail({match}) {
                             // && <GroupIntro/>
                         }       
                         {optionValue == "5"
+                            &&<GroupDashBoard group_id={group_data.id}/>
                         }
                     </div>
                 </div>

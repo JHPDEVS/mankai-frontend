@@ -2,7 +2,7 @@ import  React, { Component , useCallback, useEffect, useState}from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import BoardSideCard from './BoardSideCard';
-import { AppBar, Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
+import { AppBar, Avatar, Button, ClickAwayListener, Divider, Fab, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {Provider, useSelector, useDispatch, connect} from 'react-redux';
@@ -14,7 +14,9 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import { Slide } from 'react-toastify';
 import Header from '../admin/layout/Header';
 import GroupBoardSideCard from './GroupBoardSideCard';
-
+import CloseIcon from '@mui/icons-material/Close';
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading'
 
 const drawerWidth = 700;
 
@@ -195,10 +197,8 @@ function BoardSide(props){
                 
                 {/* 사이드바 데이터 있을경우*/}
                 {sideData != null &&
-                <div className='flex flex-col relative mb-20 mt-16'>
-                    <Button onClick={handleDrawerClose}>
-                        <div className='h-8 text-lg'>X</div>
-                    </Button>
+                <div className='flex flex-col relative mb-20 mt-24'>
+                    
                     <div className='w-full p-5'>
                     {/* 프사 & 이름 */}
                         
@@ -207,36 +207,14 @@ function BoardSide(props){
                         
                        
                        {/* 페이지 네이션 */}
-                        <div className='w-full flex justify-center my-4 bg-gray-200'>
+                        <div className='w-full flex justify-center my-4 rounded-xl bg-gray-200'>
                             <Pagination name="paginate" count={last_page} color="primary" onChange={paginateHandle} page={paginatePage} hidePrevButton hideNextButton />
                         </div>
-                        {/* 댓글 구간 */}   
-                        <Divider light>Comment</Divider>
                        
                         {/* 댓글 데이터 로딩중 */}
                         {comments.length == 0 &&
-                            <div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
+                            <div className='mx-auto w-fit'>
+                                    <UseAnimations size={64} animation={loading}/>
                             </div>
                         }
                         {/* axios 값없으면 보여줌 */}
@@ -291,7 +269,7 @@ function BoardSide(props){
                                                     }
                                                     {/* 수정중 아니면 */}
                                                     {isUpdate != comment.id && 
-                                                        <div className='mx-8 '>
+                                                        <div className='mx-8'>
                                                             {comment.comment}
                                                         </div>
                                                     }
@@ -315,14 +293,21 @@ function BoardSide(props){
                         }
                     </div>
                     {/* 댓글 달기 */}
-                    <div className='flex fixed w-186 mr-4 bottom-0 right-0 bg-gray-100'>
+                    <div className='flex fixed w-186 mr-2 bottom-0 right-0 bg-gray-200 rounded-xl'>
                         <div className='w-full flex'>
-                            <textarea name='post_comment' className='w-4/5 bg-gray-200' rows={4} onChange={commentHandle}
+                            <textarea name='post_comment' className='w-4/5 m-3 rounded-xl p-1 bg-gray-300' rows={3} onChange={commentHandle}
                                 value={post_comment}></textarea>
-                            <Button className='w-1/5' onClick={PostComment}>댓글 달기</Button>
-                    
+
+                            <div className='w-1/5'>
+                                <button className='bg-white px-5 mt-3 mr-3 h-20  rounded-2xl' onClick={PostComment}>댓글 달기</button>
+                            </div>
                         </div>
                     </div>
+                    <div className='fixed top-32 right-10 w-186'>
+                        <Fab color="primary" aria-label="add" onClick={handleDrawerClose}>
+                            <CloseIcon/>
+                        </Fab>
+                    </div>  
                 </div>
             }
             </Drawer>

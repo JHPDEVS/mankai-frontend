@@ -18,9 +18,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
 import 'react-dropdown/style.css';
-import { OptionUnstyled } from '@mui/base';
-import GroupBoardImages from './GroupBoardImages';
 
+import UseAnimations from 'react-useanimations';
+import heart from 'react-useanimations/lib/heart'
+import settings2 from 'react-useanimations/lib/settings2'
 function GroupBoardCard(props){
     
     const dispatch = useDispatch();
@@ -172,15 +173,8 @@ function GroupBoardCard(props){
                             </div>
                             {/* 메뉴바 */}
                             <div>
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    설정
-                                </Button>
+                                
+                                <UseAnimations onClick={handleClick} size={32} animation={settings2}/>
                                 <Menu
                                     id="basic-menu"
                                     anchorEl={anchorEl}
@@ -207,7 +201,7 @@ function GroupBoardCard(props){
                             <p className='font-bold'>{props.board.content_text}</p>
                             <p className="bg-gray-200">{translated}</p>
                             {imageList == ''
-                                ?<Skeleton variant="rectangular" width={550} height={550} />
+                                ?<Skeleton variant="rectangular" width={600} height={400} />
                                 :imageList != 'No Data'
                                     ?<div className='mt-3'><BoardImages imageList={imageList}/></div>   
                                     :<div></div>
@@ -218,14 +212,17 @@ function GroupBoardCard(props){
                             <div className='pb-4'>
                                 <div className='flex'>
                                     <div className='w-1/3 grid grid-cols-2'> 
-                                        {isLike
-                                            ?<Button color="error" onClick={ClickDisLike}>
-                                                <SvgIcon color='error'  className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
-                                                <p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+                                         {isLike
+                                            ?
+                                                <div className='flex ml-10 my-auto'>
+                                                     <UseAnimations onClick={ClickDisLike} size={48} fillColor="red" reverse animation={heart}/> 
+                                                    <p className='my-auto'>{likes ? likes.length+likeCount : 0 + likeCount }</p>
+                                                </div>
 
-                                            :<Button color='error' onClick={ClickLike}>
-                                                <SvgIcon color='action' className='mx-auto' component={FavoriteBorderIcon} fontSize="large">
-                                                    </SvgIcon><p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+                                            :<div className='flex ml-10 my-auto'>
+                                                <UseAnimations onClick={ClickLike} size={48} fillColor="red" animation={heart}/> 
+                                                <p  className='my-auto'>{likes ? likes.length+likeCount : 0 + likeCount }</p>
+                                            </div>
                                         }    
                                         {/* <Button color="error"><SvgIcon color='error' className='mx-auto' component={FavoriteBorderIcon} fontSize="large"></SvgIcon></Button> */}
                                             {(sideBoard.id === props.board.id && isOpen === true

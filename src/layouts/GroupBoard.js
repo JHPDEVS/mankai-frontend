@@ -7,6 +7,8 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import { Skeleton } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 import { BoardUpdate } from "../store/actions"
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading'
 
 
 
@@ -41,17 +43,11 @@ function GroupBoard(props){
                     scrollableTarget="scrollableDiv"
                     loader={
                         <div className='w-full flex justify-center'>
-                            <div className='mb-10'>
-                                <Skeleton variant="text" width={600} height={100}/>
-                                <Skeleton variant="rectangular" width={600} height={300} />
-                                
-                                <Skeleton variant="text" width={600} height={100}/>
-                                <Skeleton variant="rectangular" width={600} height={300} />
-
-                                <Skeleton variant="text" width={600} height={100}/>
-                                <Skeleton variant="rectangular" width={600} height={300} />
-                            </div>
-                    </div>
+                            <UseAnimations 
+                                size={48}
+                                animation={loading} 
+                            />
+                        </div>
 
                     }
                     endMessage={
@@ -66,10 +62,8 @@ function GroupBoard(props){
                         )
                     })}
                 </InfiniteScroll>
-                :<div></div>
+                :<div className="bg-white rounded-t-xl text-center text-2xl pt-10">글이 없습니다. 글을 써주세요!</div>
             }
-            
-            
             <GroupBoardSide></GroupBoardSide>
             <GroupWriteModal group_id={props.group.id}></GroupWriteModal>
         </div>

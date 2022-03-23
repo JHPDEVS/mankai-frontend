@@ -18,7 +18,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
 import 'react-dropdown/style.css';
-import { OptionUnstyled } from '@mui/base';
+import UseAnimations from 'react-useanimations';
+import heart from 'react-useanimations/lib/heart'
 
 function BoardCard(props){
     
@@ -209,7 +210,7 @@ function BoardCard(props){
                                     <div className='w-1/3 grid grid-cols-2'> 
                                         {isLike
                                             ?<Button color="error" onClick={ClickDisLike}>
-                                                <SvgIcon color='error'  className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
+                                                <UseAnimations size={24} animation={heart}/> 
                                                 <p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
 
                                             :<Button color='error' onClick={ClickLike}>
