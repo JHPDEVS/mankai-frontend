@@ -457,19 +457,19 @@ export default handleActions(
     [ADD_CHAT_SIDE_FILES]: (state, action) => {
       return {
         ...state,
-        room_files: [...state.room_files, action.payload.files],
+        room_files: [action.payload.files, ...state.room_files],
       }
     },
     [ADD_CHAT_SIDE_IMAGES]: (state, action) => {
       return {
         ...state,
-        room_images: [...state.room_images, action.payload.images],
+        room_images: [action.payload.images, ...state.room_images],
       }
     },
     [ADD_CHAT_SIDE_MEMOS]: (state, action) => {
       return {
         ...state,
-        room_memos: [...state.room_memos, action.payload.memos],
+        room_memos: [action.payload.memos, ...state.room_memos],
       }
     },
     [GET_CURRENT_ROOM_SUCCESS]: (state, action) => {
