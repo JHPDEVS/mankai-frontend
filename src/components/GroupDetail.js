@@ -105,26 +105,13 @@ function GroupDetail({match}) {
             {/* 레이아웃 용 */}
             <div className='pt-32 bg-gray-200'/>
                     {/* side 그룹정보 */}
-
-                <div>
-                    {/* <div className='w-full sticky h-screen right-0 rounded-xl bg-white '>
-                        <div className='relative'>
-                            <img className="w-full w-48 h-32 brightness-50 rounded-t-xl" src={group_data.logoImage} alt="이미지 없음"/>
-                            <div className="absolute w-full bottom-10 right ">
-                                <p className="text-2xl text-white text-center ">{group_data.name}</p>
-                            </div> 
-                           
-                        </div>
-                        <div className='pl-2'>
-                            맴버수 : 30
-                        </div>
-                    </div> */}
-                    <div className={'max-w-3xl mx-auto min-h-screen  rounded-xl bg-white '+(isOpen ? "mr-240" : "")}>
+                <div className={'w-full  '+(isOpen ?"pr-192" : " ")}>
+                    <div className={'max-w-3xl mx-auto min-h-screen rounded-xl bg-white'}>
                         {optionValue == "1" 
-                            && <GroupIntro group={group_data} isMaster={isMaster} group_user={groupUsers} isGroup={isGroup}/>
+                            && <GroupIntro  group={group_data} isMaster={isMaster} group_user={groupUsers} isGroup={isGroup}/>
                         }
                         {optionValue == "2" 
-                            && <div className=''><GroupBoard group={group_data}/></div>
+                            && <GroupBoard group={group_data}/>
                         }    
                         {optionValue == "3" 
                             // && <GroupIntro/>
@@ -136,8 +123,8 @@ function GroupDetail({match}) {
                             &&<GroupDashBoard group_id={group_data.id}/>
                         }
                     </div>
-                </div>
-                    
+                </div>    
+            {/*레이아웃*/}
             <div className='pt-10 bg-gray-200'/>
         
            

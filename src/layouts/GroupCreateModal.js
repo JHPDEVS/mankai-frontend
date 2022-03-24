@@ -11,6 +11,7 @@ function GroupCreateModal(props) {
     const [preview,setPreview] = useState("")
     const [imageFile,setImageFile] = useState("");
     const [inputText,setInputText] = useState("");
+    const [inputPass,setInputPass] = useState("");
     const [optionSelected,setOptionSelected] = useState("");
     const user = useSelector(state=>state.Reducers.user);
 
@@ -28,6 +29,9 @@ function GroupCreateModal(props) {
     const textHandle = (e) =>{
         setInputText(e.target.value)
     }
+    const passHandle = (e) =>{
+        setInputPass(e.target.value)
+    }
     const ModalOpen =() =>{
         setOpen(true)
     }
@@ -40,6 +44,7 @@ function GroupCreateModal(props) {
         formData.append('text', inputText);
         formData.append('category',optionSelected);
         formData.append('user_id',user.id);
+        formData.append('password',inputPass);
                 
         axios.post('/api/post/group',formData
         ).then(res=>{
@@ -97,6 +102,9 @@ function GroupCreateModal(props) {
 
                         <input type="text" className="bg-gray-200 rounded-xl h-10 px-4   w-full" onChange={textHandle}></input>
                         
+                        <p className="">비밀번호 - 공백시 공개</p>
+                        <input type="text" className="bg-gray-200 rounded-xl h-10 px-4   w-full" onChange={passHandle}></input>
+                        
                     </div>
                     카테고리
                     {/* {optionSelected} */}
@@ -108,7 +116,6 @@ function GroupCreateModal(props) {
                                     {optionSelected == option
                                         ?  <p className="bg-gray-400 rounded-lg w-20 text-center py-1">{option}</p>
                                         :  <p className="bg-gray-200 rounded-lg w-20 text-center py-1" onClick={()=>setOptionSelected(option)}>{option}</p>
-                                      
                                     }
                                 </div>
                             )

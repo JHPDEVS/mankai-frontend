@@ -14,6 +14,7 @@ function GroupUpdateModal(props) {
     const [inputText,setInputText] = useState("");
     const [optionSelected,setOptionSelected] = useState("");
     const [groupId,setGroupId] = useState("");
+    const [inputPass,setInputPass]=useState("");
     const user = useSelector(state=>state.Reducers.user);
 
     const options = ["IT","자유","공부","정치","투자","취업"];
@@ -36,6 +37,9 @@ function GroupUpdateModal(props) {
     const ModalClose = () =>{
         setOpen(false)
     }
+    const passHandle = (e) =>{
+        setInputPass(e.target.value)
+    }
     const save =() =>{
         const formData = new FormData();
         formData.append('img', imageFile);
@@ -43,6 +47,7 @@ function GroupUpdateModal(props) {
         formData.append('category',optionSelected);
         formData.append('user_id',user.id);
         formData.append('group_id',groupId);
+        formData.append('password',inputPass);
                 
         axios.post('/api/update/group',formData
         ).then(res=>{
@@ -56,6 +61,7 @@ function GroupUpdateModal(props) {
         setPreview(props.group.logoImage)
         setInputText(props.group.name)
         setOptionSelected(props.group.category)
+        setInputPass(props.group.password)
     },[props.group])
 
     return(
@@ -101,6 +107,9 @@ function GroupUpdateModal(props) {
                         </p>
 
                         <input type="text" className="bg-gray-200 rounded-xl h-10 px-4 w-full" value={inputText} onChange={textHandle}></input>
+                        
+                        <p className="">비밀번호 - 공백시 공개</p>
+                        <input type="text" className="bg-gray-200 rounded-xl h-10 px-4   w-full" value={inputPass} onChange={passHandle}></input>
                         
                     </div>
                     카테고리

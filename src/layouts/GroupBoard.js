@@ -14,21 +14,25 @@ import loading from 'react-useanimations/lib/loading'
 
 function GroupBoard(props){
     const [groupBoard,setGroupBoard] = useState("")
+    const [currentPage,setCurrentPage] = useState(1)
+    const [lastPage,setLastPage] = useState(1)
+    const [infHandle,setInfHandle] = useState(true)
     const dispatch = useDispatch();
     const boards = useSelector((state)=>state.Reducers.boardData); 
-    
 
     const board_update = () => { 
-        axios.get("/api/show/groupboard/"+props.group.id)
+        axios.get("/api/show/groupboard/"+props.group.id+"?page="+currentPage)
         .then(res=>{
-            for(let i = 0 ; i<res.data.length;i++){
-                console.log(res.data[i])
-                setGroupBoard(groupBoard=>[...groupBoard,res.data[i]])    
-                // array.push(res.data.data[i].id);
+            console.log(res.data)
+            for(let i = 0 ; i<res.data.data.length;i++){
+                setGroupBoard(groupBoard=>[...groupBoard,res.data.data[i]])    
             }
+            if(res.data.last_page == currentPage)
+                setInfHandle(false)
+            else
+            setCurrentPage(currentPage+1)
         })
-    } 
-
+    }
     useEffect(()=>{
         board_update()
     },[])
@@ -39,7 +43,7 @@ function GroupBoard(props){
                 ?<InfiniteScroll
                     dataLength={groupBoard.length} //This is important field to render the next data
                     next={board_update}
-                    hasMore={true}
+                    hasMore={infHandle}
                     scrollableTarget="scrollableDiv"
                     loader={
                         <div className='w-full flex justify-center'>
@@ -48,7 +52,6 @@ function GroupBoard(props){
                                 animation={loading} 
                             />
                         </div>
-
                     }
                     endMessage={
                     <p style={{ textAlign: 'center' }}>
