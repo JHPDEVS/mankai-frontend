@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ImageIcon from '@mui/icons-material/Image';
 
+
+
 function GroupCreateModal(props) {
 
     const [open,setOpen] = useState(false);
@@ -51,7 +53,11 @@ function GroupCreateModal(props) {
 
     return(
         <div>
-            <button onClick={ModalOpen}>그룹 만들기</button>
+            
+            {/* <Button onClick={ModalOpen} >test</Button> */}
+            <button class="w-28 bg-blue-500 hover:bg-blue-700 text-white 
+            
+            font-bold py-2 px-4 mb-4 rounded-full" onClick={ModalOpen}>그룹 만들기</button>
             <Modal 
                 open={open}
                 onClose={ModalClose}
@@ -65,13 +71,13 @@ function GroupCreateModal(props) {
                     
                     <div className="relative mt-5">
                         {preview.length > 1
-                            ?    <img className="w-full h-64 rounded-xl" src={preview} alt="이미지 에러"/>
-                            :    <img className="w-full h-64 " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
+                            ?    <img className="w-full h-80 rounded-xl" src={preview} alt="이미지 에러"/>
+                            :    <img className="w-full h-80 " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
                         }
                         <div className="absolute w-full top-0 left-0">
 
                             <label
-                                className="focus:outline-none flex items-center w-full h-64 justify-center hover:text-gray-300  text-white"
+                                className="focus:outline-none flex items-center w-full h-72 justify-center hover:text-gray-300  text-white"
                                 htmlFor="input-file"
                             >
                                 <ImageIcon sx={{ fontSize: 70 }}></ImageIcon>
