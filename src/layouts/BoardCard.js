@@ -13,11 +13,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import axios from 'axios';
 import BoardImages from './BoardImages';
-import Dropdown from 'react-dropdown';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
-import 'react-dropdown/style.css';
 import { OptionUnstyled } from '@mui/base';
 
 function BoardCard(props){

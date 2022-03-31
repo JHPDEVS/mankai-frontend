@@ -45,7 +45,6 @@ export default function PostList() {
                 <BsThreeDots className='float-right my-4 mx-4'/>    
             </div>
             <p>{postData.content_text}</p>
-                  
           </div>
       )})}
     

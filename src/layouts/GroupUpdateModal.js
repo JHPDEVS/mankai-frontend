@@ -73,8 +73,8 @@ function GroupUpdateModal(props) {
                     </p>
                     <div className="relative mt-5">
                         {preview
-                            ?    <img className="w-full h-64 rounded-xl" src={preview} alt="이미지 에러"/>
-                            :    <img className="w-full h-64 " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
+                            ?    <img className="w-full h-80 rounded-xl" src={preview} alt="이미지 에러"/>
+                            :    <img className="w-full h-80 " src="https://mankai-bucket.s3-ap-northeast-2.amazonaws.com/images/EjqTKgV5GU3U5cTOuUEGIg6303oAiz2Kfl5vS871.jpg" alt="이미지없음"/>
                         }
                         <div className="absolute w-full top-0 left-0">
 
