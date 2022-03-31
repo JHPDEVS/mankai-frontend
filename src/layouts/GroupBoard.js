@@ -14,28 +14,43 @@ import loading from 'react-useanimations/lib/loading'
 
 function GroupBoard(props){
     const [groupBoard,setGroupBoard] = useState("")
-    const [currentPage,setCurrentPage] = useState(1)
-    const [lastPage,setLastPage] = useState(1)
     const [infHandle,setInfHandle] = useState(true)
     const dispatch = useDispatch();
-    const boards = useSelector((state)=>state.Reducers.boardData); 
-
+    const [currentPage,setCurrentPage] = useState(1)
     const board_update = () => { 
-        axios.get("/api/show/groupboard/"+props.group.id+"?page="+currentPage)
+        axios.post("/api/show/groupboard/"+props.group.id+"?page="+currentPage,{
+            category:props.category_id            
+        })
         .then(res=>{
-            console.log(res.data)
             for(let i = 0 ; i<res.data.data.length;i++){
                 setGroupBoard(groupBoard=>[...groupBoard,res.data.data[i]])    
             }
-            if(res.data.last_page == currentPage)
-                setInfHandle(false)
-            else
-            setCurrentPage(currentPage+1)
+            if(res.data.last_page < currentPage){
+                setInfHandle(false) 
+            }
+            else{
+                setCurrentPage(currentPage+1)
+            }
         })
     }
+    const board_clean = () =>{
+        setCurrentPage(1)
+        setInfHandle(true)
+        setGroupBoard("")
+    }
+    const GetUpdate = ()=>{
+        board_clean()
+        board_update()
+    }
+
+    useEffect(()=>{
+        board_clean()
+    },[props.category_id])
+
     useEffect(()=>{
         board_update()
-    },[])
+    },[infHandle])
+
 
     return(
         <div className="bg-gray-200">
@@ -68,7 +83,7 @@ function GroupBoard(props){
                 :<div className="bg-white rounded-t-xl text-center text-2xl pt-10">글이 없습니다. 글을 써주세요!</div>
             }
             <GroupBoardSide></GroupBoardSide>
-            <GroupWriteModal group_id={props.group.id}></GroupWriteModal>
+            <GroupWriteModal GetUpdate={()=>GetUpdate()} category_id={props.category_id} group_id={props.group.id}></GroupWriteModal>
         </div>
     )
 }export default GroupBoard

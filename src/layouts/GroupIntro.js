@@ -5,6 +5,11 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import GroupUpdateModal from "./GroupUpdateModal";
 import GroupIcon from '@mui/icons-material/Group';
+import SunEditor from 'suneditor-react';
+import 'suneditor/dist/css/suneditor.min.css'; // Import Sun Editor's CSS File
+import GroupEditor from "../components/GroupEditor";
+
+
 
 function GroupIntro(props)
 {
@@ -17,8 +22,10 @@ function GroupIntro(props)
     const [post_data,setPost_data] = useState("");
     const [editorState,setEditorState] =useState("");
     const [postPass,setPostPass] = useState("");
+    const [content,setContent] = useState("");
 
     const dispatch = useDispatch();
+
     
     useEffect(()=>{
         if(props.isMaster){
@@ -33,6 +40,17 @@ function GroupIntro(props)
 
     const onEditorStateChange = (e) =>{
         setEditorState(e)
+    }
+    const getContent = (data) =>{
+        axios.post('/api/post/intro',{
+            group_id:props.group.id,
+            text:data
+        }).then(res=>{
+            console.log(res.data)
+        })
+        
+        // console.log("인트로",data)
+        // setContent(data)
     }
 
     const modalOpen = () =>{
@@ -146,7 +164,14 @@ function GroupIntro(props)
                 <p>
                     {props.group.intro == null 
                         ?<div>그룹 설명이 없습니다. 설정해 주세요</div>
-                        :<div>{props.group.intro}</div>
+                        :<div>
+                            <SunEditor 
+                                defaultValue={props.group.intro} 
+                                readOnly
+                                hideToolbar
+                                height="100%"
+                            ></SunEditor>
+                        </div>
                     }                
                 </p>
             </div>
@@ -159,8 +184,7 @@ function GroupIntro(props)
                 aria-describedby="modal-modal-description"
             >
                 <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
-                    소개글 작성 Editor 추가할것
-            
+                    <GroupEditor content={content} group_intro={props.group.intro} getContent={getContent}></GroupEditor>
                  </Box>
             </Modal>
 
