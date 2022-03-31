@@ -26,7 +26,9 @@ const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
 const MEMO_UPDATE = "MEMO_UPDATE"
-
+const GROUP_LIST = "GROUP_LIST"
+const GROUP_IN = "GROUP_IN"
+const GROUP_OUT = "GROUP_OUT"
 const initialState = {
   user: null,
   pending: false,
@@ -34,9 +36,16 @@ const initialState = {
   noti: null,
   boardData:[],
   sideData:"",
+  sideLikeData:[],
+  sideImageList:[],
   isOpen:false,
+
   likeData:[],
-  memoUpdate:[]
+  memoUpdate:[],
+  likeUpdate:0,
+  likeId:0,
+  groupChange:0,
+  isGroupChange:0
 }
 
 export default handleActions(
@@ -177,7 +186,9 @@ export default handleActions(
     [BOARD_CLICK]:(state,action)=>{
       return {
         ...state,
-        sideData:action.payload.sideData        
+        sideData:action.payload.sideData,
+        sideLikeData:action.payload.sideLikeData,
+        sideImageList:action.payload.sideImageList   
       }
     },
     [BOARD_CLEAR]:(state,action)=>{
@@ -201,7 +212,26 @@ export default handleActions(
     [LIKE_UPDATE]:(state,action)=>{
       return{
         ...state,
-        likeData:[...state.likeData,action.payload.likeData]
+        likeUpdate:state.likeUpdate+1,
+        likeId:action.payload.board_id
+      }
+    },
+    [GROUP_LIST]:(state,action)=>{
+      return{
+        ...state,
+        groupChange:state.groupChange+1
+      }
+    },
+    [GROUP_IN]:(state,action)=>{
+      return{
+        ...state,
+        isGroupChange:state.isGroupChange+1
+      }
+    },
+    [GROUP_OUT]:(state,action)=>{
+      return{
+        ...state,
+        isGroupChange:state.isGroupChange+1
       }
     },
     [MEMO_UPDATE]:(state,action)=>{
@@ -210,9 +240,6 @@ export default handleActions(
         memoUpdate:[...state.memoUpdate,1]
       }
     }
-
-
-    
   },
   
   initialState

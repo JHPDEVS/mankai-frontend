@@ -19,8 +19,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
 import 'react-dropdown/style.css';
 import { OptionUnstyled } from '@mui/base';
+import GroupBoardImages from './GroupBoardImages';
 
-function BoardCard(props){
+function GroupBoardCard(props){
     
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
@@ -44,8 +45,12 @@ function BoardCard(props){
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
     };
+
+
+    // 설정 핸들 
     const handleClose = (e) => {
         let eText = e.target.outerText;
+        // 0 == 번역하기
         if(eText == option[0])
         {
             // console.log(props.board.content_text)
@@ -60,7 +65,6 @@ function BoardCard(props){
     };
 
     const BoardToSideData = (e) =>{
-        console.log(likes)
         dispatch({
             type:"BOARD_CLICK",
             payload:{
@@ -79,10 +83,11 @@ function BoardCard(props){
             }
         })
         setIsLike(true)
-        axios.post('/api/post/like',{
+        axios.post('/api/post/grouplike',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
+            console.log(res.data)
             setLikes(res.data)
         })
     }
@@ -94,23 +99,24 @@ function BoardCard(props){
             }
         })
         setIsLike(false)
-        axios.post('/api/delete/like',{
+        axios.post('/api/delete/grouplike',{
             user_id:user.id,
             board_id:props.board.id
         }).then(res=>{
+            console.log(res.data)
             setLikes(res.data)
         })
     }
 
-    useEffect(()=>{
-        if(likeId == props.board.id){
-            axios.get('/api/show/like/'+props.board.id)
-            .then(res=>{
-                console.log(res.data)
-                setLikes(res.data)
-            })
-        }
-    },[likeUpdate])
+    // useEffect(()=>{
+    //     if(likeId == props.board.id && props.board ){
+    //         axios.get('/api/show/like/'+props.board.id)
+    //         .then(res=>{
+    //             console.log(res.data)
+    //             setLikes(res.data)
+    //         })
+    //     }
+    // },[likeUpdate])
 
     useEffect(()=>{
         setIsLike(false)
@@ -124,31 +130,36 @@ function BoardCard(props){
 
     // 통합 데이터 받기
     useEffect(() => {
-        let check = 0 
-        if(check == 0){
-            axios.get('/api/upload_image/'+props.board.id)
-            .then(function(res){
-                console.log(res.data);
-                check = 1
-                if(res.data.images.length == 0)
-                    setImageList("No Data")
-                else
-                    for(let i = 0 ; i<res.data.images.length ; i++){
-                        setImageList((imageList)=>[...imageList,res.data.images[i].url])
-                    }
-                setSampleComment(res.data.comments)
-                setCommentLength(res.data.comment_length)
-                setLikes(res.data.likes)
-            })
-            .catch(function(error){
-                console.log(error);
-            })
-        }
+        // if(props.board){  
+            let check = 0 
+            if(check == 0){
+                axios.get('/api/show/groupdata/'+props.board.id)
+                .then(res=>{
+                    check=1
+                    console.log(res.data);
+                    if(res.data.images.length == 0)
+                        setImageList("No Data")
+                    else
+                        for(let i = 0 ; i<res.data.images.length ; i++){
+                            setImageList((imageList)=>[...imageList,res.data.images[i].url])
+                        }
+                    setSampleComment(res.data.comments)
+                    setCommentLength(res.data.comment_length)
+                    setLikes(res.data.likes)
+                })
+                .catch(function(error){
+                    console.log(error);
+                })
+            }
+            
     },[])
 
     return (  
+       
         <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
-            <div>
+             {props.board
+                ?
+                <div>
                 <div className="bg-white w-full rounded-2xl shadow-md mt-2">
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
@@ -181,7 +192,7 @@ function BoardCard(props){
                                 >
                                     {option.map((option)=>{
                                         return(
-                                            <MenuItem onClick={handleClose}>{option}</MenuItem>
+                                            <MenuItem key={option} onClick={handleClose}>{option}</MenuItem>
                                         )
                                     })}
                                     
@@ -236,7 +247,7 @@ function BoardCard(props){
                                         ? <div>
                                             {sampleComment.map((sample)=>{
                                                 return(
-                                                    <div className='text-md text-gray-500'>
+                                                    <div key={sample.id} className='text-md text-gray-500'>
                                                         {sample.user_name +" : "+sample.comment}
                                                     </div>
                                                 )
@@ -258,9 +269,12 @@ function BoardCard(props){
                     
                 </div>
             </div>
+                :<div></div>
+            }
         </div>
+         
     );
     
 }
 
-export default BoardCard;
+export default GroupBoardCard;

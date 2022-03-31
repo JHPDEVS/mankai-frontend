@@ -13,6 +13,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { Slide } from 'react-toastify';
 import Header from '../admin/layout/Header';
+import GroupBoardSideCard from './GroupBoardSideCard';
 
 
 const drawerWidth = 700;
@@ -68,7 +69,7 @@ function BoardSide(props){
     }
     // 댓글 작성하기
     const PostComment = () =>{
-        axios.post('/api/post/comment',{
+        axios.post('/api/post/groupcomment',{
             content:post_comment,
             board_id:sideData.id,
             user_id:user.id
@@ -94,7 +95,7 @@ function BoardSide(props){
     // 게시글 누르면 코멘트 불러오기 & 페이지네이션 버튼누르면 반응
     const ShowComment = useCallback(async (page) =>{
         if(sideData){
-            axios.post("/api/show/comment/"+sideData.id+"?page=" + page)
+            axios.get("/api/show/groupcomment/"+sideData.id+"?page=" + page)
             .then(res=>{ 
                 setPaginatePage(paginatePage=>res.data.current_page)
                 if(res.data.data.length === 0){
@@ -125,7 +126,7 @@ function BoardSide(props){
             id:0,
             text:""
         }]);
-        axios.post("/api/update/comment",{
+        axios.post("/api/update/groupcomment",{
             comment_id:comment.id,
             updateText:updateComment
         }).then(res=>{
@@ -133,7 +134,7 @@ function BoardSide(props){
             ShowComment(current_page);
         })
     }
-    // 번역 api 부르기
+    // 본문 번역 부르기
     const callPapago = (data) =>{
         handleToggle()
         axios.post("/api/show/papago",{
@@ -163,7 +164,7 @@ function BoardSide(props){
     }
     // 댓글 삭제
     const clickDelete = (comment)=>{
-        axios.post("/api/delete/comment/"+comment.id).
+        axios.post("/api/delete/groupcomment/"+comment.id).
         then(res=>{
             ShowComment(current_page)
             console.log("삭제 완료")
@@ -202,7 +203,7 @@ function BoardSide(props){
                     {/* 프사 & 이름 */}
                         
                         {/* 게시글 구간 */}
-                        <BoardSideCard board={sideData}></BoardSideCard>
+                        <GroupBoardSideCard board={sideData}></GroupBoardSideCard>
                         
                        
                        {/* 페이지 네이션 */}

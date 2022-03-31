@@ -36,7 +36,7 @@ const style = {
 };
 
 
-export default function BasicModal() {
+export default function GroupWriteModal(props) {
   const [muiSelectValue, setMuiSelectValue] = useState("전체");
   const [open, setOpen] = React.useState(false);
   const [textfieldvalue,setTextFieldValue] = useState("");
@@ -155,6 +155,7 @@ const fileDrop = (e) => {
     textfieldvalue : textfieldvalue,
     selectedImages : selectedImages,
     muiSelectValue : muiSelectValue,
+    group_id:props.group_id, 
     user : user,
   }
   
@@ -165,15 +166,14 @@ const fileDrop = (e) => {
     for(let i = 0 ; i < imageToServer.length ; i++){
       formData.append(`images${i}`, imageToServer[i])
     }
-    axios.post('/api/upload_post', data)
+    axios.post('/api/post/groupboard', data)
     .then(function (response) {
       formData.append('post_id',response.data["id"]);
       console.log(response.data["id"]);
-      axios.post('/api/upload_image', formData)
+      axios.post('/api/post/groupboardimage', formData)
       .then(function(response) {
         console.log(response.data)
          handleClose();
-        window.location.reload();
 
       }).catch(function(error){
         console.log(error);
@@ -257,7 +257,7 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="무슨 생각을 하고 있나요? test" 
+          label="무슨 생각을 하고 있나요?" 
           variant="standard"
           />
       <div>

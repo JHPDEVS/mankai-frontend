@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 
 
-function BoardImages(props){
+function GroupBoardImages(props){
     const sideData = useSelector(state=>state.Reducers.sideData)
     const [item,setItem] = useState(0);
     const imageRef = useRef(null)
@@ -39,4 +39,4 @@ function BoardImages(props){
        </div>
     );
 
-}export default BoardImages;
+}export default GroupBoardImages;
