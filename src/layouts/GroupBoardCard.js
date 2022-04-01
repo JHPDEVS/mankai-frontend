@@ -18,9 +18,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
 import 'react-dropdown/style.css';
-import { OptionUnstyled } from '@mui/base';
-import GroupBoardImages from './GroupBoardImages';
 
+import UseAnimations from 'react-useanimations';
+import heart from 'react-useanimations/lib/heart'
+import settings2 from 'react-useanimations/lib/settings2'
 function GroupBoardCard(props){
     
     const dispatch = useDispatch();
@@ -38,6 +39,8 @@ function GroupBoardCard(props){
     const [commentLength, setCommentLength] = useState("")
     const option = ["번역하기","클립보드로 이동","신고하기"]
     const [translated,setTranslated] = useState("");
+    const [content_text,setContent_text] = useState("");
+    const [moreHandle,setMoreHandle] = useState(false)
 
     // 메뉴바 조절
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -63,6 +66,10 @@ function GroupBoardCard(props){
         }
         setAnchorEl(null);
     };
+    const MoreContent = () =>{
+        setContent_text(props.board.content_text)
+        setMoreHandle(false)
+    }
 
     const BoardToSideData = (e) =>{
         dispatch({
@@ -150,6 +157,12 @@ function GroupBoardCard(props){
                 .catch(function(error){
                     console.log(error);
                 })
+                if(props.board.content_text.length>100){
+                    console.log("처리함")
+                    setMoreHandle(true)
+                    setContent_text(props.board.content_text.substr(0,105))
+                    // setContent_text()
+                }
             }
             
     },[])
@@ -172,15 +185,8 @@ function GroupBoardCard(props){
                             </div>
                             {/* 메뉴바 */}
                             <div>
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                >
-                                    설정
-                                </Button>
+                                
+                                <UseAnimations onClick={handleClick} size={32} animation={settings2}/>
                                 <Menu
                                     id="basic-menu"
                                     anchorEl={anchorEl}
@@ -204,10 +210,17 @@ function GroupBoardCard(props){
                     <div className='w-full mt-10 '>
                         <div className='w-full mx-auto xl:px-16 px-10'>
                             {/* 게시글 사진및 본문내용 */}
-                            <p className='font-bold'>{props.board.content_text}</p>
+                            {content_text.length>100
+                                ?<div>
+                                    <p className='font-bold text-ellipsis overflow-hidden'>{content_text}</p>
+                                    {moreHandle && <p onClick={MoreContent} className="text-right  text-gray-400 hover:text-gray-600">더보기...</p>}
+                                </div>
+                            
+                                :<div>{props.board.content_text}</div>       
+                            }
                             <p className="bg-gray-200">{translated}</p>
                             {imageList == ''
-                                ?<Skeleton variant="rectangular" width={550} height={550} />
+                                ?<Skeleton variant="rectangular" width={600} height={400} />
                                 :imageList != 'No Data'
                                     ?<div className='mt-3'><BoardImages imageList={imageList}/></div>   
                                     :<div></div>
@@ -218,14 +231,17 @@ function GroupBoardCard(props){
                             <div className='pb-4'>
                                 <div className='flex'>
                                     <div className='w-1/3 grid grid-cols-2'> 
-                                        {isLike
-                                            ?<Button color="error" onClick={ClickDisLike}>
-                                                <SvgIcon color='error'  className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
-                                                <p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+                                         {isLike
+                                            ?
+                                                <div className='flex ml-10 my-auto'>
+                                                     <UseAnimations onClick={ClickDisLike} size={48} fillColor="red" reverse animation={heart}/> 
+                                                    <p className='my-auto'>{likes ? likes.length+likeCount : 0 + likeCount }</p>
+                                                </div>
 
-                                            :<Button color='error' onClick={ClickLike}>
-                                                <SvgIcon color='action' className='mx-auto' component={FavoriteBorderIcon} fontSize="large">
-                                                    </SvgIcon><p>{likes ? likes.length+likeCount : 0 + likeCount }</p></Button>
+                                            :<div className='flex ml-10 my-auto'>
+                                                <UseAnimations onClick={ClickLike} size={48} fillColor="red" animation={heart}/> 
+                                                <p  className='my-auto'>{likes ? likes.length+likeCount : 0 + likeCount }</p>
+                                            </div>
                                         }    
                                         {/* <Button color="error"><SvgIcon color='error' className='mx-auto' component={FavoriteBorderIcon} fontSize="large"></SvgIcon></Button> */}
                                             {(sideBoard.id === props.board.id && isOpen === true

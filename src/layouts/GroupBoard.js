@@ -7,29 +7,50 @@ import InfiniteScroll from "react-infinite-scroll-component"
 import { Skeleton } from "@mui/material"
 import { useDispatch, useSelector } from "react-redux"
 import { BoardUpdate } from "../store/actions"
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading'
 
 
 
 function GroupBoard(props){
     const [groupBoard,setGroupBoard] = useState("")
+    const [infHandle,setInfHandle] = useState(true)
     const dispatch = useDispatch();
-    const boards = useSelector((state)=>state.Reducers.boardData); 
-    
-
+    const [currentPage,setCurrentPage] = useState(1)
     const board_update = () => { 
-        axios.get("/api/show/groupboard/"+props.group.id)
+        axios.post("/api/show/groupboard/"+props.group.id+"?page="+currentPage,{
+            category:props.category_id            
+        })
         .then(res=>{
-            for(let i = 0 ; i<res.data.length;i++){
-                console.log(res.data[i])
-                setGroupBoard(groupBoard=>[...groupBoard,res.data[i]])    
-                // array.push(res.data.data[i].id);
+            for(let i = 0 ; i<res.data.data.length;i++){
+                setGroupBoard(groupBoard=>[...groupBoard,res.data.data[i]])    
+            }
+            if(res.data.last_page < currentPage){
+                setInfHandle(false) 
+            }
+            else{
+                setCurrentPage(currentPage+1)
             }
         })
-    } 
+    }
+    const board_clean = () =>{
+        setCurrentPage(1)
+        setInfHandle(true)
+        setGroupBoard("")
+    }
+    const GetUpdate = ()=>{
+        board_clean()
+        board_update()
+    }
+
+    useEffect(()=>{
+        board_clean()
+    },[props.category_id])
 
     useEffect(()=>{
         board_update()
-    },[])
+    },[infHandle])
+
 
     return(
         <div className="bg-gray-200">
@@ -37,22 +58,15 @@ function GroupBoard(props){
                 ?<InfiniteScroll
                     dataLength={groupBoard.length} //This is important field to render the next data
                     next={board_update}
-                    hasMore={true}
+                    hasMore={infHandle}
                     scrollableTarget="scrollableDiv"
                     loader={
                         <div className='w-full flex justify-center'>
-                            <div className='mb-10'>
-                                <Skeleton variant="text" width={600} height={100}/>
-                                <Skeleton variant="rectangular" width={600} height={300} />
-                                
-                                <Skeleton variant="text" width={600} height={100}/>
-                                <Skeleton variant="rectangular" width={600} height={300} />
-
-                                <Skeleton variant="text" width={600} height={100}/>
-                                <Skeleton variant="rectangular" width={600} height={300} />
-                            </div>
-                    </div>
-
+                            <UseAnimations 
+                                size={48}
+                                animation={loading} 
+                            />
+                        </div>
                     }
                     endMessage={
                     <p style={{ textAlign: 'center' }}>
@@ -66,12 +80,10 @@ function GroupBoard(props){
                         )
                     })}
                 </InfiniteScroll>
-                :<div></div>
+                :<div className="bg-white rounded-t-xl text-center text-2xl pt-10">글이 없습니다. 글을 써주세요!</div>
             }
-            
-            
             <GroupBoardSide></GroupBoardSide>
-            <GroupWriteModal group_id={props.group.id}></GroupWriteModal>
+            <GroupWriteModal GetUpdate={()=>GetUpdate()} category_id={props.category_id} group_id={props.group.id}></GroupWriteModal>
         </div>
     )
 }export default GroupBoard

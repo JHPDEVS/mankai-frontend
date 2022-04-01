@@ -1,11 +1,15 @@
-import { Button, Modal } from "@mui/material";
+import { Button, Modal, SvgIcon } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
-import {Editor, EditorState} from 'draft-js';
-import MyEditor from "./PageContainer";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import GroupUpdateModal from "./GroupUpdateModal";
+import GroupIcon from '@mui/icons-material/Group';
+import SunEditor from 'suneditor-react';
+import 'suneditor/dist/css/suneditor.min.css'; // Import Sun Editor's CSS File
+import GroupEditor from "../components/GroupEditor";
+
+
 
 function GroupIntro(props)
 {
@@ -15,8 +19,13 @@ function GroupIntro(props)
     const [isGroup,setIsGroup] = useState(false)
     const [isMaster,setIsMaster] = useState(false)
     const [group_data,setGroup_data] = useState("");
+    const [post_data,setPost_data] = useState("");
+    const [editorState,setEditorState] =useState("");
+    const [postPass,setPostPass] = useState("");
+    const [content,setContent] = useState("");
 
     const dispatch = useDispatch();
+
     
     useEffect(()=>{
         if(props.isMaster){
@@ -29,6 +38,21 @@ function GroupIntro(props)
         setIsGroup(props.isGroup)
     },[props.isGroup])
 
+    const onEditorStateChange = (e) =>{
+        setEditorState(e)
+    }
+    const getContent = (data) =>{
+        axios.post('/api/post/intro',{
+            group_id:props.group.id,
+            text:data
+        }).then(res=>{
+            console.log(res.data)
+        })
+        
+        // console.log("인트로",data)
+        // setContent(data)
+    }
+
     const modalOpen = () =>{
         setOpen(true)
     }
@@ -36,15 +60,20 @@ function GroupIntro(props)
         setOpen(false)
     }
     const GroupIn = () =>{
-        setIsGroup(true)
-        dispatch({type:"GROUP_IN"})
-        axios.post('/api/post/groupuser/',{
-            user_id:user.id,
-            group_id:props.group.id
-        })
-        .then(res=>{
-            console.log(res.data)
-        })
+        if(!props.group.password || props.group.password == postPass){  
+            setIsGroup(true)
+            dispatch({type:"GROUP_IN"})
+            axios.post('/api/post/groupuser/',{
+                user_id:user.id,
+                group_id:props.group.id
+            })
+            .then(res=>{
+                console.log(res.data)
+            })
+        }
+        else{
+            console.log("비번틀림 ㅋㅋ")
+        }
     }
     const GroupOut = () =>{
         dispatch({type:"GROUP_OUT"})
@@ -57,7 +86,19 @@ function GroupIntro(props)
             console.log(res.data)
         })
     }
-
+    const postIntro = () =>{
+        axios.post('/api/post/intro',
+        {
+            text:post_data,
+            group_id:props.group.id
+        })
+        .then(res=>{
+            window.location.reload();
+        })
+    }
+    const passHandle = (e) =>{
+        setPostPass(e.target.value)
+    }
     return(
         <div>
             <div className="relative w-full">
@@ -68,11 +109,24 @@ function GroupIntro(props)
                 <div className="absolute bottom-4 left-6 text-white text-lg">
                     {isGroup
                         ?<div>
-                            <button className="px-4 py-2 rounded-xl border-2 hover:bg-red-600" onClick={GroupOut}>가입 해지</button>
-                        </div>
+                            {isMaster
+                            ? <div>관리자</div>
+                            :<div>
+                                <button className="px-4 py-2 rounded-xl border-2 hover:bg-red-600" onClick={GroupOut}>가입 해지</button>
+                            </div>
+                        }</div>
                         :<div>
-                            <button className="px-4 py-2 rounded-xl border-2 hover:bg-green-600" onClick={GroupIn}>그룹 가입</button>
-                        </div>
+                            {props.group.password 
+                            ?<div>
+                                <input type={"text"} onChange={passHandle} placeholder="비밀번호" className="bg-gray-100 text-black px-5 border text-sm border-gray-300 w-32 h-12 rounded-xl"/>
+                                <button className="px-4 py-2 rounded-xl border-2 hover:bg-green-600" onClick={GroupIn}>그룹 가입</button>
+                            </div> 
+                        
+                            :<div>
+                                <button className="px-4 py-2 rounded-xl border-2 hover:bg-green-600" onClick={GroupIn}>그룹 가입</button>
+                            </div>
+                            }
+                          </div>
                     }
                 </div>
                 {isMaster
@@ -82,20 +136,42 @@ function GroupIntro(props)
                     :<div></div>
                 }
             </div>
-            
+            <div className="w-fit mx-auto text-gray-600 mt-2 bg-gray-200 border rounded-xl px-10">
+                {props.group.password
+                        ?<div>비공개 그룹</div>
+                        :<div>공개 그룹</div>
+                }
+            </div>
+            <div className="mx-4 my-2 border py-2 px-4 rounded-xl">
+                <div className="text-3xl font-bold">그룹 정보</div>
+                <div className="text-xl">{props.group.name}</div>
+                <div className="text-md">
+                    <SvgIcon><GroupIcon></GroupIcon></SvgIcon>{props.group_user.length} 
+                     
+                     - 관심사 : {props.group.category}
+                </div>
+                나중에 레이아웃 바꿀것
+
+            </div>
             <div className="m-4 border py-2 px-4 rounded-xl">
                 <div className="flex justify-between mb-5">
-                    <p className="text-3xl">소개글</p>
+                    <p className="text-3xl font-bold">소개글</p>
                     {isMaster 
                         ?<Button onClick={modalOpen} className="text-blue-500 hover:text-blue-700">수정하기</Button>
                         :<div></div>
                     }
                 </div>
-                인원수 : {props.group_user.length}
                 <p>
                     {props.group.intro == null 
                         ?<div>그룹 설명이 없습니다. 설정해 주세요</div>
-                        :<div>{props.group.intro}</div>
+                        :<div>
+                            <SunEditor 
+                                defaultValue={props.group.intro} 
+                                readOnly
+                                hideToolbar
+                                height="100%"
+                            ></SunEditor>
+                        </div>
                     }                
                 </p>
             </div>
@@ -107,10 +183,9 @@ function GroupIntro(props)
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box className="bg-white w-192 mx-auto mt-10  h-240 rounded-xl p-5 relative">
-                    소개글 작성
-                  
-                </Box> 
+                <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
+                    <GroupEditor content={content} group_intro={props.group.intro} getContent={getContent}></GroupEditor>
+                 </Box>
             </Modal>
 
        </div>

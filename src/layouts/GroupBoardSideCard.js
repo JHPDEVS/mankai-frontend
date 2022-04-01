@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { Avatar, Button, Card, IconButton } from '@mui/material';
 import BoardSide from './BoardSide';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -16,7 +16,9 @@ import BoardImages from './BoardImages';
 import Moment from 'react-moment';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import GroupBoardImages from './GroupBoardImages';
+
+import UseAnimations from 'react-useanimations';
+import heart from 'react-useanimations/lib/heart'
 
 function GroupBoardSideCard(props){
     
@@ -29,9 +31,9 @@ function GroupBoardSideCard(props){
     const sideData = useSelector(state=>state.Reducers.sideData)
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
-    
     const option = ["번역하기","클립보드로 이동","신고하기"]
     const [translated,setTranslated] = useState("");
+    const animationHandle = useRef(null)
 
     const ClickLike = () => {
         dispatch({
@@ -88,9 +90,9 @@ function GroupBoardSideCard(props){
 
     useEffect(()=>{
         if(isOpen && likeId == props.board.id){
-            axios.get('/api/show/like/'+props.board.id)
+            axios.get('/api/show/grouplike/'+props.board.id)
             .then(res=>{
-                console.log(res.data)
+                console.log("likeupdate 받기",res.data)
                 setLikes(res.data)
             })
         }
@@ -99,6 +101,7 @@ function GroupBoardSideCard(props){
     useEffect(()=>{
         axios.get('/api/show/grouplike/'+props.board.id)
             .then(res=>{
+                console.log("showLike",res.data)
                 setLikes(res.data)
             })
     },[sideData])
@@ -107,6 +110,7 @@ function GroupBoardSideCard(props){
     useEffect(()=>{
         setIsLike(false)
         likes.forEach(like=>{
+            // console.log("좋아요체크",like,isLike)
             if(user.id == like.user_id)
             {
                 setIsLike(true)
@@ -172,15 +176,20 @@ function GroupBoardSideCard(props){
                                 <div className='flex'>
                                     <div className='w-1/3 grid grid-cols-2'> 
                                         {isLike
-                                            ?<Button color="error" onClick={ClickDisLike}>
-                                                <SvgIcon color='error' disabled className='mx-auto' component={FavoriteIcon} fontSize="large"/> 
-                                                <p>{likes ? likes.length : 0}</p></Button>
+                                          ?
+                                            <div className='flex ml-10 my-auto'>
+                                                <UseAnimations onClick={ClickDisLike} size={48} fillColor="red" reverse animation={heart}/> 
+                                                <p className='my-auto'>{likes ? likes.length : 0}</p>
+                                            </div>
 
-                                            :<Button color='error' onClick={ClickLike}>
-                                                <SvgIcon color='action' className='mx-auto' component={FavoriteBorderIcon} fontSize="large">
-                                                    </SvgIcon><p>{likes ? likes.length : 0}</p></Button>
+                                            :<div className='flex ml-10 my-auto'>
+                                                <UseAnimations ref={animationHandle} onClick={ClickLike} size={48} fillColor="red" animation={heart}/> 
+                                                <p className='my-auto'>{likes ? likes.length : 0}</p>
+                                            </div>
+
                                         }       
                                     </div>
+                                    
                                     <div className='w-2/3 text-right'>
                                         <Button>
                                                 <SvgIcon color='action' className='mx-auto' component={ShareIcon} fontSize="large"/>
