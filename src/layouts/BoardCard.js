@@ -16,14 +16,10 @@ import BoardImages from './BoardImages';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
-<<<<<<< HEAD
 import { OptionUnstyled } from '@mui/base';
-=======
 import 'react-dropdown/style.css';
 import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
->>>>>>> 7c4df15d680d12da98dcf68c22d4bda5467eb633
-
 function BoardCard(props){
     
     const dispatch = useDispatch();
