@@ -8,6 +8,9 @@ import GroupBoard from '../layouts/GroupBoard';
 import GroupDashBoard from '../layouts/GroupDashBoard';
 import GroupIntro from '../layouts/GroupIntro';
 import GroupNotice from '../layouts/GroupNotice';
+import BoardImage from '../images/BOARD.png';
+import SNSImage from '../images/SNS.png';
+
 
 
 function GroupDetail({match}) {
@@ -23,7 +26,7 @@ function GroupDetail({match}) {
     const [isMaster,setIsMaster] = useState(false)
     const [groupCategory,setGroupCategory] = useState([])
     const [open,setOpen] = useState(false)
-    const [postType,setPostType] = useState("")
+    const [postType,setPostType] = useState("SNS")
     const [postTitle,setPostTitle] = useState("")
     const [selectedValue,setSelectedValue] = useState("")
 
@@ -84,9 +87,9 @@ function GroupDetail({match}) {
             })
         }
     },[groupUsers])
-    const typeHandle = (e) =>{
-        console.log(e.target.innerText)
-        setPostType(e.target.innerText)
+    const typeHandle = (data) =>{
+        console.log(data)
+        setPostType(data)
     }
 
     const optionHandle = (e,newValue) =>{
@@ -123,7 +126,9 @@ function GroupDetail({match}) {
                                 )
                             })}
                         </Tabs>
-                        <button onClick={modalOpen} className='text-blue-500 ml-4 rounded-2xl px-2 h-8 my-auto bg-gray-200 hover:bg-gray-300 hover:text-blue-700'>그룹추가</button>
+                        {isMaster &&
+                            <button onClick={modalOpen} className='text-blue-500 ml-4 rounded-2xl px-2 h-8 my-auto bg-gray-200 hover:bg-gray-300 hover:text-blue-700'>그룹추가</button>
+                        }
                     </div>
             </AppBar>
             
@@ -140,7 +145,7 @@ function GroupDetail({match}) {
                         }
                         {selectedValue.type === "BOARD"
                             &&<GroupNotice  category_id={selectedValue.id} group={group_data}/>
-                        }       
+                        }
                         {optionValue === "맴버관리"
                             &&<GroupDashBoard group_id={group_data.id}/>
                         }
@@ -157,21 +162,30 @@ function GroupDetail({match}) {
                 aria-describedby="modal-modal-description"
             >
                 <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
-                        어떤 형식의 게시판?
-
-                        <input type={"text"} onChange={titleHandle} className='bg-gray-200 p-2 rounded-2xl'></input>
+                        <div className='text-2xl font-bold text-center mt-5 mb-5'>카테고리 제목</div>
+                        <input type={"text"} onChange={titleHandle} className='bg-gray-300 w-full p-2 rounded-2xl'></input>
+                        <div className='text-center text-xl font-bold mt-10 mb-10'>어떤 형식의 게시판을 만들것인가요?</div>
                         <div className='flex w-full'>                        
                         {array.map((data)=>{
                             return(
-                                <div className='w-full' onClick={typeHandle}>
-                                    <div className={'h-192 '+(data == postType ? "bg-gray-300" : "bg-gray-200")}>
-                                        {data}
+                                <div className='w-full' onClick={()=>typeHandle(data)}>
+                                    <div className='text-center text-xl font-bold '>{data}타입</div>
+                                    <div className={'pt-4 '+(data == postType ? "brightness-75" : " hover:brightness-75")}>
+                                        {data == "SNS"
+                                            ?<div>
+                                                <img  className='w-full border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
+                                            </div>
+                                            :<div className='px-5'>
+                                                <img className='w-full border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
+                                            </div>
+                                        
+                                        }
                                     </div>
                                 </div>
                             )
                         })}
                         </div>
-                        <button onClick={postCategory}>만들기</button>
+                        <button className='absolute bottom-5 left-5 bg-green-400 p-4 rounded-xl text-white font-bold text-xl' onClick={postCategory}>만들기</button>
                 </Box>
             </Modal>
         </div>

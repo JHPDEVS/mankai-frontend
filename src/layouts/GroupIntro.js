@@ -8,6 +8,9 @@ import GroupIcon from '@mui/icons-material/Group';
 import SunEditor from 'suneditor-react';
 import 'suneditor/dist/css/suneditor.min.css'; // Import Sun Editor's CSS File
 import GroupEditor from "../components/GroupEditor";
+import UseAnimations from "react-useanimations";
+import loading from 'react-useanimations/lib/loading'
+
 
 
 
@@ -102,7 +105,16 @@ function GroupIntro(props)
     return(
         <div>
             <div className="relative w-full">
-                <img className="w-full h-96 brightness-50 rounded-t-xl" src={props.group.logoImage} alt="이미지 없음"/>
+                {props.group.logoImage 
+                    ?<img className="w-full h-96 brightness-50 rounded-t-xl" src={props.group.logoImage} alt="이미지 없음"/>
+                
+                    :<div className="w-full h-96  bg-gray-100 rounded-t-xl">
+                        <div className="w-fit mx-auto pt-32">
+                            <UseAnimations size={100} animation={loading}></UseAnimations>
+                        </div>
+                    </div>
+
+                }
                 <div className="absolute w-full bottom-48 right ">
                     <p className="text-6xl text-white text-center ">{props.group.name}</p>
                 </div> 

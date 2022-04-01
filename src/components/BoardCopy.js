@@ -76,13 +76,8 @@ function BoardCopy(props)
         return(
             <div className="flex bg-byuncolor">
                 {/* Sidebar */}  
-                    <div className={'w-0 lg:mr-64'}>
+                    <div className={'w-0'}>
                         <AppBar position="fixed" color="transparent" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                                <div className='fixed top-0 left-0'>
-                                    <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}  />
-                                </div>
-                            </AppBar>
                             <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>   
                         </AppBar>
                         
@@ -95,7 +90,7 @@ function BoardCopy(props)
                 
                     <div className='w-full flex mt-16 z-10' >
                         {/* main */}  
-                        <div className={'w-full '+(isOpen ? "pr-192":"")} >
+                        <div className={'w-full  '+(isOpen ? "pr-192":"")} >
                             
                             <div className="w-full fixed flex bg-white p-2 z-20 border">
                                 <div className={'flex '}>
@@ -151,7 +146,7 @@ function BoardCopy(props)
                             </div>   
                         </div>
 
-                        <div className={(isOpen ? "" : "lg:pl-96")}>
+                        {/* <div className={(isOpen ? "" : "lg:pl-96")}>
                         {!isOpen &&
                             <div className={'w-0 h-screen bg-byuncolor2 fixed top-24 mt-6 right-0 lg:w-96'}>
                                 <p className='text-center font-bold text-lg bg-blue-500 text-white border rounded '>
@@ -186,7 +181,7 @@ function BoardCopy(props)
                             </div>
                             
                         }
-                        </div>
+                        </div> */}
                     
                 </div>
             </div>
