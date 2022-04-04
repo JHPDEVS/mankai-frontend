@@ -57,10 +57,12 @@ function Group(props) {
             <Header/>  
             
             <div className="w-full text-center">
-                <p className="text-5xl mb-5 mt-5">
+                <div className="text-center flex">
+                <p className="text-5xl mb-5 mt-5 flex-auto">
                    그룹 검색하기
                 </p>
                 <GroupCreateModal></GroupCreateModal>
+                </div>
                 <div className="mb-10 my-auto">
                     <input type={"text"} onKeyPress={onKeyPress} onChange={searchHandle} placeholder="어떤 그룹을 찾으시나요?" className="bg-gray-200 px-5 border border-gray-300 w-192 h-14 rounded-l-xl"/>
                     <button onClick={searchBtn} className="h-14 px-3 border rounded-r-xl">검색하기</button>
