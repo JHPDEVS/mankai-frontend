@@ -64,6 +64,8 @@ function GroupIntro(props)
     }
     const GroupIn = () =>{
         if(!props.group.password || props.group.password == postPass){  
+            
+            alert("가입 되었습니다")
             setIsGroup(true)
             dispatch({type:"GROUP_IN"})
             axios.post('/api/post/groupuser/',{
@@ -75,7 +77,7 @@ function GroupIntro(props)
             })
         }
         else{
-            console.log("비번틀림 ㅋㅋ")
+            alert("비밀번호가 틀립니다")
         }
     }
     const GroupOut = () =>{
@@ -130,8 +132,8 @@ function GroupIntro(props)
                         :<div>
                             {props.group.password 
                             ?<div>
-                                <input type={"text"} onChange={passHandle} placeholder="비밀번호" className="bg-gray-100 text-black px-5 border text-sm border-gray-300 w-32 h-12 rounded-xl"/>
-                                <button className="px-4 py-2 rounded-xl border-2 hover:bg-green-600" onClick={GroupIn}>그룹 가입</button>
+                                <input type={"text"} onChange={passHandle} placeholder="비밀번호" className="bg-gray-100 text-black px-5 border text-sm border-gray-300 w-32 h-12 rounded-l-xl"/>
+                                <button className="px-4 py-2 rounded-r-xl border-2 hover:bg-green-600" onClick={GroupIn}>그룹 가입</button>
                             </div> 
                         
                             :<div>
