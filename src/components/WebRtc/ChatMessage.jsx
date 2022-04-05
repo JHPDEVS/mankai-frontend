@@ -41,13 +41,62 @@ function ChatMessage({ message: msg, user: user, date: date }) {
 
           <div
             onDoubleClick={e => translation(message.message)}
-            className="text-left mr-2 py-3 px-4 bg-primary opacity-75   text-white  rounded-xl border max-w-[50%]"
+            className="text-left mr-2 py-3 px-4 bg-primary opacity-75   text-white  rounded-xl border max-w-[80%] border-2"
           >
-            <span className="break-all break-word">{message.message}</span>
+            {message.message == undefined ? (
+              <div className="flex " key={message.file}>
+                <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
+                  <a
+                    className="p-3 w-12 h-12"
+                    download
+                    href={
+                      'http://localhost:8000/storage/' + message.file[0].path
+                    }
+                    target="_blank"
+                  >
+                    <FileIcon
+                      extension={message.file[0].type}
+                      {...defaultStyles[message.file[0].type]}
+                    ></FileIcon>
+                  </a>
+                </div>
+                <div className="flex flex-col p-2">
+                  <div>
+                    <a
+                      href={
+                        'http://localhost:8000/storage/' + message.file[0].path
+                      }
+                      download
+                      className="font-bold break-all"
+                      target="_blank"
+                    >
+                      {message.file[0].name}
+                    </a>
+                  </div>
+                  <span>{prettyBytes(message.file[0].size)}</span>
+                </div>
+                <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
+                  <a
+                    className="p-3"
+                    download
+                    target="_blank"
+                    href={
+                      'http://localhost:8000/storage/' + message.file[0].path
+                    }
+                  >
+                    <span className="text-primarytext">
+                      <DownloadIcon />
+                    </span>
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <span className="break-all break-word">{message.message}</span>
+            )}
           </div>
         </div>
       ) : (
-        <div className="flex p-1 mr-2 justify-start relative  max-w-[50%]">
+        <div className="flex p-1 mr-2 justify-start relative  max-w-[80%]">
           <div className="">
             {message.user.profile ? (
               <img
@@ -57,18 +106,69 @@ function ChatMessage({ message: msg, user: user, date: date }) {
               />
             ) : (
               <div className="flex items-center justify-center h-10 w-10 rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                {message.user.name.substring(0, 1)}
+                {message.nickname.substring(0, 1)}
               </div>
             )}
           </div>
-
-          <div className="text-left mx-2 py-3 px-4 bg-secondary    rounded-xl border ">
-            <span>{message.user.name}</span>
-            <span className="break-all break-word ">{message.message}</span>
+          <div className="text-left ml-2 ">
+            <span>{message.nickname}</span>
+            <div className="text-left mr-2 py-3 px-4 bg-secondary    rounded-xl border  ">
+              {message.message == undefined ? (
+                <div className="flex " key={message.file}>
+                  <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
+                    <a
+                      className="p-3 w-12 h-12"
+                      download
+                      href={
+                        'http://localhost:8000/storage/' + message.file[0].path
+                      }
+                      target="_blank"
+                    >
+                      <FileIcon
+                        extension={message.file[0].type}
+                        {...defaultStyles[message.file[0].type]}
+                      ></FileIcon>
+                    </a>
+                  </div>
+                  <div className="flex flex-col p-2">
+                    <div>
+                      <a
+                        href={
+                          'http://localhost:8000/storage/' +
+                          message.file[0].path
+                        }
+                        download
+                        className="font-bold break-all"
+                        target="_blank"
+                      >
+                        {message.file[0].name}
+                      </a>
+                    </div>
+                    <span>{prettyBytes(message.file[0].size)}</span>
+                  </div>
+                  <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
+                    <a
+                      className="p-3"
+                      download
+                      target="_blank"
+                      href={
+                        'http://localhost:8000/storage/' + message.file[0].path
+                      }
+                    >
+                      <span className="text-primarytext">
+                        <DownloadIcon />
+                      </span>
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <span className="break-all break-word">{message.message}</span>
+              )}
+            </div>
           </div>
           <span className="flex items-end ml-1">
             <Moment format="H:mm" local>
-              {message.created_at}
+              {message.date}
             </Moment>
           </span>
         </div>

@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import axios from 'axios'
+import moment from 'moment'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import UserModel from '../../models/user-model'
 import ChatMessage from './ChatMessage'
 
 function Chat(props) {
   const dispatch = useDispatch()
+  const chatBody = useRef()
   const [message, setMessage] = useState(null)
   const user = useSelector(state => state.Reducers.user)
   const [messageList, setMessageList] = useState([])
@@ -14,6 +17,7 @@ function Chat(props) {
       if (messageValue !== '' && messageValue !== ' ') {
         const data = {
           message: messageValue,
+          date: moment().format(),
           nickname: props.user.getNickname(),
           streamId: props.user.getStreamManager().stream.streamId,
           user: user,
@@ -24,12 +28,47 @@ function Chat(props) {
         })
       }
     }
+    setMessage('')
+  }
+
+  const sendFile = file => {
+    if (props.user && file && user) {
+      const formData = new FormData()
+      formData.append('file', file)
+      axios
+        .post('/api/video/filesave', formData, {
+          headers: { 'Content-Type': 'multipart/from-data' },
+        })
+        .then(res => {
+          const data = {
+            file: res.data,
+            date: moment().format(),
+            nickname: props.user.getNickname(),
+            streamId: props.user.getStreamManager().stream.streamId,
+            user: user,
+          }
+          props.user.getStreamManager().stream.session.signal({
+            data: JSON.stringify(data),
+            type: 'chat-file',
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
   }
 
   const onKeyPress = e => {
     if (e.key == 'Enter') {
       sendMessage()
     }
+  }
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      try {
+        chatBody.current.scrollTop = chatBody.current.scrollHeight
+      } catch (err) {}
+    }, 20)
   }
   useEffect(() => {
     if (props.user) {
@@ -41,16 +80,38 @@ function Chat(props) {
           nickname: data.nickname,
           message: data.message,
           user: data.user,
+          date: data.date,
         })
         setMessageList([...message])
+        scrollToBottom()
       })
+
+      props.user
+        .getStreamManager()
+        .stream.session.on('signal:chat-file', event => {
+          const data = JSON.parse(event.data)
+          let message = messageList
+          message.push({
+            connectionId: event.from.connectionId,
+            nickname: data.nickname,
+            message: undefined,
+            file: data.file,
+            user: data.user,
+            date: data.date,
+          })
+          setMessageList([...message])
+          scrollToBottom()
+        })
     }
   }, [props.user])
 
   return (
     <div className=" w-full h-[calc(100vh-275px)]  bg-primary300">
       <div className="w-full ">
-        <div className="h-[calc(100vh-370px)] bg-white mb-1 rounded-xl">
+        <div
+          ref={chatBody}
+          className="h-[calc(100vh-370px)] bg-white mb-1 rounded-xl  overflow-y-auto"
+        >
           채팅창
           {messageList &&
             messageList.map((message, index) => (
@@ -63,6 +124,7 @@ function Chat(props) {
         </div>
         <input
           type="text"
+          value={message}
           className="border rounded-2xl border-transparent w-full focus:outline-none text-sm h-10 flex items-center"
           placeholder="메세지를 입력해주세요"
           onKeyPress={onKeyPress}
@@ -88,26 +150,15 @@ function Chat(props) {
             ></path>
           </svg>
         </label>
-        <input type="file" id="input-file" className="hidden" multiple />
-
-        <button
-          id="capture"
-          className="focus:outline-none flex items-center justify-center h-10 w-8 hover:text-green-600 text-green-400 ml-1 mr-2"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-            ></path>
-          </svg>
-        </button>
+        <form method="post" enctype="multipart/form-data">
+          <input
+            type="file"
+            id="input-file"
+            className="hidden"
+            name="input-file"
+            onChange={e => sendFile(e.target.files[0])}
+          />
+        </form>
       </div>
     </div>
   )
