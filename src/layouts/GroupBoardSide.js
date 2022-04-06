@@ -1,9 +1,8 @@
-import React, { Component , useCallback, useEffect, useState}from 'react';
+import  React, { Component , useCallback, useEffect, useState}from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Modal from '@mui/material/Modal'
 import BoardSideCard from './BoardSideCard';
-import { AppBar, Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
+import { AppBar, Avatar, Button, ClickAwayListener, Divider, Fab, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {Provider, useSelector, useDispatch, connect} from 'react-redux';
@@ -14,14 +13,16 @@ import CreateIcon from '@mui/icons-material/Create';
 import TranslateIcon from '@mui/icons-material/Translate';
 import { Slide } from 'react-toastify';
 import Header from '../admin/layout/Header';
-
+import GroupBoardSideCard from './GroupBoardSideCard';
+import CloseIcon from '@mui/icons-material/Close';
+import UseAnimations from 'react-useanimations';
+import loading from 'react-useanimations/lib/loading'
 
 const drawerWidth = 700;
 
 function BoardSide(props){
     
     const sideData = useSelector((state=>state.Reducers.sideData));
-    const postMemo = useSelector((state=>state.Reducers.postMemo));
     const user = useSelector((state=>state.Reducers.user))
     const [translatedText,setTranslatedText] = useState("");
     const [post_comment,setPostComment] = useState("");
@@ -35,8 +36,6 @@ function BoardSide(props){
     const [isMenuOpen,setIsMenuOpen] = useState(false);
     const [transComment,setTransComment] = useState([]);
     const anchorRef = React.useRef(null);
-    const [open,setOpen] = useState(false);
-    const [titlefieldvalue,setTitleFieldValue] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(false)
     
         
@@ -48,20 +47,6 @@ function BoardSide(props){
         dispatch({type:"SIDE_CLOSE"})
     };
  
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        maxHeight: 630,
-        borderRadius:'10px',
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 24,
-        p: 4,
-      };
-
     // 클릭한 board_id 값바뀌면 새로운 댓글 출력
     useEffect(()=>{
         if(sideData != null){
@@ -86,7 +71,7 @@ function BoardSide(props){
     }
     // 댓글 작성하기
     const PostComment = () =>{
-        axios.post('/api/post/comment',{
+        axios.post('/api/post/groupcomment',{
             content:post_comment,
             board_id:sideData.id,
             user_id:user.id
@@ -112,7 +97,7 @@ function BoardSide(props){
     // 게시글 누르면 코멘트 불러오기 & 페이지네이션 버튼누르면 반응
     const ShowComment = useCallback(async (page) =>{
         if(sideData){
-            axios.post("/api/show/comment/"+sideData.id+"?page=" + page)
+            axios.get("/api/show/groupcomment/"+sideData.id+"?page=" + page)
             .then(res=>{ 
                 setPaginatePage(paginatePage=>res.data.current_page)
                 if(res.data.data.length === 0){
@@ -143,7 +128,7 @@ function BoardSide(props){
             id:0,
             text:""
         }]);
-        axios.post("/api/update/comment",{
+        axios.post("/api/update/groupcomment",{
             comment_id:comment.id,
             updateText:updateComment
         }).then(res=>{
@@ -151,7 +136,7 @@ function BoardSide(props){
             ShowComment(current_page);
         })
     }
-    // 번역 api 부르기
+    // 본문 번역 부르기
     const callPapago = (data) =>{
         handleToggle()
         axios.post("/api/show/papago",{
@@ -181,77 +166,17 @@ function BoardSide(props){
     }
     // 댓글 삭제
     const clickDelete = (comment)=>{
-        axios.post("/api/delete/comment/"+comment.id).
+        axios.post("/api/delete/groupcomment/"+comment.id).
         then(res=>{
             ShowComment(current_page)
             console.log("삭제 완료")
         })
     }
     // 설정 오픈여부 확인
-
-    const textChange = (e) => {
-        setTitleFieldValue(e.target.value);
-      };
-
-    const submitMemo = (titlefieldvalue) => {
-        axios.post("/api/storememo",{
-            content_text:{sideData}.sideData.content_text,
-            memo_title : titlefieldvalue,
-            user_id : user.id,
-            post_memo_id : {sideData}.sideData.id
-        })
-        // post_memo_id를 보낸게 MemoController에서 게시글에 딸린 이미지를 저장할 수 있게 해준다. 
-        .then((res)=>{
-            console.log(res);
-            handleClose();
-            dispatch({
-                type: 'ADD_MEMO',
-                payload: { memo: res.data },
-              })
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
-        setTitleFieldValue("")
-    }
-
-    const handleClose = () => {
-        setOpen(false);
-    }
-
-    const handleToggle = (clickCategory) =>{
+    const handleToggle = () =>{
         setIsMenuOpen(isMenuOpen => !isMenuOpen)
-        if(clickCategory === 'memo'){
-            setOpen(true);
-        }
     }
     return (
-       <>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-          <Box sx={style}>
-           <TextField 
-          fullWidth 
-          value={titlefieldvalue}
-          onChange={textChange}
-          multiline 
-          maxRows={5}
-          id="standard-basic" 
-          label="메모 제목을 적어주세요" 
-          variant="standard"
-          />
-
-          <Button onClick={() => {submitMemo(titlefieldvalue)}} sx={{ ":hover":{
-            backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
-          </Box>
-      </Modal>
-
-
         <Box className="justify-between flex">
             <Drawer
                 sx={{
@@ -272,109 +197,27 @@ function BoardSide(props){
                 
                 {/* 사이드바 데이터 있을경우*/}
                 {sideData != null &&
-                <div className='flex flex-col relative mb-20 mt-16'>
-                    <Button onClick={handleDrawerClose}>
-                        <div className='h-8 text-lg'>X</div>
-                    </Button>
+                <div className='flex flex-col relative mb-20 mt-24'>
+                    
                     <div className='w-full p-5'>
                     {/* 프사 & 이름 */}
-                    <div className='flex justify-between'>
-                        <div className="flex">
-                          
-                            <Avatar className='mr-3'>d</Avatar> 
-                            <div>
-                                <h3 className="text-md font-semibold">{sideData.name}</h3>
-                                <p className="text-xs text-gray-500">시간표시할것</p>
-                            </div>
-                        </div>
-                            {/* 메뉴바 */}
-                            <Stack direction="row" className='z-10' spacing={2}>
-                                <div>
-                                    <Button className=''
-                                        ref={anchorRef}
-                                        id="composition-button"
-                                        aria-controls={isMenuOpen ? 'composition-menu' : undefined}
-                                        aria-expanded={isMenuOpen ? 'true' : undefined}
-                                        aria-haspopup="true"
-                                        onClick={handleToggle}
-                                    >
-                                    설정
-                                    </Button>
-                                    <Popper
-                                        open={isMenuOpen}
-                                        anchorEl={anchorRef.current}
-                                        role={undefined}
-                                        placement="bottom"
-                                        transition
-                                        disablePortal
-                                    >
-                                    {({ TransitionProps, placement }) => (
-                                        <Grow
-                                            {...TransitionProps}
-                                            style={{
-                                                transformOrigin:
-                                                placement === 'bottom-start' ? 'left top' : 'left bottom',
-                                            }}
-                                            >
-                                            <Paper>
-                                                <ClickAwayListener onClickAway={() => handleToggle("")}>
-                                                <MenuList
-                                                    autoFocusItem={isMenuOpen}
-                                                    id="composition-menu"
-                                                    aria-labelledby="composition-button"
-                                                >
-                                                    <MenuItem onClick={()=>callPapago(sideData.content_text)}>번역하기</MenuItem>
-                                                    <MenuItem onClick={() => handleToggle("memo")}>메모 보내기</MenuItem>
-                                                    <MenuItem onClick={() => handleToggle("")}>신고하기</MenuItem>
-                                                </MenuList>
-                                                </ClickAwayListener>
-                                            </Paper>
-                                        </Grow>
-                                    )}
-                                    </Popper>
-                                </div>
-                            </Stack>  
-                    </div>
                         
                         {/* 게시글 구간 */}
-                        <BoardSideCard board={sideData}></BoardSideCard>
+                        <GroupBoardSideCard board={sideData}></GroupBoardSideCard>
                         
                        
                        {/* 페이지 네이션 */}
-                        <div className='w-full flex justify-center my-4 bg-gray-200'>
+                        <div className='w-full flex justify-center my-4 rounded-xl bg-gray-200'>
                             <Pagination name="paginate" count={last_page} color="primary" onChange={paginateHandle} page={paginatePage} hidePrevButton hideNextButton />
                         </div>
-                        {/* 댓글 구간 */}   
-                        <Divider light>Comment</Divider>
                        
                         {/* 댓글 데이터 로딩중 */}
-                        {comments.length === 0 &&
-                            <div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
-                                <div className='w-full p-3'>
-                                     <div className='flex mb-2'>
-                                         <Skeleton variant="circular" width={48} height={48} />
-                                         <Skeleton className='w-24 ml-2' variant="text"/>
-                                     </div>
-                                     <Skeleton variant="rectangular" width={270} height={58} />
-                                </div>
+                        {comments.length == 0 &&
+                            <div className='mx-auto w-fit'>
+                                    <UseAnimations size={64} animation={loading}/>
                             </div>
                         }
                         {/* axios 값없으면 보여줌 */}
-
                         {comments[0] == "No Data" &&  
                             <div className='w-full text-center mt-10 text-sm text-gray-500'>
                                 <p>댓글이 없습니다.</p>
@@ -426,7 +269,7 @@ function BoardSide(props){
                                                     }
                                                     {/* 수정중 아니면 */}
                                                     {isUpdate != comment.id && 
-                                                        <div className='mx-8 '>
+                                                        <div className='mx-8'>
                                                             {comment.comment}
                                                         </div>
                                                     }
@@ -450,19 +293,25 @@ function BoardSide(props){
                         }
                     </div>
                     {/* 댓글 달기 */}
-                    <div className='flex fixed w-186 mr-4 bottom-0 right-0 bg-gray-100'>
+                    <div className='flex fixed w-186 mr-2 bottom-0 right-0 bg-gray-200 rounded-xl'>
                         <div className='w-full flex'>
-                            <textarea name='post_comment' className='w-4/5 bg-gray-200' rows={4} onChange={commentHandle}
+                            <textarea name='post_comment' className='w-4/5 m-3 rounded-xl p-1 bg-gray-300' rows={3} onChange={commentHandle}
                                 value={post_comment}></textarea>
-                            <Button className='w-1/5' onClick={PostComment}>댓글 달기</Button>
-                    
+
+                            <div className='w-1/5'>
+                                <button className='bg-white px-5 mt-3 mr-3 h-20  rounded-2xl' onClick={PostComment}>댓글 달기</button>
+                            </div>
                         </div>
                     </div>
+                    <div className='fixed top-32 right-10 w-186'>
+                        <Fab color="primary" aria-label="add" onClick={handleDrawerClose}>
+                            <CloseIcon/>
+                        </Fab>
+                    </div>  
                 </div>
             }
             </Drawer>
         </Box>
-        </>
         ); 
 }
 export default BoardSide;

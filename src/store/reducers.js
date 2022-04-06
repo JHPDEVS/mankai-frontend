@@ -7,6 +7,7 @@ const LOGOUT = 'LOGOUT'
 const GET_USER_FAILURE = 'GET_USER_FAILURE'
 const GET_USER_PENDING = 'GET_USER_PENDING'
 const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
+const UPDATE_USER = 'UPDATE_USER'
 const GET_LOGIN_PENDING = 'GET_LOGIN_PENDING'
 const GET_LOGIN_SUCCESS = 'GET_LOGIN_SUCCESS'
 const GET_LOGIN_FAILURE = 'GET_LOGIN_FAILURE'
@@ -45,6 +46,13 @@ const CHAT_PAGE_NOT = 'CHAT_PAGE_NOT'
 const GET_FOLLOWS_PENDING = 'GET_FOLLOWS_PENDING'
 const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
 const GET_FOLLOWS_FAILURE = 'GET_FOLLOWS_FAILURE'
+const SET_FOLLOWERFOLLOWER = 'SET_FOLLOWERFOLLOWER'
+const TOGGLE_FOLLOWERFOLLOWER = 'TOGGLE_FOLLOWERFOLLOWER'
+const GET_FOLLOWINGS_PENDING = 'GET_FOLLOWINGS_PENDING'
+const GET_FOLLOWINGS_SUCCESS = 'GET_FOLLOWINGS_SUCCESS'
+const GET_FOLLOWINGS_FAILURE = 'GET_FOLLOWINGS_FAILURE'
+const SET_FOLLOWERFOLLOWING = 'SET_FOLLOWERFOLLOWING'
+const DELETE_FOLLOWINGS = 'DELETE_FOLLOWINGS'
 const GET_MEMO_PENDING = 'GET_MEMO_PENDING'
 const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
 const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
@@ -60,7 +68,9 @@ const GROUP_LIST = "GROUP_LIST"
 const ADD_MEMO = "ADD_MEMO"
 const MODAL_OPEN = "MODAL_OPEN"
 const MODAL_CLOSE = "MODAL_CLOSE"
-
+const GROUP_IN = "GROUP_IN"
+const GROUP_OUT = "GROUP_OUT"
+const SET_FOLLOWID = "SET_FOLLOWID"
 
 const initialState = {
   user: null,
@@ -83,6 +93,11 @@ const initialState = {
   chat_current_page: 1,
   chat_inf_handle: true,
   isModalOpen : false,
+  isGroupChange:0,
+  followId:0,
+  followerFollower: null,
+  followings: null,
+  followerFollowing : null,
 }
 
 export default handleActions(
@@ -138,6 +153,20 @@ export default handleActions(
         user_pending: false,
         user: action.payload,
         error: false,
+      }
+    },
+    [UPDATE_USER] : (state,action) => {
+      const copieduser = {...state.user};
+
+
+      copieduser.name = action.payload.name;
+      copieduser.country = action.payload.country;
+      copieduser.description = action.payload.description;
+      copieduser.profile = action.payload.image;
+
+      return {
+        ...state,
+        user: copieduser
       }
     },
     [GET_USER_FAILURE]: (state, action) => {
@@ -288,6 +317,9 @@ export default handleActions(
         ...state,
         useredit_register_pending: false,
         useredit: action.payload,
+        sideData:action.payload.sideData,
+        sideLikeData:action.payload.sideLikeData,
+        sideImageList:action.payload.sideImageList   
       }
     },
     [POST_USEREDIT_FAILURE]: (state, action) => {
@@ -383,6 +415,78 @@ export default handleActions(
         follows_pending: false,
         get_follows_error: true,
       }
+    },
+    [SET_FOLLOWERFOLLOWING] : (state, action) => {
+      return {
+        ...state,
+        followerFollowing :action.payload.followerFollowing
+      }
+    },
+
+    [GET_FOLLOWINGS_PENDING]: (state, action) => {
+      return {
+        ...state,
+        followings_pending: true,
+        get_followings_error: true,
+      }
+    },
+    [GET_FOLLOWINGS_SUCCESS]: (state, action) => {
+      return {
+        ...state,
+        followings_pending: false,
+        followings: action.payload,
+        get_followings_error: false,
+      }
+    },
+    [GET_FOLLOWINGS_FAILURE]: (state, action) => {
+      return {
+        ...state,
+        followings_pending: false,
+        get_followings_error: true,
+      }
+    },
+
+    [SET_FOLLOWID]: (state, action) => {
+      return {
+        ...state,
+        followId : action.payload.followId, 
+      }
+    },
+    [SET_FOLLOWERFOLLOWER] : (state, action) => {
+      return {
+        ...state,
+      followerFollower: action.payload.followerFollower,
+      }
+    },
+    [TOGGLE_FOLLOWERFOLLOWER] : (state, action) => {
+      var plus = true;
+      var i = 0 ;
+
+      var copiedfollowerFollower = [...state.followerFollower];
+      copiedfollowerFollower.forEach(follower => {
+        if(follower.id === action.payload.followerFollower.id){
+          copiedfollowerFollower.splice(i,1)
+          plus = false;
+        }
+        i++;
+      })
+      if(plus === true){
+        copiedfollowerFollower.push(action.payload.followerFollower);
+      }
+
+      return{
+      ...state,
+      followerFollower : copiedfollowerFollower
+    }
+    },
+
+    [DELETE_FOLLOWINGS] : (state,action) => {
+        return {
+          ...state,
+          followings : state.followings.filter((following)=>{
+            return following.id !== action.payload
+          })
+        }
     },
     [GET_MEMO_PENDING]: (state, action) => {
       return {
@@ -519,6 +623,24 @@ export default handleActions(
         chat_inf_handle: false,
       }
     },
+    [GROUP_LIST]:(state,action)=>{
+      return{
+        ...state,
+        groupChange:state.groupChange+1
+      }
+    },
+    [GROUP_IN]:(state,action)=>{
+      return{
+        ...state,
+        isGroupChange:state.isGroupChange+1
+      }
+    },
+    [GROUP_OUT]:(state,action)=>{
+      return{
+        ...state,
+        isGroupChange:state.isGroupChange+1
+      }
+    }
   },
   initialState
 )
