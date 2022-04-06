@@ -48,7 +48,7 @@ function GroupBoard(props){
     }
     const GetUpdate = ()=>{
         board_clean()
-        board_update()
+        setcallUpdate(callUpdate+1)
     }
 
     useEffect(()=>{

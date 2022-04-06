@@ -22,7 +22,7 @@ function GroupEditor ({group_intro,content,getContent}){
           plugins: plugins, 
           width: "100%",
           height: "100%",
-          minHeight: "600px",
+          minHeight: "550px",
           buttonList: [
           //   Default
             ["undo", "redo"],
@@ -52,7 +52,7 @@ function GroupEditor ({group_intro,content,getContent}){
     return(
         <div>
             <textarea ref={txtArea} defaultValue={group_intro}/>
-            <button onClick={PostUpload}>바꾸기</button>
+            <button onClick={PostUpload}>확인</button>
         </div>
     )
 }export default GroupEditor
