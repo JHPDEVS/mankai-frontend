@@ -342,6 +342,7 @@ const fileDrop = (e) => {
         </Box>
       </Modal>
        <Fab color="primary" > <AddIcon onClick={modalOpenFunc}/></Fab>
+       {/* ?! 한번눌러서 말을 못알아 듣는다. */}
     </div>
    
   )}

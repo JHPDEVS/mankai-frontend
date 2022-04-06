@@ -17,6 +17,7 @@ export default function MyMemo(props){
     const [editModalOpen,setEditModalOpen] = useState(false)
     const [memoDetailOpen, setMemoDetailOpen] = useState(false);
     const [memo_id,setMemoId] = useState("");
+    const [memo_type,setMemoType] = useState("");
     const [memoTitle,setMemoTitle] = useState("");
     const memos = useSelector(state=> state.Reducers.memo);
     var [sortedMemos,setSortedMemos] = useState([]);
@@ -62,12 +63,12 @@ const openEditModal = (opened) => {
     setEditModalOpen(opened);
 }
 
-const memoDetail = (e,memo_id, memo_content_text,memo_title) => {
+const memoDetail = (e,memo_id, memo_content_text,memo_title,memo_type) => {
     var target = e.target.nodeName
     setMemoContentText(memo_content_text);
     setMemoId(memo_id)
     setMemoTitle(memo_title)
-
+    setMemoType(memo_type)
 
     if((target === "DIV") || (target === "H1")){
         setMemoDetailOpen(true)
@@ -121,7 +122,7 @@ useEffect(()=>{
             return(
             <>
             {
-<div onClick={(e) => {memoDetail(e, memo.id, memo.content_text, memo.memo_title)}} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
+<div onClick={(e) => {memoDetail(e, memo.id, memo.content_text, memo.memo_title,memo.type)}} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
 <div
    className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
 </div>
@@ -161,7 +162,7 @@ useEffect(()=>{
                     {/* oepnEditModal은 자식에서 editModalOpen을 조정하기 위해서 부모에서 자식으로 메소드를 준 것이다. */}
                     {/* ??? 위치옮기기 */}
 
-                    <MemoDetail memoDetailOpen={memoDetailOpen} memoTitle= {memoTitle} memoContentText={memoContentText} memo_id={memo_id} openDetailModal={openDetailModal} openEditModal={openEditModal} memoDelete={memoDelete}/>
+                    <MemoDetail memoDetailOpen={memoDetailOpen} memoTitle= {memoTitle} memoType={memo_type} memoContentText={memoContentText} memo_id={memo_id} openDetailModal={openDetailModal} openEditModal={openEditModal} memoDelete={memoDelete}/>
     </div>
     )
 }

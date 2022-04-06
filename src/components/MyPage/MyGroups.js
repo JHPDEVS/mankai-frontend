@@ -9,21 +9,37 @@ function Group(props) {
 
     const [groups,setGroups] = useState([]); 
     const groupChange = useSelector(state=>state.Reducers.groupChange);
+    const user = useSelector(state=>state.Reducers.user)
 
+
+    let initialRender = true    
     useEffect(()=>{
+        if(initialRender){
+            initialRender = false
+        }
+        else{
         axios.get('/api/show/group/'+user.id)
         .then(res=>{
             console.log(res.data);
             setGroups(res.data)
         })
+        }
     },[groupChange])
     // group을 새로 만들때 +1이 되는 값이 groupChange이고 groupChange가 일어날 때마다 새롭게 다시 보여줌.
 
+    useEffect(()=>{
+        if(user){
+            axios.get('/api/show/group/'+user.id)
+        .then(res=>{
+            console.log(res.data);
+            setGroups(res.data)
+        })
+        }
+    },[user])
     
     const listClick=(id)=>{
         window.location.href = 'group/'+id
     }
-    const user = useSelector(state=>state.Reducers.user)
     
     return(
         <div>

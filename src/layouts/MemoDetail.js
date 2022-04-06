@@ -21,6 +21,7 @@ const [memoTitle,setMemoTitle] = React.useState("")
 const [memoContentText,setMemoContentText] = React.useState("");
 const [memoId, setMemoId] = React.useState(props.memoId);
 const [selectedImage,setSelectedImage] = React.useState([])
+const [memoType,setMemoType] = React.useState("")
 
 
     const style = {
@@ -43,6 +44,10 @@ const [selectedImage,setSelectedImage] = React.useState([])
       }
 
       React.useEffect(()=>{
+        setMemoType(props.memoType)
+      },[props.memoType])
+
+      React.useEffect(()=>{
           setOpen(props.memoDetailOpen)
       },[props.memoDetailOpen])
 
@@ -63,7 +68,7 @@ const [selectedImage,setSelectedImage] = React.useState([])
         if(open === true){
         axios.get('/api/getmemoimages/'+memoId)
           .then((res)=>{
-            if(res.data.length == 0)
+            if(res.data.length === 0)
                setSelectedImage("No Data")
               if(res.data.length >= 1 ){
               for(let i = 0 ; i < res.data.length ; i++){
