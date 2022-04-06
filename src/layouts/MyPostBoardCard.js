@@ -133,6 +133,7 @@ function MyPostBoardCard(props){
             setLikes(res.data)
         })
     }
+    
     const ClickDisLike =() => {
         dispatch({
             type:"LIKE_UPDATE",
@@ -158,7 +159,8 @@ function MyPostBoardCard(props){
             content_text:props.board.content_text,
             memo_title : titlefieldvalue,
             user_id : user.id,
-            post_memo_id : props.board.id
+            post_memo_id : props.board.id,
+            memo_type : 'SNS'
         })
         // post_memo_id를 보낸게 MemoController에서 게시글에 딸린 이미지를 저장할 수 있게 해준다. 
         .then((res)=>{

@@ -7,6 +7,7 @@ import {Skeleton} from '@mui/material'
 import MemoDetailImages from './MemoDetailImages'
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import { IoIosCloseCircle } from "react-icons/io";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -116,16 +117,39 @@ const [selectedImage,setSelectedImage] = React.useState([])
              width:'100%',
              marginTop:6
          }}/>
+         {
+           ((memoContentText !== '' && selectedImage ==='No Data') || (memoContentText === '' && selectedImage.length >= 1) || (memoContentText !== '' && selectedImage.length >=1))
+           ?
+           <>
          <Box sx={{ p:3 }}>
          <h2 className='font-bold'>{memoContentText}</h2>
          </Box>
-  
-                              {selectedImage == ''
+         {(selectedImage === 'No Data')
+         ?
+         null
+         :<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>
+          }
+         </>
+         :
+         <div className='flex justify-center m-10'>
+         <CircularProgress/>
+         </div>
+         }
+                              {/* {selectedImage == ''
                                 ?<div className='flex justify-center'><Skeleton variant="rectangular" width={595} height={400} /></div>
-                                :selectedImage != 'No Data'
-                                    ?<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>   
-                                    :<div></div>
-                            }
+                                :selectedImage === 'No Data'
+                                    ?<div></div>
+                                    :<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>
+                              } */}
+                             
+
+{selectedImage != 'No data'
+                    ?<div></div>
+                    :selectedImage[0]
+                        ?<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>   
+                        :<div className='flex justify-center'><Skeleton variant="rectangular" width={595} height={400} /></div>
+                  }
+                  {/* No data가 아닌경우는 로딩이 안되어서 ''이거나 사진이 왔거나 */}
 <div className='flex justify-center'>
 
       <div class="py-2">

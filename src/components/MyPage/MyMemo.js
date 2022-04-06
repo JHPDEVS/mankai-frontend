@@ -79,12 +79,14 @@ const openDetailModal = () => {
 }
 
 useEffect(()=>{
+    console.log(memos)
     if(memos){
+        console.log(memos === null)
+        console.log("sort를 마주하려면 무조건 지나는 console.log")
     var copiedSortedMemos = memos.sort(function(a,b){
         return b.id - a.id 
     });
     setSortedMemos(copiedSortedMemos);
-    console.log(memos)
 }
 },[memos])
 // 정렬하지않으면 자꾸 수정할 때마다 최근에 수정한 메모가 맨 앞으로 와서 한 속성을 기준으로(id) 내림차순정렬을 했다.

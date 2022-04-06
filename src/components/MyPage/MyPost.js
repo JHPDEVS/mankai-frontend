@@ -95,10 +95,27 @@ const paginateHandle = (event,value) =>{
   setCurrentPage(value);
 }
 
+let initialRender=true
 useEffect(()=>{
-  console.log("currentPage:",currentPage)
-  ShowBoard()
+  if(initialRender){
+    initialRender=false;
+  }
+  else{
+    ShowBoard()
+  }
 },[currentPage])
+// currentPage에 변화가 있을 때만 ShowBoard()를 하기 위해 초기값설정으로 인해 useEffect가 일어나는 걸 막았다. 
+// 창이 시작되자 마자 myPosts를 들어가면 GET_USER_SUCCESS를 하기 전에 ShowBoard()가 실행되고,
+// 그 때는 user.id가 null값이기 때문에 오류가난다.
+// 따라서 렌더링은(ShowBoard) 반드시 "user정보가 있으면"실행해야 한다. 따라서 밑의 user에 의해 실행되는 useEffect를 만들었고,
+// currentPage의 초기값설정으로 인한 렌더링을 막기위해 initialRender라는 변수를 생성했다. 
+
+
+useEffect(()=>{
+  if(user){
+    ShowBoard()
+  }
+},[user])
 
 
 

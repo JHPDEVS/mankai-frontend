@@ -153,6 +153,7 @@ const fileDrop = (e) => {
     textfieldvalue : textfieldvalue,
     selectedImages : selectedImages,
     user : user,
+    
   }
   
 
@@ -164,6 +165,7 @@ const fileDrop = (e) => {
     formData.append('user_id',user.id);
     formData.append('content_text',textfieldvalue);
     formData.append('memo_title',memoTitleValue);
+    formData.append('memo_type','SNS');
       axios.post('/api/storememo',formData)      
       .then((res)=>{
         dispatch({
