@@ -35,6 +35,7 @@ function GroupCreateModal(props) {
         setOpen(false)
     }
     const save =() =>{
+        console.log("체크체크")
         const formData = new FormData();
         formData.append('img', imageFile);
         formData.append('text', inputText);

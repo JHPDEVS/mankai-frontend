@@ -31,15 +31,12 @@ const style = {
 
 export default function MyMemoWriteModal(props) {
   const [textfieldvalue,setTextFieldValue] = useState("");
+  const [memoTitleValue, setMemoTitleValue] = useState("");
   const [selectedImages, setSelectedImage] = useState([])
   const [imageContainer, setImageContainer] = useState(false); 
   const [fileType, setFileType] = useState([]);
   const [imageToServer, setImageToServer] = useState([]);
   const [dragIn, setDragIn] = useState(false);
-  const [openMemoTitle, setOpenMemoTitle] = useState(false);
-  // 이 값에 따라서 메모제목을 정하는 창이 올라오거나 내려오거나
-  // 수정할때는 제목값이 떠 있어야 된다. 
-  const [memoTitleValue, setMemoTitleValue] = useState("");
   const user = useSelector(state=> state.Reducers.user);
   const [modalOpen,setModalOpen] = useState(props.editModalOpen);
   const [memoId,setMemoId] = useState(props.memo_id)
@@ -53,6 +50,7 @@ export default function MyMemoWriteModal(props) {
   },[props.memoContentText])
 
   useEffect(()=>{
+    console.log("props.memoTitle:",props.memoTitle)
     setMemoTitleValue(props.memoTitle);
   },[props.memoTitle])
   
@@ -158,6 +156,10 @@ export default function MyMemoWriteModal(props) {
     setTextFieldValue(e.target.value);
   };
 
+  const textTitleChange = (e) => {
+    setMemoTitleValue(e.target.value);
+  }
+
  const dragOver = (e) => {
    e.preventDefault();
    setDragIn(true);
@@ -243,7 +245,6 @@ const fileDrop = (e) => {
         })
         console.log("res.data:",res.data);
         props.openEditModal(false);
-        handleClose2();
       })
       .catch((err)=>{
         console.log(err);
@@ -254,16 +255,6 @@ const fileDrop = (e) => {
     
   }
 
-  const setMemoTitleOpen = () => {
-    console.log("제목을 띄우는 모달을 띄우기")
-    setOpenMemoTitle(true)
-  }
-  // memo_title을 입력하기 위한 모달을 띄움
-
-  const handleClose2 = () => {
-    setOpenMemoTitle(false);
-    setMemoTitleValue(props.memoTitle)
-  }
   // memo_title입력을 위한 모달을 끔.
 
   const memoTitleChange = (e) => {
@@ -304,22 +295,19 @@ const fileDrop = (e) => {
       >
 
         <Box sx={style}>
-        <div className="flex justify-start pb-3">
-            <img src="https://images.pexels.com/photos/3278968/pexels-photo-3278968.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-                className="h-14 w-14 rounded-full object-cover"
-                alt="username"/>
-            <div className="ml-4 mt-2">
-                <div className="flex items-center">
-                    {/* <h2 style={{ fontWeight:'bold' }}>{user.name}</h2> */}
-                    {/* user를 갖고오기 전에 user.name을 부르려고 해서 가끔 오류가 난다. */}
-                </div>
 
-                <ul className="flex justify-content-around items-center">
-                </ul>
-                <br/>
-            </div>
-            
-         </div>
+
+         <TextField 
+          sx={{ mb:3 }}
+          fullWidth 
+          value={memoTitleValue}
+          onChange={memoTitleChange}
+          multiline 
+          maxRows={5}
+          id="standard-basic" 
+          label="메모 제목"
+          variant="standard"
+          />
 
           <TextField 
           fullWidth 
@@ -401,36 +389,10 @@ const fileDrop = (e) => {
       onChange={imageHandleChange}/>
     <Button type="submit" sx={{ ":hover":{
             backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} onClick = {setMemoTitleOpen} variant="contained" className="submit_button">메모수정</Button>
+          }, backgroundColor:'#4D2BF4', }} onClick = {toServer} variant="contained" className="submit_button">메모수정</Button>
         </form>
         </Box>
       </Modal>
-
-      
-      <Modal
-        open={openMemoTitle}
-        onClose={handleClose2}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-          <Box sx={style}>
-           <TextField 
-          fullWidth 
-          value={memoTitleValue}
-          onChange={memoTitleChange}
-          multiline 
-          maxRows={5}
-          id="standard-basic" 
-          label="메모 제목을 적어주세요" 
-          variant="standard"
-          />
-
-          <Button onClick={toServer} sx={{ ":hover":{
-            backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모 수정</Button>
-          </Box>
-      </Modal>
-      
       {/* 만약에 https로 시작하는 파일이 있다면 기존에 있었던것. 아니라면 blob로 시작하는 건데 */}
       {/* 기존것을 삭제하고 추가하는 방향으로 한다. 그러면 memo_id를 이용해서 memo_image들을 삭제하고 반복문을 돌렸을 때 https로 시작하면 */}
       {/* 그냥 그대로 저장, 그리고 blob로시작하면 s3에 저장후에 DB에 저장 */}

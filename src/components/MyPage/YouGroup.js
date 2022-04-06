@@ -5,13 +5,14 @@ import Header from "../../admin/layout/Header";
 import GroupCreateModal from "../../layouts/GroupCreateModal";
 
 
-function Group(props) {
+function Group() {
 
     const [groups,setGroups] = useState([]); 
     const groupChange = useSelector(state=>state.Reducers.groupChange);
+    const followId = useSelector(state=>state.Reducers.followId);
 
     useEffect(()=>{
-        axios.get('/api/show/group/'+user.id)
+        axios.get('/api/show/group/'+followId.id)
         .then(res=>{
             console.log(res.data);
             setGroups(res.data)

@@ -179,7 +179,7 @@ const fileDrop = (e) => {
       .catch((err)=>{
         console.log(err);
       })
-    
+    // 제목은 필수, 사진/글 둘중에 하나는 필수로 조건을 정해야 한다. 그리고 조건 위배시 else로 alert띄우게
     
   }
 
@@ -222,9 +222,6 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
-{/* <div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-96" : "right-0")}>
-            <Fab color="primary" onClick={handleOpen}> <AddIcon /></Fab>
-        </div> */}
 
 
       <Modal
@@ -236,13 +233,18 @@ const fileDrop = (e) => {
 
         <Box sx={style}>
         <div className="flex justify-start pb-3">
-            <img src="https://images.pexels.com/photos/3278968/pexels-photo-3278968.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-                className="h-14 w-14 rounded-full object-cover"
-                alt="username"/>
+        <TextField 
+          fullWidth 
+          value={memoTitleValue}
+          onChange={memoTitleChange}
+          multiline 
+          maxRows={5}
+          id="standard-basic" 
+          label="메모제목을 적어주세요" 
+          variant="standard"
+          />
             <div className="ml-4 mt-2">
                 <div className="flex items-center">
-                    {/* <h2 style={{ fontWeight:'bold' }}>{user.name}</h2> */}
-                    {/* user를 갖고오기 전에 user.name을 부르려고 해서 가끔 오류가 난다. */}
                 </div>
 
                 <ul className="flex justify-content-around items-center">
@@ -333,36 +335,10 @@ const fileDrop = (e) => {
       onChange={imageHandleChange}/>
     <Button type="submit" sx={{ ":hover":{
             backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} onClick = {setMemoTitleOpen} variant="contained" className="submit_button">메모저장</Button>
+          }, backgroundColor:'#4D2BF4', }} onClick = {toServer} variant="contained" className="submit_button">메모저장</Button>
         </form>
         </Box>
       </Modal>
-
-      
-      <Modal
-        open={openMemoTitle}
-        onClose={handleClose2}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-          <Box sx={style}>
-           <TextField 
-          fullWidth 
-          value={memoTitleValue}
-          onChange={memoTitleChange}
-          multiline 
-          maxRows={5}
-          id="standard-basic" 
-          label="메모 제목을 적어주세요" 
-          variant="standard"
-          />
-
-          <Button onClick={toServer} sx={{ ":hover":{
-            backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
-          </Box>
-      </Modal>
-      
        <Fab color="primary" > <AddIcon onClick={modalOpenFunc}/></Fab>
     </div>
    

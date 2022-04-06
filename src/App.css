@@ -152,6 +152,51 @@
   object-fit: cover !important;
 }
 
+.profile_image{
+  border-radius: 100px;
+  width:200px;
+  height:200px;
+  object-fit: cover;
+}
+
+.profile_image:hover{
+  filter:brightness(80%)
+}
+
+.profile_image1{
+  border-radius: 100px;
+  width:200px;
+  height:200px;
+  object-fit: cover;
+}
+
+
+
+.slider-container {
+  width: 80%;
+  height: 100%;
+}
+
+.comment_effect:hover {
+  text-decoration: underline;
+}
+
+.memoImages{
+  width: 300px;
+  height: 400px;
+}
+
+.close_memodetail{
+  display: inline;
+  float:right;
+  position:absolute;
+  right:5px;
+  top:1px;
+   margin-top: 5px;
+   margin-right: 5px;
+}
+
+
 
 @keyframes App-logo-spin {
   from {

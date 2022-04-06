@@ -19,6 +19,8 @@ function Group(props) {
             setGroups(res.data)
         })
     },[groupChange])
+    // group을 새로 만들때 +1이 되는 값이 groupChange이고 groupChange가 일어날 때마다 새롭게 다시 보여줌.
+
     
     const listClick=(id)=>{
         window.location.href = 'group/'+id

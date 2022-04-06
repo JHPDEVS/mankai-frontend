@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import GroupUpdateModal from "./GroupUpdateModal";
 
 function GroupIntro(props)
-{
-    
+{   
     const user = useSelector(state=>state.Reducers.user);
     const [open,setOpen] = useState(false)
     const [isGroup,setIsGroup] = useState(false)

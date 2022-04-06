@@ -5,7 +5,7 @@ import { BsThreeDots } from 'react-icons/bs';
 import { useSelector,useDispatch } from 'react-redux';
 import { BoardUpdate } from '../../store/actions';
 import axios from 'axios';
-import MyPostBoardCard from '../../layouts/MyPostBoardCard'
+import BoardCard from '../../layouts/BoardCard'
 
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
@@ -14,7 +14,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 
-export default function MyPost(props) {
+export default function YouPost() {
 
   const style = {
     position: 'absolute',
@@ -28,8 +28,8 @@ export default function MyPost(props) {
   };
 
   const dispatch = useDispatch();
-  const boards = useSelector((state)=>state.Reducers.boardData); 
-  const user = useSelector((state)=>state.Reducers.user)
+  const followId = useSelector(state => state.Reducers.followId);
+//  이제는 useSelector를 이용해서 followId를 가져와 요청 주소에 followId.id를 쓴다.
   const [myPostData, setMyPostData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const likeData = useSelector((state)=>state.Reducers.likeData)
@@ -46,9 +46,9 @@ export default function MyPost(props) {
 
 
   const ShowBoard = () => {
-    axios.get('/api/myposts/'+user.id+"?page="+currentPage)
+    axios.get('/api/myposts/'+followId.id+"?page="+currentPage)
     .then((res)=>{
-        console.log("myPost:",res.data.data)
+        console.log("myPost:",res.data)
         //??? setCurrentPage(res.data.current_page+1);
         //??? 이건 플러스버튼을 눌렀을 때 일어나야 되고
         setLastPage(res.data.last_page);
@@ -58,13 +58,6 @@ export default function MyPost(props) {
             array.push(res.data.data[i].id)
         }
         setMyPostData(fakeMyPostData)
-
-        for(let i = 0 ;i < res.data.data.length; i++){
-        dispatch({
-          type:"BOARD_UPDATE",
-          payload:{boardData:res.data.data[i]}
-        })
-      }
 
         axios.post("api/show/like",{
             data:array
@@ -91,12 +84,12 @@ export default function MyPost(props) {
 
 }
 
-const paginateHandle = (event,value) =>{
-  setCurrentPage(value);
+const paginateHandle = (e) =>{
+  setCurrentPage(e.target.outerText);
+  console.log(e.target.outerText);
 }
 
 useEffect(()=>{
-  console.log("currentPage:",currentPage)
   ShowBoard()
 },[currentPage])
 
@@ -104,29 +97,32 @@ useEffect(()=>{
 
   return (
     <>
-      <Stack id="top"  spacing={2}>
-      {/* ?! 다음페이지를 눌렀을 때 currentPage 업데이트가 안된다. */}
+      <Stack id="top" spacing={2}>
+
       {myPostData.map((myPost,idx) =>{
       return(   
           <div key={idx}>
-              <MyPostBoardCard board={myPost} likeData={likeData} currentPage={currentPage} ShowBoard={ShowBoard} idx={idx}/>
+              <BoardCard board={myPost} likeData={likeData} currentPage={currentPage} idx={idx}/>
            </div>
             )
            })}
 
-           {/* 댓글 보내야된다. 좋아요하고 */}
+           {/* 사진도 보내야 되고 댓글도 보내야 된다. */}
+           
       <Pagination
         count={lastPage}
-        page={currentPage}
-        className="flex justify-center"
         onChange={paginateHandle}
         
+        // ???previous, next할 때 다음페이지, 이전페이지로 이동해야한다.
+        // 그리고 페이지 이동할 때 가장 위에가 보이게 해야된다.
         renderItem={(item) => (
           <PaginationItem
             href="#top"
             components={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
             {...item}
           />
+          //??? 얘 가운데에 놔야된다.
+          //??? 고정시키는게 좋을 것 같다.
         )}
       />
       </Stack>

@@ -9,6 +9,7 @@ import axios from 'axios'
 
 
 import MyFollow from './MyFollow';
+import MyFollowing from './MyFollowing'
 import MyPost from './MyPost';
 import MyGroups from './MyGroups';
 import MyMemo from './MyMemo';
@@ -50,23 +51,21 @@ function a11yProps(index) {
 
 export default function BasicTabs() {
   const [value, setValue] = React.useState(0);
-  const [myPosts, setMyPosts] = React.useState("");
-  const [postMemo, setPostMemo] = React.useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const user = useSelector((state=>state.Reducers.user))
   
   return (
     <div className='h-[calc(100vh-110px)] ' >
       <div className='bg-white border-solid rounded-md items-center my-10 overflow-x-hidden'>
         <Tabs value={value} onChange={handleChange}>
 
-          <Tab label="MyFollows" {...a11yProps(0)} />
-          <Tab label="MyPosts" {...a11yProps(1)} />
-          <Tab label="MyGroups" {...a11yProps(2)} />
-          <Tab label="MyMemos"  {...a11yProps(3)} />
+          <Tab label="Followers" {...a11yProps(0)} />
+          <Tab label="Followings" {...a11yProps(1)} />
+          <Tab label="MyPosts" {...a11yProps(2)} />
+          <Tab label="MyGroups" {...a11yProps(3)} />
+          <Tab label="MyMemos"  {...a11yProps(4)} />
 
 
         </Tabs>
@@ -78,12 +77,15 @@ export default function BasicTabs() {
           <MyFollow/>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <MyPost/>
+          <MyFollowing/>
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <MyGroups/>
+          <MyPost/>
         </TabPanel>
         <TabPanel value={value} index={3}>
+          <MyGroups/>
+        </TabPanel>
+        <TabPanel value={value} index={4}>
           <MyMemo/>
         </TabPanel>
       </div>

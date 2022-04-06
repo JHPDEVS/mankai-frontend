@@ -1,7 +1,8 @@
-import { Button, Fab, getImageListItemBarUtilityClass, Link } from "@mui/material";
+import { Button, Fab, getImageListItemBarUtilityClass, Link, Skeleton } from "@mui/material";
 import axios from "axios";
 import MyMemoWriteModal from '../../layouts/MyMemoWriteModal'
 import MyMemoEditModal from '../../layouts/MyMemoEditModal'
+import MemoDetail from '../../layouts/MemoDetail'
 import AddIcon from '@mui/icons-material/Add';
 import { useSelector, useDispatch } from 'react-redux';
 import React, { useEffect, useState, useRef} from "react";
@@ -14,9 +15,11 @@ export default function MyMemo(props){
     
     const [memoContentText,setMemoContentText] = useState();
     const [editModalOpen,setEditModalOpen] = useState(false)
+    const [memoDetailOpen, setMemoDetailOpen] = useState(false);
     const [memo_id,setMemoId] = useState("");
     const [memoTitle,setMemoTitle] = useState("");
     const memos = useSelector(state=> state.Reducers.memo);
+    var [sortedMemos,setSortedMemos] = useState([]);
     // 추가를 했을 때 reducers.js의 memo에 추가가 되지만 useSelector를 이용해 memo를 가져왔을 때 값이 바로 바뀌지 않는다.
     // 삭제도 마찬가지로 없어지지만 바로 렌더링이 되지 않는다.
 
@@ -59,6 +62,33 @@ const openEditModal = (opened) => {
     setEditModalOpen(opened);
 }
 
+const memoDetail = (e,memo_id, memo_content_text,memo_title) => {
+    var target = e.target.nodeName
+    setMemoContentText(memo_content_text);
+    setMemoId(memo_id)
+    setMemoTitle(memo_title)
+
+
+    if((target === "DIV") || (target === "H1")){
+        setMemoDetailOpen(true)
+    }
+}
+
+const openDetailModal = () => {
+    setMemoDetailOpen(false);
+}
+
+useEffect(()=>{
+    if(memos){
+    var copiedSortedMemos = memos.sort(function(a,b){
+        return b.id - a.id 
+    });
+    setSortedMemos(copiedSortedMemos);
+    console.log(memos)
+}
+},[memos])
+// 정렬하지않으면 자꾸 수정할 때마다 최근에 수정한 메모가 맨 앞으로 와서 한 속성을 기준으로(id) 내림차순정렬을 했다.
+
 
 
 
@@ -84,19 +114,12 @@ const openEditModal = (opened) => {
         
     
     {
-        memos.map((memo,idx)=>{
+        (sortedMemos) ? 
+        sortedMemos.map((memo,idx)=>{
             return(
             <>
             {
-                    // <div key={memo.id} className="postballoon">
-                    // <div className="oneline">{memo.memo_title}</div>
-                    // <br/>
-                    // <span>
-                    //     <Button onClick={() => {editMemo(memo.id,memo.content_text, memo.memo_title); openEditModal(true);}}>수정</Button>
-                    //     <Button onClick={()=>{memoDelete(memo.id,idx)}}>삭제</Button></span>
-                    // </div>
-
-<div key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
+<div onClick={(e) => {memoDetail(e, memo.id, memo.content_text, memo.memo_title)}} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
 <div
    className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
 </div>
@@ -109,8 +132,8 @@ const openEditModal = (opened) => {
          <div className=" text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
             
             <div className="relative">
-               <button onClick={() => {editMemo(memo.id,memo.content_text, memo.memo_title); openEditModal(true);}} className=" rounded-md py-1"><EditIcon/></button>
-        <button onClick={()=>{memoDelete(memo.id,idx)}} className=" rounded-md mx-3 py-1"><DeleteIcon/></button>
+               
+        <button id="deleteicon" onClick={()=>{memoDelete(memo.id,idx)}} className=" rounded-md mx-3 py-1"><DeleteIcon/></button>
             </div>
          </div>
       </div>
@@ -122,15 +145,21 @@ const openEditModal = (opened) => {
             </>
             )
         })
+        :
+        <>
+                <Skeleton variant="rectangular" width={270} height={58} />
+                {/* ?! 로딩할 때 여기로 오질 않는다. */}
+        </>
     }
                     <MyMemoWriteModal/>
 
                     
                     <MyMemoEditModal editModalOpen={editModalOpen} memoTitle = {memoTitle} memoContentText={memoContentText} memo_id={memo_id} openEditModal={openEditModal}/>
-                    {/* editMemoInit은 모달 닫을 때 모달에 있던 정보 초기화하는 useState */}
                     {/* editModalOpen이 true냐 아니냐에 따라 모달이 열리고 닫힌다 */}
                     {/* oepnEditModal은 자식에서 editModalOpen을 조정하기 위해서 부모에서 자식으로 메소드를 준 것이다. */}
                     {/* ??? 위치옮기기 */}
+
+                    <MemoDetail memoDetailOpen={memoDetailOpen} memoTitle= {memoTitle} memoContentText={memoContentText} memo_id={memo_id} openDetailModal={openDetailModal} openEditModal={openEditModal} memoDelete={memoDelete}/>
     </div>
     )
 }

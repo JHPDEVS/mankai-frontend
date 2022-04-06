@@ -2,6 +2,7 @@
 import axios from "axios";
 import { getFollows } from './getFollows'
 import { getMemo } from './getMemo'
+import { getFollowings } from "./getFollowings";
 
 const GET_USER_PENDING = "GET_USER_PENDING";
 const GET_USER_SUCCESS = "GET_USER_SUCCESS";
@@ -28,6 +29,7 @@ export const User = () => async (dispatch) => {
         })
         dispatch(getFollows(res.data.id));
         dispatch(getMemo(res.data.id));
+        dispatch(getFollowings(res.data.id))
       }
     ).catch(err=> {
       // 에러가 발생할경우  GET_USER_FAILURE
