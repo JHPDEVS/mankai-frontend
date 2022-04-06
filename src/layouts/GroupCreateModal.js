@@ -4,10 +4,13 @@ import axios from "axios";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ImageIcon from '@mui/icons-material/Image';
-
+import { useForm } from 'react-hook-form';
 
 
 function GroupCreateModal(props) {
+
+    const { register, watch} = useForm();
+    console.log(watch('email'))
 
     const [open,setOpen] = useState(false);
     const [preview,setPreview] = useState("")
@@ -56,10 +59,24 @@ function GroupCreateModal(props) {
         })
     }
 
+    const nameValidation = () => {
+        let check = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+.{1,80}$/; 
+        if( inputText.length >= 2 ){
+            return false;
+        } else{
+            return !(check.test(inputText));
+        }
+    }
+
+    const passValidation = () => {
+        let check = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+.{1,80}$/; 
+        if( inputPass.length >= 0 ){
+            return !(check.test(inputPass));
+        } 
+    }
+
     return(
         <div>
-            
-            {/* <Button onClick={ModalOpen} >test</Button> */}
             <button class="w-28 bg-blue-500 hover:bg-blue-700 text-white 
             
             font-bold py-2 px-4 mb-4 rounded-full" onClick={ModalOpen}>그룹 만들기</button>
@@ -101,17 +118,47 @@ function GroupCreateModal(props) {
 
                         </div>
                     </div>
-                    <div className="my-4">
+                    {/* <div className="my-4">
                         <p className="text-xl text-gray-500 pl-5">
                             이름
                         </p>
-
                         <input type="text" className="bg-gray-200 rounded-xl h-10 px-4   w-full" onChange={textHandle}></input>
-                        
-                        <p className="">비밀번호 - 공백시 공개</p>
+                        <p className="text-xl text-gray-500 pl-5">비밀번호 - 공백시 공개</p>
                         <input type="text" className="bg-gray-200 rounded-xl h-10 px-4   w-full" onChange={passHandle}></input>
                         
+                    </div> */}
+
+                    <div className="my-4">
+                        <form>
+                            <div className="mb-4">
+                        <TextField 
+                            label="그룹 이름" 
+                            type="text" 
+                            name="name" 
+                            className="w-full mb-5"
+                            variant="outlined"
+                            value={ inputText } 
+                            onChange={ textHandle } 
+                            required
+                            error={ nameValidation() }  
+                            helperText={ nameValidation() ? "최소 2글자이상 입력해주세요." : "" } 
+                        />
+                        </div>
+                        <TextField 
+                            label="그룹 비밀번호" 
+                            type="text" 
+                            name="password" 
+                            variant="outlined"
+                            className="w-full"
+                            value={ inputPass } 
+                            onChange={ passHandle } 
+                            required
+                            error={ passValidation() }  
+                            helperText={ passValidation() ? "공백시 공개그룹." : "" } 
+                        />
+                        </form>
                     </div>
+            
                     카테고리
                     {/* {optionSelected} */}
                     <div className="grid grid-cols-7">
@@ -127,12 +174,16 @@ function GroupCreateModal(props) {
                             )
                         })}
                     </div>
-                    <div className="absolute flex bottom-5 right-10">
-                        <div className="mr-2">
-                            <Button variant="outlined"  color="success" onClick={save}>만들기</Button>
+                    <div className="absolute flex bottom-2 right-10">
+                      
+                        <div className="mr-2 ">
+                            {inputText.length >= 3 && inputPass.length >= 0
+                                ? <Button type="submit" variant="outlined"  color="success" onClick={save}>만들기</Button>
+                                : <Button type="submit" variant="outlined"  color="error">다시 입력해주세요</Button>
+                            }
                         </div>
-                        <Button variant="outlined"  color="error" onClick={ModalClose}>취소하기</Button>
-                
+                            <Button variant="outlined"  color="error" onClick={ModalClose}>취소하기</Button>
+
                     </div>
                 </Box>
             </Modal>

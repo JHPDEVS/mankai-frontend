@@ -57,8 +57,8 @@ function Group(props) {
             <Header/>  
             
             <div className="w-full text-center">
-                <div className="text-center flex">
-                <p className="text-5xl mb-5 mt-5 flex-auto">
+                <div className="text-center">
+                <p className="text-5xl mb-5 mt-5">
                    그룹 검색하기
                 </p>
                 <GroupCreateModal></GroupCreateModal>
