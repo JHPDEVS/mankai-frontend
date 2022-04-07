@@ -106,7 +106,7 @@ class VideoRoom extends Component {
     this.OV = new OpenVidu()
     this.OV.setAdvancedConfiguration({
       interval: 20, // Frequency of the polling of audio streams in ms (default 100)
-      threshold: 0, // Threshold volume in dB (default -50)
+      threshold: 50, // Threshold volume in dB (default -50)
     })
     this.setState(
       {
@@ -507,6 +507,21 @@ class VideoRoom extends Component {
       console.error(e)
     }
   }
+  handleDblClick = e => {
+    const layoutDivs = document.querySelectorAll('.custom-class')
+    const el = e.target.closest('.custom-class')
+
+    if (el.classList.contains('OV_big')) {
+      el.classList.remove('OV_big')
+    } else {
+      for (let i = 0; i < layoutDivs.length; i++) {
+        layoutDivs[i].classList.remove('OV_big')
+      }
+      el.classList.add('OV_big')
+    }
+
+    this.updateLayout()
+  }
 
   screenShare() {
     const videoSource =
@@ -650,7 +665,11 @@ class VideoRoom extends Component {
           <div className="flex w-full h-full">
             <div className="flex flex-col w-full h-full">
               <div id="container" className="flex flex-col h-full w-full">
-                <div id="layout" className="bounds h-6/7 ">
+                <div
+                  id="layout"
+                  className="bounds "
+                  onDoubleClick={this.handleDblClick}
+                >
                   {localUser !== undefined &&
                     localUser.getStreamManager() !== undefined && (
                       <div className="custom-class " id="localUser">
