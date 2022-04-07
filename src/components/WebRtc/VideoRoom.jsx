@@ -19,7 +19,17 @@ import VideocamOff from '@mui/icons-material/VideocamOff'
 import { ConstructionOutlined } from '@mui/icons-material'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
+<<<<<<< HEAD
 
+=======
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition
+const mic = new SpeechRecognition()
+
+mic.continuous = true
+mic.interimResults = true
+mic.lang = 'ko'
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
 class VideoRoom extends Component {
   constructor(props) {
     super(props)
@@ -65,7 +75,10 @@ class VideoRoom extends Component {
     this.checkSize = this.checkSize.bind(this)
     this.setOpenModal = this.setOpenModal.bind(this)
     this.closeOpenModal = this.closeOpenModal.bind(this)
+<<<<<<< HEAD
     this.getPermissions = this.getPermissions.bind(this)
+=======
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
   }
 
   componentDidMount() {
@@ -106,7 +119,11 @@ class VideoRoom extends Component {
   joinSession() {
     this.OV = new OpenVidu()
     this.OV.setAdvancedConfiguration({
+<<<<<<< HEAD
       interval: 1000, // Frequency of the polling of audio streams in ms (default 100)
+=======
+      interval: 20, // Frequency of the polling of audio streams in ms (default 100)
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
       threshold: 0, // Threshold volume in dB (default -50)
     })
     this.setState(
@@ -201,18 +218,54 @@ class VideoRoom extends Component {
       insertMode: 'APPEND',
       mirror: false,
     })
+<<<<<<< HEAD
+=======
+    mic.start()
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
     publisher.on('publisherStartSpeaking', event => {
       console.log('로컬 유저')
       localUser.setSpeaking(true)
       this.sendSignalUserChanged({ speaking: true })
+<<<<<<< HEAD
     })
 
     publisher.on('publisherStopSpeaking', event => {
       console.log('로컬 유저 말안함 ㅎ')
       localUser.setSpeaking(false)
       this.sendSignalUserChanged({ speaking: false })
+=======
+      try {
+        mic.start()
+      } catch (error) {}
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
     })
 
+    publisher.on('publisherStopSpeaking', event => {
+      console.log('로컬 유저 말안함 ㅎ')
+      localUser.setSpeaking(false)
+      this.sendSignalUserChanged({ speaking: false })
+      try {
+        mic.stop()
+      } catch (error) {}
+    })
+
+    mic.onstart = () => {
+      console.log('mics on')
+    }
+
+    mic.onresult = event => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('')
+
+      console.log(event.results)
+
+      this.captionChanged(transcript)
+    }
+    mic.onerror = event => {
+      console.log(event.error)
+    }
     if (this.state.session.capabilities.publish) {
       publisher.on('accessAllowed', () => {
         let transcript = null
@@ -265,7 +318,10 @@ class VideoRoom extends Component {
             nickname: this.state.localUser.getNickname(),
             userOBJ: this.state.localUser.getUserOBJ(),
             caption: this.state.localUser.getCaption(),
+<<<<<<< HEAD
             captionOn: this.state.localUser.getCaptionOnOff(),
+=======
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
             isScreenShareActive: this.state.localUser.isScreenShareActive(),
           })
         }
@@ -314,6 +370,7 @@ class VideoRoom extends Component {
     this.setState({ localUser: localUser })
     this.sendSignalUserChanged({ caption: this.state.localUser.getCaption() })
   }
+<<<<<<< HEAD
 
   captionOnOff(value) {
     let localUser = this.state.localUser
@@ -321,6 +378,8 @@ class VideoRoom extends Component {
     this.setState({ localUser: localUser })
     this.sendSignalUserChanged({ caption: this.state.localUser.getCaption() })
   }
+=======
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
   nicknameChanged(nickname) {
     let localUser = this.state.localUser
     localUser.setNickname(nickname)
@@ -405,6 +464,10 @@ class VideoRoom extends Component {
           }
           if (data.caption !== undefined) {
             user.setCaption(data.caption)
+<<<<<<< HEAD
+=======
+            console.log('캡션 설정 ㅇ')
+>>>>>>> 798e836cbddf443204c94a82fc28c70340ec373a
           }
           if (data.isScreenShareActive !== undefined) {
             user.setScreenShareActive(data.isScreenShareActive)
