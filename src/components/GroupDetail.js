@@ -182,7 +182,7 @@ function GroupDetail({match}) {
                             :<div className='pt-2 pb-2'>가입시 볼 수 있습니다.</div>
                         }
                         {isMaster &&
-                            <button onClick={modalOpen} className='text-blue-500 ml-4 rounded-2xl px-2 h-8 my-auto bg-gray-200 hover:bg-gray-300 hover:text-blue-700'>관리</button>
+                            <button onClick={modalOpen} className='text-blue-500 w-16 ml-4 rounded-2xl px-2 h-8 my-auto bg-gray-200 hover:bg-gray-300 hover:text-blue-700'>관리</button>
                         }
                     </div>
             </AppBar>
@@ -218,12 +218,12 @@ function GroupDetail({match}) {
             >
                 <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
                     <div>
-                            <button onClick={()=>settingClick(2)} className={'w-1/2 py-2 mb-10 hover:bg-gray-100 ' +(settingOption == "2" ? 'bg-blue-100' : "")}>카테고리 관리</button>
-                            <button onClick={()=>settingClick(1)} className={'w-1/2 py-2 mb-10 hover:bg-gray-100 ' +(settingOption == "1" ? 'bg-blue-100' : "")}>카테고리 생성</button>
+                            <button onClick={()=>settingClick(2)} className={'w-80 py-2 my-5 border-b-4 border-indigo-300 hover:border-indigo-600' +(settingOption == "2" ? 'border-b-4 border-indigo-600' : "")}>카테고리 관리</button>
+                            <button onClick={()=>settingClick(1)} className={'w-80 py-2 my-5 ml-6 border-b-4 border-indigo-300 hover:border-indigo-600' +(settingOption == "1" ? 'border-b-4 border-indigo-600' : "")}>카테고리 생성</button>
                         {settingOption == 1 ?
                             <div>
                                 <div className='text-2xl font-bold text-center mt-5 mb-5'>카테고리 제목</div>
-                                    <input type={"text"} onChange={titleHandle} className='bg-gray-300 w-full p-2 rounded-2xl'></input>
+                                    <input type={"text"} onChange={titleHandle} className='bg-gray-200 w-full border-2 border-sky-300 p-2 rounded-2xl'></input>
                                     <div className='text-center text-xl font-bold mt-10 mb-10'>어떤 형식의 게시판을 만들것인가요?</div>
                                     <div className='flex w-full'>                        
                                     {array.map((data)=>{

@@ -7,53 +7,35 @@ export default function FollowList() {
   return (
     <div className='snap-y'>
 
-      <div >
-        {followData.map((item)=>(
-          <div className='border border-gray-300 rounded py-2 px-4 my-3'>
-            <img className="rounded-full border border-gray-100 w-12 h-12 inline-block" src={`${item.img}?w=248&fit=crop&auto=format`} alt="user image" />
-            <Button href="/youProfile">{item.name}</Button>
-            <span className='text-gray-500'> {item.sogae}</span>
-            <BsThreeDots className='float-right my-4 mx-4'/>
-            <BiPaperPlane className='float-right my-4'/>
-          </div>
-        ))}
-            
+<div class="min-h-screen grid place-items-center bg-indigo-400">
+    <div class="bg-indigo-100 h-80 w-64 rounded-md">
+      <div class="flex justify-center items-center leading-none">
+        <img
+          src="https://images.unsplash.com/photo-1585554414787-09b821c321c0?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+          alt="pic"
+          class="h-40 w-56 rounded-md shadow-2xl mt-6 transform -translate-y-10 hover:-translate-y-4 transition duration-700"
+        />
       </div>
+      <div class="p-3">
+        <p class="block mb-1">Modelling</p>
+        <p class="text-xs tracking-tighter text-gray-600">
+          When it is your time, it’s your time. There is no point in worrying
+          about what you can’t control.
+        </p>
+      </div>
+      <div class="flex justify-between items-center p-2">
+        <div class="flex">
+          <i class="test1">favorite_border</i>
+          <span class="text-sm ml-1">100</span>
+          <i class="test2">message</i>
+          <span class="text-sm ml-1">60</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
     </div>
   );
 }
 
 
-const followData = [
-    {
-      id:1,
-      img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-      name: '이현호',
-      sogae: '나는 돼지다'
-    },
-    {
-        id:2,
-        img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-        name: '박주형',
-        sogae: '나는 히틀러다'
-      },
-      {
-        id:3,
-        img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-        name: '장성규',
-        sogae: '나는 착하다'
-      },
-      {
-        id:4,
-        img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-        name: '서재열',
-        sogae: '나는 신중하다'
-      },
-      {
-        id:5,
-        img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-        name: '최지성',
-        sogae: '나는 운동한다'
-      },
-]

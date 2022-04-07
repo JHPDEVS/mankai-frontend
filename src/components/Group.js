@@ -79,7 +79,33 @@ function Group(props) {
                 :<div className="w-full flex flex-wrap">
                     {groups.map((group)=>{
                     return(
-                        <div className="w-96 shadow-lg mx-5 mt-5 mb-8 rounded-xl border hover:brightness-50" onClick={()=>listClick(group.id)} key={group.id}>
+                        <div className="bg-indigo-50 h-90 w-96 mx-5 mt-5 mb-8 rounded-md" onClick={()=>listClick(group.id)} key={group.id}>
+                            <div className="flex flex justify-center items-center leading-none ">
+                                <img className="h-48 w-72 rounded-md shadow-2xl mt-6 -translate-y-10 hover:-translate-y-4 transition duration-700" 
+                                     src={group.logoImage} alt='null' />
+                            </div>
+                            <div className="h-24 mx-2 px-4 text-2xl font-bold text-black">
+                                {group.name}
+                                <p class="text-lg tracking-tighter text-gray-600">
+                                {group.onelineintro}
+                                </p>
+                            </div>
+                            <div class="flex justify-between items-center p-1 ml-72  h-10">
+                                <div class="flex">
+                                <p className="text-sm text-black-400">
+                                    {group.category} / <SvgIcon><GroupIcon></GroupIcon></SvgIcon>{group.length}
+                                </p>
+                                </div>
+                            </div>
+                        </div>
+                    )})}
+
+                </div>
+            }
+
+                {/* {groups.map((group)=>{
+                    return(
+                        <div className="w-96 shadow-lg mx-5 mt-5 mb-8 rounded-xl border hover:brightness-50" 								onClick={()=>listClick(group.id)} key={group.id}>
                             <img className="h-60 rounded-t-xl w-full" src={group.logoImage} alt='null' />
                             <div className=" pt-6 w-fit mx-auto px-4 text-lg font-bold text-black">
                                 {group.name}
@@ -90,9 +116,9 @@ function Group(props) {
                                 </p>
                             </div>
                         </div> 
-                    )})}
-                </div>
-            }
+                    )})} */}
+
+
             </div>
         </div>
     )
