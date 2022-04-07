@@ -4,15 +4,22 @@ import { OpenVidu } from 'openvidu-browser'
 import axios from 'axios'
 import StreamComponent from '../stream/StreamComponent'
 import DialogExtensionComponent from '../dialog-extension/DialogExtension'
-import ChatComponent from '../Chat/ChatComponent'
 import './Room.css'
 import OpenViduLayout from '../../layouts/openvidu-layout'
 import UserModel from '../../models/user-model'
 import ToolbarComponent from '../toolbar/ToolbarComponent'
 import Header from '../../admin/layout/Header'
 import { IconButton } from '@mui/material'
+import ChangeNameModal from './ChangeNameModal'
+import Chat from './Chat'
+import Mic from '@mui/icons-material/Mic'
+import MicOff from '@mui/icons-material/MicOff'
+import Videocam from '@mui/icons-material/Videocam'
+import VideocamOff from '@mui/icons-material/VideocamOff'
+import { ConstructionOutlined } from '@mui/icons-material'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
+
 class VideoRoom extends Component {
   constructor(props) {
     super(props)
@@ -32,10 +39,12 @@ class VideoRoom extends Component {
       myUserName: userName,
       session: undefined,
       localUser: undefined,
+      openModal: false,
       subscribers: [],
       chatDisplay: 'none',
       userInfo: userInfo,
       currentVideoDevice: undefined,
+      sst: undefined,
     }
 
     this.joinSession = this.joinSession.bind(this)
@@ -43,6 +52,7 @@ class VideoRoom extends Component {
     this.onbeforeunload = this.onbeforeunload.bind(this)
     this.updateLayout = this.updateLayout.bind(this)
     this.camStatusChanged = this.camStatusChanged.bind(this)
+    this.captionChanged = this.captionChanged.bind(this)
     this.micStatusChanged = this.micStatusChanged.bind(this)
     this.nicknameChanged = this.nicknameChanged.bind(this)
     this.toggleFullscreen = this.toggleFullscreen.bind(this)
@@ -53,22 +63,24 @@ class VideoRoom extends Component {
     this.toggleChat = this.toggleChat.bind(this)
     this.checkNotification = this.checkNotification.bind(this)
     this.checkSize = this.checkSize.bind(this)
+    this.setOpenModal = this.setOpenModal.bind(this)
+    this.closeOpenModal = this.closeOpenModal.bind(this)
+    this.getPermissions = this.getPermissions.bind(this)
   }
 
   componentDidMount() {
     const openViduLayoutOptions = {
-      maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
-      minRatio: 9 / 16, // The widest ratio that will be used (default 16x9)
-      fixedRatio: false, // If this is true then the aspect ratio of the video is maintained and minRatio and maxRatio are ignored (default false)
-      bigClass: 'OV_big', // The class to add to elements that should be sized bigger
-      bigPercentage: 0.8, // The maximum percentage of space the big ones should take up
-      bigFixedRatio: false, // fixedRatio for the big ones
-      bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
-      bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
-      bigFirst: true, // Whether to place the big one in the top left (true) or bottom right
-      animate: true, // Whether you want to animate the transitions
+      maxRatio: 3 / 4,
+      minRatio: 9 / 16,
+      fixedRatio: true,
+      bigClass: 'OV_big',
+      bigPercentage: 0.7,
+      bigFixedRatio: true,
+      bigMaxRatio: 9 / 16,
+      bigMinRatio: 9 / 16,
+      bigFirst: true,
+      animate: true,
     }
-
     this.layout.initLayoutContainer(
       document.getElementById('layout'),
       openViduLayoutOptions
@@ -76,13 +88,14 @@ class VideoRoom extends Component {
     window.addEventListener('beforeunload', this.onbeforeunload)
     window.addEventListener('resize', this.updateLayout)
     window.addEventListener('resize', this.checkSize)
-    this.joinSession()
+    this.getPermissions()
   }
 
   componentWillUnmount() {
     window.removeEventListener('beforeunload', this.onbeforeunload)
     window.removeEventListener('resize', this.updateLayout)
     window.removeEventListener('resize', this.checkSize)
+
     this.leaveSession()
   }
 
@@ -92,7 +105,10 @@ class VideoRoom extends Component {
 
   joinSession() {
     this.OV = new OpenVidu()
-
+    this.OV.setAdvancedConfiguration({
+      interval: 1000, // Frequency of the polling of audio streams in ms (default 100)
+      threshold: 0, // Threshold volume in dB (default -50)
+    })
     this.setState(
       {
         session: this.OV.initSession(),
@@ -159,24 +175,48 @@ class VideoRoom extends Component {
         )
       })
   }
-
+  getPermissions = () => {
+    return new Promise((res, rej) => {
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          this.joinSession()
+        })
+        .catch(err => {
+          alert('카메라나 오디오 권한을 확인해주세요 게스트모드로 접근')
+          this.joinSession()
+        })
+    })
+  }
   async connectWebCam() {
     var devices = await this.OV.getDevices()
     var videoDevices = devices.filter(device => device.kind === 'videoinput')
-
     let publisher = this.OV.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: videoDevices[0].deviceId,
       publishAudio: localUser.isAudioActive(),
       publishVideo: localUser.isVideoActive(),
-      resolution: '640x480',
-      frameRate: 60,
+      resolution: '1920x1080',
+      frameRate: 30,
       insertMode: 'APPEND',
       mirror: false,
+    })
+    publisher.on('publisherStartSpeaking', event => {
+      console.log('로컬 유저')
+      localUser.setSpeaking(true)
+      this.sendSignalUserChanged({ speaking: true })
+    })
+
+    publisher.on('publisherStopSpeaking', event => {
+      console.log('로컬 유저 말안함 ㅎ')
+      localUser.setSpeaking(false)
+      this.sendSignalUserChanged({ speaking: false })
     })
 
     if (this.state.session.capabilities.publish) {
       publisher.on('accessAllowed', () => {
+        let transcript = null
+
         this.state.session.publish(publisher).then(() => {
           this.updateSubscribers()
           this.localUserAccessAllowed = true
@@ -221,8 +261,11 @@ class VideoRoom extends Component {
           this.sendSignalUserChanged({
             isAudioActive: this.state.localUser.isAudioActive(),
             isVideoActive: this.state.localUser.isVideoActive(),
+            speaking: this.state.localUser.isSpeaking(),
             nickname: this.state.localUser.getNickname(),
             userOBJ: this.state.localUser.getUserOBJ(),
+            caption: this.state.localUser.getCaption(),
+            captionOn: this.state.localUser.getCaptionOnOff(),
             isScreenShareActive: this.state.localUser.isScreenShareActive(),
           })
         }
@@ -265,6 +308,19 @@ class VideoRoom extends Component {
     this.setState({ localUser: localUser })
   }
 
+  captionChanged(value) {
+    let localUser = this.state.localUser
+    localUser.setCaption(value)
+    this.setState({ localUser: localUser })
+    this.sendSignalUserChanged({ caption: this.state.localUser.getCaption() })
+  }
+
+  captionOnOff(value) {
+    let localUser = this.state.localUser
+    localUser.setCaption(value)
+    this.setState({ localUser: localUser })
+    this.sendSignalUserChanged({ caption: this.state.localUser.getCaption() })
+  }
   nicknameChanged(nickname) {
     let localUser = this.state.localUser
     localUser.setNickname(nickname)
@@ -297,6 +353,7 @@ class VideoRoom extends Component {
           'custom-class'
         )
       })
+
       const newUser = new UserModel()
       newUser.setStreamManager(subscriber)
       newUser.setConnectionId(event.stream.connection.connectionId)
@@ -343,6 +400,12 @@ class VideoRoom extends Component {
           if (data.user !== undefined) {
             user.setUserOBJ(data.user)
           }
+          if (data.speaking !== undefined) {
+            user.setSpeaking(data.speaking)
+          }
+          if (data.caption !== undefined) {
+            user.setCaption(data.caption)
+          }
           if (data.isScreenShareActive !== undefined) {
             user.setScreenShareActive(data.isScreenShareActive)
           }
@@ -363,6 +426,12 @@ class VideoRoom extends Component {
     }, 20)
   }
 
+  setOpenModal = () => {
+    this.setState({ openModal: true })
+  }
+  closeOpenModal = () => {
+    this.setState({ openModal: false })
+  }
   sendSignalUserChanged(data) {
     const signalOptions = {
       data: JSON.stringify(data),
@@ -447,7 +516,10 @@ class VideoRoom extends Component {
       undefined,
       {
         videoSource: videoSource,
-        publishAudio: localUser.isAudioActive(),
+        audioSource: undefined,
+        resolution: '1920x1080',
+        publishAudio: true,
+        insertMode: 'PREPEND',
         publishVideo: localUser.isVideoActive(),
         mirror: false,
       },
@@ -477,6 +549,15 @@ class VideoRoom extends Component {
           })
         })
       })
+
+      publisher.stream
+        .getMediaStream()
+        .getVideoTracks()[0]
+        .addEventListener('ended', () => {
+          console.log('화면 공유 중지')
+          this.stopScreenShare()
+          // You can send a signal with Session.signal method to warn other participants
+        })
     })
     publisher.on('streamPlaying', () => {
       this.updateLayout()
@@ -500,13 +581,13 @@ class VideoRoom extends Component {
       this.state.subscribers.some(user => user.isScreenShareActive()) ||
       localUser.isScreenShareActive()
     const openviduLayoutOptions = {
-      maxRatio: 3 / 2,
+      maxRatio: 3 / 4,
       minRatio: 9 / 16,
       fixedRatio: isScreenShared,
       bigClass: 'OV_big',
       bigPercentage: 0.7,
       bigFixedRatio: false,
-      bigMaxRatio: 3 / 2,
+      bigMaxRatio: 9 / 16,
       bigMinRatio: 9 / 16,
       bigFirst: true,
       animate: true,
@@ -561,17 +642,19 @@ class VideoRoom extends Component {
         <div className="relative flex flex-col flex-1 h-screen  overflow-x-hidden">
           {/*  Site header */}
           <Header />
-
+          <ChangeNameModal
+            open={this.state.openModal}
+            user={localUser}
+            handleNickname={this.nicknameChanged}
+            handleClose={this.closeOpenModal}
+          />
           <div className="flex w-full h-full">
             <div className="flex flex-col w-full h-full">
-              <div className="flex flex-row h-full w-full">
-                <div id="layout" className="bounds">
+              <div id="container" className="flex flex-col h-full w-full">
+                <div id="layout" className="bounds h-6/7 ">
                   {localUser !== undefined &&
                     localUser.getStreamManager() !== undefined && (
-                      <div
-                        className="OT_root OT_publisher custom-class"
-                        id="localUser"
-                      >
+                      <div className="custom-class " id="localUser">
                         <StreamComponent
                           user={localUser}
                           handleNickname={this.nicknameChanged}
@@ -579,11 +662,7 @@ class VideoRoom extends Component {
                       </div>
                     )}
                   {this.state.subscribers.map((sub, i) => (
-                    <div
-                      key={i}
-                      className="OT_root OT_publisher custom-class"
-                      id="remoteUsers"
-                    >
+                    <div key={i} className="custom-class" id="remoteUsers">
                       <StreamComponent
                         user={sub}
                         streamId={sub.streamManager.stream.streamId}
@@ -595,40 +674,38 @@ class VideoRoom extends Component {
                       <div
                         className="OT_root OT_publisher custom-class"
                         style={chatDisplay}
-                      >
-                        <ChatComponent
-                          user={localUser}
-                          chatDisplay={this.state.chatDisplay}
-                          close={this.toggleChat}
-                          messageReceived={this.checkNotification}
-                        />
-                      </div>
+                      ></div>
                     )}
+                </div>
+                <div className="h-1/7">
+                  <ToolbarComponent
+                    sessionId={mySessionId}
+                    user={localUser}
+                    showNotification={this.state.messageReceived}
+                    camStatusChanged={this.camStatusChanged}
+                    micStatusChanged={this.micStatusChanged}
+                    screenShare={this.screenShare}
+                    stopScreenShare={this.stopScreenShare}
+                    toggleFullscreen={this.toggleFullscreen}
+                    switchCamera={this.switchCamera}
+                    leaveSession={this.leaveSession}
+                    toggleChat={this.toggleChat}
+                  />
                 </div>
               </div>
             </div>
-            <div className="w-full w-2/6 bg-videochatbg">
+            <div className="w-full w-1/3 bg-videochatbg">
               <div className=" font-bold text-sm text-left p-2">
                 <div className="flex w-full">
                   <span className="px-2 py-1 text-sm font-bold text-blue-900  rounded-md ">
-                    대화상대 {this.state.subscribers.length + 1}명
-                    <ToolbarComponent
-                      sessionId={mySessionId}
-                      user={localUser}
-                      showNotification={this.state.messageReceived}
-                      camStatusChanged={this.camStatusChanged}
-                      micStatusChanged={this.micStatusChanged}
-                      screenShare={this.screenShare}
-                      stopScreenShare={this.stopScreenShare}
-                      toggleFullscreen={this.toggleFullscreen}
-                      switchCamera={this.switchCamera}
-                      leaveSession={this.leaveSession}
-                      toggleChat={this.toggleChat}
-                    />
+                    {this.props.roomName} 대화상대{' '}
+                    {this.state.subscribers.length + 1}명
                   </span>
+                  <button className="ml-auto p-1 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500">
+                    방 공유
+                  </button>
                 </div>
-
-                <div className="text-sm  ">
+                <div className="text-sm  bg-white h-40 overflow-y-auto">
                   <div className="flex items-center w-full bg-white">
                     <IconButton
                       className="inline-flex justify-center item  s-center group"
@@ -636,13 +713,41 @@ class VideoRoom extends Component {
                     >
                       <div className="flex flex-row items-center text-center">
                         <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
-                          <span> {this.props.user.name.substr(0, 1)}</span>
+                          <span>
+                            {localUser ? localUser.nickname.substr(0, 1) : null}
+                          </span>
                         </div>
                       </div>
                     </IconButton>
 
                     <div className="text-xl block overflow-hidden text-ellipsis whitespace-nowrap ">
-                      {this.props.user.name}
+                      {localUser ? localUser.nickname : null}
+                    </div>
+                    <div
+                      className="ml-auto font-bold text-primarytext mr-1"
+                      onClick={() => this.setOpenModal()}
+                    >
+                      이름 변경
+                    </div>
+                    <div className=" mr-2">
+                      {localUser && localUser.audioActive ? (
+                        <span>
+                          <Mic />
+                        </span>
+                      ) : (
+                        <span>
+                          <MicOff />
+                        </span>
+                      )}
+                      {localUser && localUser.videoActive ? (
+                        <span>
+                          <Videocam />
+                        </span>
+                      ) : (
+                        <span>
+                          <VideocamOff />
+                        </span>
+                      )}
                     </div>
                   </div>
                   {this.state.subscribers.map((user, index) => (
@@ -655,7 +760,7 @@ class VideoRoom extends Component {
                           <div className="flex items-center justify-center h-10 w-10 text-black rounded-2xl bg-primary300 font-bold uppercase text-xl">
                             <span>
                               {user.userOBJ
-                                ? user.userOBJ.name.substr(0, 1)
+                                ? user.nickname.substr(0, 1)
                                 : user.nickname.substr(0, 1)}
                             </span>
                           </div>
@@ -663,10 +768,33 @@ class VideoRoom extends Component {
                       </IconButton>
 
                       <div className="text-xl block overflow-hidden text-ellipsis whitespace-nowrap ">
-                        {user.userOBJ ? user.userOBJ.name : user.nickname}
+                        {user.userOBJ ? user.nickname : user.nickname}
+                      </div>
+                      <div className="ml-auto mr-2">
+                        {user && user.audioActive ? (
+                          <span>
+                            <Mic />
+                          </span>
+                        ) : (
+                          <span>
+                            <MicOff />
+                          </span>
+                        )}
+                        {user && user.videoActive ? (
+                          <span>
+                            <Videocam />
+                          </span>
+                        ) : (
+                          <span>
+                            <VideocamOff />
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}
+                </div>
+                <div className="pt-1">
+                  <Chat user={localUser} roomID={this.props.roomName}></Chat>
                 </div>
               </div>
             </div>
@@ -683,8 +811,8 @@ class VideoRoom extends Component {
    * These methods retrieve the mandatory user token from OpenVidu Server.
    * This behaviour MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
    * the API REST, openvidu-java-client or openvidu-node-client):
-   *   1) Initialize a session in OpenVidu Server	(POST /api/sessions)
-   *   2) Generate a token in OpenVidu Server		(POST /api/tokens)
+   *   1) Initialize a session in OpenVidu Server   (POST /api/sessions)
+   *   2) Generate a token in OpenVidu Server      (POST /api/tokens)
    *   3) The token must be consumed in Session.connect() method
    */
 
