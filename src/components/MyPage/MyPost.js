@@ -43,6 +43,7 @@ export default function MyPost(props) {
   const [infHandle, setInfHandle] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [initialRender,setInitialRender] = useState(true)
 
 
   const ShowBoard = () => {
@@ -95,12 +96,13 @@ const paginateHandle = (event,value) =>{
   setCurrentPage(value);
 }
 
-let initialRender=true
 useEffect(()=>{
+  console.log("currentPage바뀜")
   if(initialRender){
-    initialRender=false;
+    setInitialRender(false)
   }
   else{
+    console.log("ShowBoard실행")
     ShowBoard()
   }
 },[currentPage])

@@ -129,6 +129,10 @@ function BoardCopy(props)
     const isOpen = useSelector((state)=>state.Reducers.isOpen);
     const likeData = useSelector((state)=>state.Reducers.likeData)
 
+    useEffect(()=>{
+        console.log("boards:",boards)
+    },[boards])
+
     let art = ['영화','미술','공연','음악','드라마','연예인','만화','방송'];
     let life =['패션','일상','육아','동물','요리','인테리어','할인'];
     let hobby=['게임','스포츠','자동차','취미','해외여행','국내여행','맛집']
@@ -186,7 +190,7 @@ function BoardCopy(props)
                                     {boards.map((data,idx) =>{
                                         return(   
                                             <div key={idx}>
-                                                <BoardCard board={data} idx={idx}/>
+                                                <BoardCard board={data} ShowBoard={ShowBoard} idx={idx}/>
                                             </div>
                                         )
                                     })}

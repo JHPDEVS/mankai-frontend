@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from 'react';
-import { Avatar, Button, Card, IconButton, CircularProgress, Skeleton,TextField } from '@mui/material';
+import { Avatar, Button, Card, IconButton, Skeleton,TextField } from '@mui/material';
 import BoardSide from './BoardSide';
 import Box from '@mui/material/Box';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -22,11 +22,8 @@ import Moment from 'react-moment';
 import 'react-dropdown/style.css';
 import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
-import MyPostEditModal from './MyPostEditModal'
-import { buttonUnstyledClasses } from '@mui/base';
-import '../App.css'
 
-function MyPostBoardCard(props){
+function BoardCard(props){
     
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
@@ -34,9 +31,9 @@ function MyPostBoardCard(props){
     const isOpen = useSelector(state=>state.Reducers.isOpen)
     const likeUpdate = useSelector(state=>state.Reducers.likeUpdate)
     const likeId = useSelector(state=>state.Reducers.likeId)
+    const followId = useSelector(state=>state.Reducers.followId)
 
     const [imageList, setImageList] = useState([]);
-    const [showComment, setShowComment] = useState(false);
     const [isLike,setIsLike] = useState(false)
     const [likes,setLikes] = useState([])
     const [openModal,setOpenModal] = useState(false)
@@ -44,18 +41,17 @@ function MyPostBoardCard(props){
     const [sampleComment, setSampleComment] = useState([])
     const [titlefieldvalue,setTitleFieldValue] = useState("");
     const [commentLength, setCommentLength] = useState("")
-    const option = ["번역하기","클립보드로 이동","수정하기","삭제하기"]
+    const option = ["번역하기","클립보드로 이동","신고하기",
+    (user.id===Number(props.board.user_id)) ? "삭제하기" : null
+    ]
     const [translated,setTranslated] = useState("");
-    const [more,setMore] = useState(false)
-    const [editModalOpen,setEditModalOpen] = useState(false)
+
     // 메뉴바 조절
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
     };
-
-
 
     const style = {
         position: 'absolute',
@@ -74,6 +70,7 @@ function MyPostBoardCard(props){
       const textChange = (e) => {
         setTitleFieldValue(e.target.value);
       };
+
 
     const handleClose = (e) => {
         let eText = e.target.outerText;
@@ -99,19 +96,11 @@ function MyPostBoardCard(props){
             props.ShowBoard();
         }
 
-        if(eText === "수정하기"){
-            setEditModalOpen(true)
-        }
-
         if(eText === "클립보드로 이동"){
             setOpenModal(true)
         }
         setAnchorEl(null);
     };
-
-    const showBoardByEdit = () => {
-        props.ShowBoard();
-    }
 
     const BoardToSideData = (e) =>{
         console.log(likes)
@@ -140,7 +129,6 @@ function MyPostBoardCard(props){
             setLikes(res.data)
         })
     }
-    
     const ClickDisLike =() => {
         dispatch({
             type:"LIKE_UPDATE",
@@ -166,7 +154,6 @@ function MyPostBoardCard(props){
             content_text:props.board.content_text,
             memo_title : titlefieldvalue,
             user_id : user.id,
-            post_memo_id : props.board.id,
             memo_type : 'SNS'
         })
         // post_memo_id를 보낸게 MemoController에서 게시글에 딸린 이미지를 저장할 수 있게 해준다. 
@@ -204,9 +191,6 @@ function MyPostBoardCard(props){
         })
     },[likes])
 
-    useEffect(()=>{
-        console.log("imageList:",imageList)
-    },[imageList])
        
 
     useEffect(()=>{
@@ -233,7 +217,6 @@ function MyPostBoardCard(props){
     useEffect(() => {
         let check = 0 
         setImageList([])
-        // setImageList가 먼저 되느냐 setImageList가 먼저되느냐 문제다.
         if(check == 0){
             axios.get('/api/upload_image/'+props.board.id)
             .then(function(res){
@@ -242,11 +225,10 @@ function MyPostBoardCard(props){
                 check = 1
                 if(res.data.images.length == 0)
                     setImageList("No Data")
-                else{
+                else
                     for(let i = 0 ; i<res.data.images.length ; i++){
                         setImageList((imageList)=>[...imageList,res.data.images[i].url])
                     }
-                }
                 setSampleComment(res.data.comments)
                 setCommentLength(res.data.comment_length)
                 setLikes(res.data.likes)
@@ -256,49 +238,19 @@ function MyPostBoardCard(props){
             })
         }
     },[props.board])
-
-  
-
-    const showComments = () => {
-        setShowComment(!showComment);
-    }
 // 댓글도 가져오니까 렌더링 시켜줘야 된다.
 
 
-    const moreComments = (boardId) => {
-        axios.get('/api/all_comments/'+boardId)
-        .then((res)=>{
-            setSampleComment(res.data)
-            setMore(true)
-        })
-        .catch((err)=>{
-            console.log(err)
-        })        
-    }
-
-    const commentsFold  = () => {
-        setMore(false)
-        console.log(sampleComment)
-        sampleComment.splice(3,sampleComment.length)
-    }
-
-    const openEditModal = (open) => {
-        setEditModalOpen(open)
-    }
-
-
-
-
     return (  
-        <div className ="w-full mx-auto max-w-3xl px-3 mb-5" >
+        <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
             <div>
                 <div className="bg-white w-full rounded-2xl shadow-md mt-2">
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
                             <div className="flex">
-                                <Avatar className='mr-3 mt-1'><img src={(user.profile) ? (user.profile) : "https://www.taggers.io/common/img/default_profile.png"} alt=""/></Avatar> 
-                                <div>       
-                                <h3 className="font-bold text-md">{user.name}</h3>
+                                <Avatar className='mr-3 mt-1'><img src={followId.profile}/></Avatar> 
+                                <div>        
+                                    <h3 className="font-bold text-md">{followId.name}</h3>
                                     <p className='text-sm text-gray-500'><Moment format='YYYY/MM/DD'>{props.board.updated_at}</Moment> </p>
                                 </div>
                             </div>
@@ -329,10 +281,6 @@ function MyPostBoardCard(props){
           </Box>
       </Modal>
 
-      <MyPostEditModal showBoardByEdit={showBoardByEdit} editModalOpen={editModalOpen} openEditModal={openEditModal} memoContentText={props.board.content_text}
-        postId={props.board.id}       
-        />
-
                                 <Button
                                     id="basic-button"
                                     aria-controls={open ? 'basic-menu' : undefined}
@@ -362,26 +310,17 @@ function MyPostBoardCard(props){
 
                         </div>
                     </div>
-                    <div className='w-full mt-10'>
+                    <div className='w-full mt-10 '>
                         <div className='w-full mx-auto xl:px-16 px-10'>
                             {/* 게시글 사진및 본문내용 */}
-                            {
-                            ((props.board.content_text !== '' && imageList ==='No Data') || (props.board.content_text === '' && imageList.length >= 1) || (props.board.content_text !== '' && imageList.length >=1))
-                            ?
-                            <>
                             <p className='font-bold'>{props.board.content_text}</p>
+
                             <p className="bg-gray-200">{translated}</p>
                             {imageList == ''
                                 ?<Skeleton variant="rectangular" width={550} height={550} />
                                 :imageList != 'No Data'
                                     ?<div className='mt-3'><BoardImages imageList={imageList}/></div>   
                                     :<div></div>
-                            }
-                            </>
-                            :
-                            <div className='flex justify-center m-10'>
-                                <CircularProgress/>
-                            </div>
                             }
                         </div>  
                         {/* Down */}
@@ -408,9 +347,6 @@ function MyPostBoardCard(props){
 
                                     </div>
                                     <div className='w-2/3 text-right'>
-                                        <button onClick={showComments} className='comment_effect inline-block text-md text-gray-500'>
-                                        댓글{commentLength}개
-                                        </button>
                                         <Button>
                                                 <SvgIcon color='action' className='mx-auto' component={ShareIcon} fontSize="large"/>
                                         </Button>
@@ -418,33 +354,22 @@ function MyPostBoardCard(props){
                                 </div>
                               
                                 <div className='px-12 mt-5  break-words'>
-                                    {(sampleComment.length > 0) && (showComment) 
+                                    {sampleComment.length > 0 
                                         ? <div>
                                             {sampleComment.map((sample)=>{
                                                 return(
-                                                   
                                                     <div className='text-md text-gray-500'>
                                                         {sample.user_name +" : "+sample.comment}
                                                     </div>
                                                 )
                                              })}
-                                             {(more) ?
-                                             <div className='flex justify-center'>
-                                            <button onClick={commentsFold} className='comment_effect inline-block text-md text-gray-500'>
-                                                접기
-                                            </button>
+                                            <div className='text-center o text-sm mt-5  text-gray-500'>
+                                                총 {commentLength}개의 댓글이 있습니다...
                                             </div>
-                                             :
-                                                   <div className='flex justify-center'>
-                                                   <button 
-                                                    onClick={() => {moreComments(sampleComment[0].freeboard_id)}}
-                                                    className='comment_effect mt-5 text-md text-gray-500'>
-                                                    댓글{commentLength-3}개 더보기
-                                                    </button>
-                                                   </div>
-                                                   }
                                         </div>
-                                        :null
+                                        :<div className='text-center text-sm text-gray-500'>
+                                            댓글이 없습니다.
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -459,5 +384,5 @@ function MyPostBoardCard(props){
     );    
 }
 
-export default MyPostBoardCard;
+export default BoardCard;
 

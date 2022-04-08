@@ -58,9 +58,11 @@ const GET_MEMO_SUCCESS = 'GET_MEMO_SUCCESS'
 const GET_MEMO_FAILURE = 'GET_MEMO_FAILURE'
 const DELETE_MEMO = 'DELETE_MEMO'
 const UPDATE_MEMO = 'UPDATE_MEMO'
+const BOARD_REALUPDATE = 'BOARD_REALUPDATE'
 const BOARD_UPDATE = "BOARD_UPDATE"
 const BOARD_CLICK ="BOARD_CLICK"
 const BOARD_CLEAR ="BOARD_CLEAR"
+const BOARD_DELETE = "BOARD_DELETE"
 const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
@@ -244,13 +246,23 @@ export default handleActions(
         error: false,
       }
     },
+    [BOARD_REALUPDATE] : (state,action)=>{
 
+    },
     [BOARD_UPDATE]:(state,action)=>{
       return{
           ...state,
           boardData:[...state.boardData,action.payload.boardData]
       }
-  },
+    },
+    [BOARD_DELETE]:(state,action)=>{
+      return{
+        ...state,
+        boardData : state.boardData.filter((boardDataone)=>{
+          return boardDataone.id !== action.payload.boardId
+        })
+      }
+    },
   [BOARD_CLICK]:(state,action)=>{
     return {
       ...state,

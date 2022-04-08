@@ -5,7 +5,7 @@ import { BsThreeDots } from 'react-icons/bs';
 import { useSelector,useDispatch } from 'react-redux';
 import { BoardUpdate } from '../../store/actions';
 import axios from 'axios';
-import BoardCard from '../../layouts/BoardCard'
+import YouBoardCard from '../../layouts/YouBoardCard'
 
 import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
@@ -102,7 +102,7 @@ useEffect(()=>{
       {myPostData.map((myPost,idx) =>{
       return(   
           <div key={idx}>
-              <BoardCard board={myPost} likeData={likeData} currentPage={currentPage} idx={idx}/>
+              <YouBoardCard board={myPost} likeData={likeData} currentPage={currentPage} idx={idx}/>
            </div>
             )
            })}
@@ -112,7 +112,7 @@ useEffect(()=>{
       <Pagination
         count={lastPage}
         onChange={paginateHandle}
-        
+        className="flex justify-center"
         // ???previous, next할 때 다음페이지, 이전페이지로 이동해야한다.
         // 그리고 페이지 이동할 때 가장 위에가 보이게 해야된다.
         renderItem={(item) => (

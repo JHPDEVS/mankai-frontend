@@ -31,7 +31,6 @@ const style = {
 
 export default function MyMemoEditModal(props) {
   const [textfieldvalue,setTextFieldValue] = useState("");
-  const [memoTitleValue, setMemoTitleValue] = useState("");
   const [selectedImages, setSelectedImage] = useState([])
   const [imageContainer, setImageContainer] = useState(false); 
   const [fileType, setFileType] = useState([]);
@@ -45,58 +44,49 @@ export default function MyMemoEditModal(props) {
   // 그리고 reducers.js에서 함수 2개 지우고 isModalOpen이라는 변수도 지우기
   const dispatch = useDispatch()
 
+
   useEffect(()=>{
     setTextFieldValue(props.memoContentText);
   },[props.memoContentText])
 
   useEffect(()=>{
-    console.log("props.memoTitle:",props.memoTitle)
-    setMemoTitleValue(props.memoTitle);
-  },[props.memoTitle])
-  
-  useEffect(()=>{
-    setMemoId(props.memo_id);
-  },[props.memo_id])
-
-  useEffect(()=>{
-    if(modalOpen === true){
-    axios.get('/api/getmemoimages/'+memoId)
-      .then((res)=>{
-          if(res.data.length >= 1 ){
-          showImageContainer()
-          for(let i = 0 ; i < res.data.length ; i++){
-            if(res.data[i].url.includes('.jpg')){
-              setFileType(file => [...file,'image/jpeg'])
-            }
-            setSelectedImage(images => [...images, res.data[i].url]);
-            setImageToServer(images => [...images, res.data[i].url])
-          }            
-          }
-          console.log(res.data)
-      })
-      .catch((err)=>{
-          console.log(err)
-      })
-    } else{
-      setSelectedImage([])
-      setImageToServer([])
-    }
+    if(modalOpen === false){
+        setSelectedImage([])
+        setImageToServer([])
+      }
+      if(modalOpen === true){
+        axios.get('/api/getpostimages/'+props.postId)
+          .then((res)=>{
+              if(res.data.length >= 1 ){
+              showImageContainer()
+              for(let i = 0 ; i < res.data.length ; i++){
+                if(res.data[i].url.includes('.jpg')){
+                  setFileType(file => [...file,'image/jpeg'])
+                }
+                setSelectedImage(images => [...images, res.data[i].url]);
+                setImageToServer(images => [...images, res.data[i].url])
+              }            
+              }
+              console.log(res.data)
+          })
+          .catch((err)=>{
+              console.log(err)
+          })
+        }
   },[modalOpen])
 
-  useEffect(()=>{ 
+  useEffect(()=>{
     console.log("fileType:",fileType)
   },[fileType])
-  
-  
 
-  useEffect(()=>{
-    console.log("selectedImages:",selectedImages);
-    // selectedImages확인
-  },[selectedImages]) 
+
+  
+  
+ 
 
   useEffect(()=>{
     setModalOpen(props.editModalOpen);
-    // 부모의 modalOpen이 바뀜에 따라 창이 열리고 닫힌다.
+    // 부모의 editModalOpen이 바뀜에 따라 창이 열리고 닫힌다.
   },[props.editModalOpen])
 
 
@@ -156,9 +146,7 @@ export default function MyMemoEditModal(props) {
     setTextFieldValue(e.target.value);
   };
 
-  const textTitleChange = (e) => {
-    setMemoTitleValue(e.target.value);
-  }
+  
 
  const dragOver = (e) => {
    e.preventDefault();
@@ -232,35 +220,27 @@ const fileDrop = (e) => {
   }
 
     formData.append('content_text',textfieldvalue);
-    formData.append('memo_title',memoTitleValue);
-    formData.append('memo_id',memoId);
     formData.append('user_id',user.id)
+    formData.append('post_id',props.postId)
 
-    if((memoTitleValue != null) && ((textfieldvalue != null) || (imageToServer != null))){
-      axios.post('/api/updatememo',formData)      
+    if((textfieldvalue != null) || (imageToServer != null)){
+      axios.post('/api/updatepost',formData)      
       .then((res)=>{
-        dispatch({
-        type: 'UPDATE_MEMO',
-          payload: { content_text:textfieldvalue, memo_title:memoTitleValue, memo_id:memoId },
-        })
-        console.log("res.data:",res.data);
+        console.log("update한 memo:",res.data);
         props.openEditModal(false);
+        props.showBoardByEdit();
       })
       .catch((err)=>{
         console.log(err);
       })
     }
     
-    // if((memoTitleValue != null) && ((textfieldvalue != null) || (imageToServer != null))) if조건은 MyMemoWriteModal에도 넣는다. 그리고 나중에 넣어보기로 한다.
     
   }
 
   // memo_title입력을 위한 모달을 끔.
 
-  const memoTitleChange = (e) => {
-    setMemoTitleValue(e.target.value);
-  };
-  // memo_title입력할 때 바인딩하기 위한 함수
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -297,18 +277,6 @@ const fileDrop = (e) => {
         <Box sx={style}>
 
 
-         <TextField 
-          sx={{ mb:3 }}
-          fullWidth 
-          value={memoTitleValue}
-          onChange={memoTitleChange}
-          multiline 
-          maxRows={5}
-          id="standard-basic" 
-          label="메모 제목"
-          variant="standard"
-          />
-
           <TextField 
           fullWidth 
           value={textfieldvalue}
@@ -316,12 +284,12 @@ const fileDrop = (e) => {
           multiline 
           maxRows={5}
           id="standard-basic" 
-          label="메모 수정"
+          label="글 수정"
           variant="standard"
           />
       <div>
           <IoMdPhotos  onClick={showImageContainer} className={(imageContainer) ? "added_photo_icon": "not_added_photo_icon" } size="48"></IoMdPhotos>
-          { (selectedImages.length>=1) ?
+          { (selectedImages.length>=1 && imageContainer) ?
       <label htmlFor="file">
           <AddPhotoAlternateIcon sx={{ fontSize: 55 }} className="add_photo_alternateIcon"></AddPhotoAlternateIcon>
       </label>
@@ -347,17 +315,18 @@ const fileDrop = (e) => {
       onDragLeave={dragLeave}
       onDrop={fileDrop}
       sx={{ width: 535, height: 235, border:6, borderRadius:5, borderColor:(dragIn) ? '#826cf5' : '#808080', backgroundColor: (dragIn) ? '#E2E2E2' : null }} cols={ (selectedImages.length>=1) ? 3 : 1  } rowHeight={164}>
-        { (selectedImages.length>=1) ?
+        { ((selectedImages.length>=1) && (fileType.length >=1)) ?
      <>
           {
+              
         selectedImages.map((item, index) => (
         <ImageListItem key={index}>
         <IoIosCloseCircle className='Close-icon' onClick={()=>{ deleteImage(index)}}></IoIosCloseCircle>
-          { fileType[index].startsWith("image/") ? (<img src={item} alt={item} loading="lazy"/>) : (
+          { fileType[0].startsWith("image/") ? (<img src={item} alt={item} loading="lazy"/>) : (
           <video controls alt={item} src={item} className='video-size' loading="lazy"/>
         )}
         </ImageListItem>))
-      }
+         }
       </>
          : 
       <label className="label" htmlFor="file">
@@ -389,7 +358,7 @@ const fileDrop = (e) => {
       onChange={imageHandleChange}/>
     <Button type="submit" sx={{ ":hover":{
             backgroundColor:'#6f53f0'
-          }, backgroundColor:'#4D2BF4', }} onClick = {toServer} variant="contained" className="submit_button">메모수정</Button>
+          }, backgroundColor:'#4D2BF4', }} onClick = {toServer} variant="contained" className="submit_button">글 수정</Button>
         </form>
         </Box>
       </Modal>

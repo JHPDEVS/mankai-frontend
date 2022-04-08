@@ -22,6 +22,7 @@ import Moment from 'react-moment';
 import 'react-dropdown/style.css';
 import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
+import MyPostEditModal from './MyPostEditModal';
 
 function BoardCard(props){
     
@@ -40,10 +41,13 @@ function BoardCard(props){
     const [sampleComment, setSampleComment] = useState([])
     const [titlefieldvalue,setTitleFieldValue] = useState("");
     const [commentLength, setCommentLength] = useState("")
-    const option = ["번역하기","클립보드로 이동","신고하기",
+    const option = ["번역하기","클립보드로 이동",
+    (user.id===Number(props.board.user_id)) ? "수정하기" : null,
     (user.id===Number(props.board.user_id)) ? "삭제하기" : null
     ]
     const [translated,setTranslated] = useState("");
+    const [profile,setProfile] = useState("");
+    const [editModalOpen,setEditModalOpen] = useState(false)
 
     // 메뉴바 조절
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -70,6 +74,8 @@ function BoardCard(props){
         setTitleFieldValue(e.target.value);
       };
 
+    
+
     const handleClose = (e) => {
         let eText = e.target.outerText;
         if(eText === option[0])
@@ -81,17 +87,25 @@ function BoardCard(props){
             })
         }
         if(eText === "삭제하기"){
-            
             axios.post('/api/mypost/delete',{
                 boardId : Number(props.board.id)
             })
             .then((res)=>{
                 console.log(res);
+                dispatch({
+                    type: "BOARD_DELETE",
+                    payload:{
+                        boardId:props.board.id
+                    }
+                })
             })
             .catch((err)=>{
                 console.log(err)
             })
-            props.ShowBoard();
+        }
+
+        if(eText === "수정하기"){
+            setEditModalOpen(true)
         }
 
         if(eText === "클립보드로 이동"){
@@ -152,6 +166,7 @@ function BoardCard(props){
             content_text:props.board.content_text,
             memo_title : titlefieldvalue,
             user_id : user.id,
+            post_memo_id : props.board.id,
             memo_type : 'SNS'
         })
         // post_memo_id를 보낸게 MemoController에서 게시글에 딸린 이미지를 저장할 수 있게 해준다. 
@@ -179,6 +194,8 @@ function BoardCard(props){
         }
     },[likeUpdate])
 
+
+
     useEffect(()=>{
         setIsLike(false)
         likes.forEach(like=>{
@@ -189,27 +206,20 @@ function BoardCard(props){
         })
     },[likes])
 
-       
-
     useEffect(()=>{
-        if(likeId == props.board.id){
-            axios.get('/api/show/like/'+props.board.id)
-            .then(res=>{
-                console.log(res.data)
-                setLikes(res.data)
+        if(props.board.user_id){
+            axios.get('/api/getuserprofile/'+props.board.user_id)
+            .then((res)=>{
+                setProfile(res.data)
+            })
+            .catch((err)=>{
+                console.log(err)
             })
         }
-    },[likeUpdate])
+    },[props.board.user_id])
 
-    useEffect(()=>{
-        setIsLike(false)
-        likes.forEach(like=>{
-            if(user.id == like.user_id)
-            {
-                setIsLike(true)
-            }
-        })
-    },[likes])
+
+
 
     // 통합 데이터 받기
     useEffect(() => {
@@ -221,7 +231,7 @@ function BoardCard(props){
                 console.log(res.data);
                 // 이미지와 댓글을 모두 받는다
                 check = 1
-                if(res.data.images.length == 0)
+                if(res.data.images.length === 0)
                     setImageList("No Data")
                 else
                     for(let i = 0 ; i<res.data.images.length ; i++){
@@ -236,8 +246,15 @@ function BoardCard(props){
             })
         }
     },[props.board])
-// 댓글도 가져오니까 렌더링 시켜줘야 된다.
 
+    const showBoardByEdit = () => {
+        console.log("이게 일어남")
+        window.location.reload()
+    }
+
+    const openEditModal = () => {
+        setEditModalOpen(false)
+    }
 
     return (  
         <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
@@ -246,7 +263,7 @@ function BoardCard(props){
                     <div className="w-full h-16 ml-2 flex items-center flex justify-between ">
                         <div className='w-full flex justify-between mt-10 py-1 px-4 mr-4 rounded-lg  border-2 border-gray-300'> 
                             <div className="flex">
-                                <Avatar className='mr-3 mt-1'>d</Avatar> 
+                                <Avatar className='mr-3 mt-1'><img src={(profile) ? profile :"https://www.taggers.io/common/img/default_profile.png"}/></Avatar> 
                                 <div>        
                                     <h3 className="font-bold text-md">{props.board.name}</h3>
                                     <p className='text-sm text-gray-500'><Moment format='YYYY/MM/DD'>{props.board.updated_at}</Moment> </p>
@@ -277,7 +294,14 @@ function BoardCard(props){
             backgroundColor:'#6f53f0'
           }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
           </Box>
+
+          
+
       </Modal>
+
+      <MyPostEditModal showBoardByEdit={showBoardByEdit} editModalOpen={editModalOpen} openEditModal={openEditModal} memoContentText={props.board.content_text}
+        postId={props.board.id}       
+        />
 
                                 <Button
                                     id="basic-button"
