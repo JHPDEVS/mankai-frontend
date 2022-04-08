@@ -7,6 +7,7 @@ import GroupCreateModal from "../layouts/GroupCreateModal";
 import GroupIcon from '@mui/icons-material/Group';
 import UseAnimations from 'react-useanimations';
 import loading from 'react-useanimations/lib/loading'
+import SearchIcon from '@mui/icons-material/Search';
 
 
 function Group(props) {
@@ -56,16 +57,20 @@ function Group(props) {
         <div>
             <Header/>  
             
-            <div className="w-full text-center">
-                <div className="text-center">
-                <p className="text-5xl mb-5 mt-5">
+            <div className="w-full text-center ">
+                <div className="w-full flex flex-wrap">
+                <p className="text-5xl my-7 ml-192">
                    그룹 검색하기
                 </p>
+                <div className="flex flex justify-center items-center ml-5 mt-4">
                 <GroupCreateModal></GroupCreateModal>
                 </div>
+                </div>
+
+
                 <div className="mb-10 my-auto">
-                    <input type={"text"} onKeyPress={onKeyPress} onChange={searchHandle} placeholder="어떤 그룹을 찾으시나요?" className="bg-gray-200 px-5 border border-gray-300 w-192 h-14 rounded-l-xl"/>
-                    <button onClick={searchBtn} className="h-14 px-3 border rounded-r-xl">검색하기</button>
+                    <input type={"text"} onKeyPress={onKeyPress} onChange={searchHandle} placeholder="어떤 그룹을 찾으시나요?" className="bg-gray-100 px-5 border border-gray-300 w-192 h-14 rounded-l-xl"/>
+                    <button onClick={searchBtn} className="h-14 px-3  border rounded-r-xl">검색하기<SearchIcon></SearchIcon></button>
                 </div>
             </div>        
             <div className="w-full">
@@ -79,7 +84,7 @@ function Group(props) {
                 :<div className="w-full flex flex-wrap">
                     {groups.map((group)=>{
                     return(
-                        <div className="bg-indigo-50 h-90 w-96 mx-5 mt-5 mb-8 rounded-md" onClick={()=>listClick(group.id)} key={group.id}>
+                        <div className="bg-gray-100 h-90 w-96 mx-5 mt-5 mb-8 rounded-md" onClick={()=>listClick(group.id)} key={group.id}>
                             <div className="flex flex justify-center items-center leading-none ">
                                 <img className="h-48 w-72 rounded-md shadow-2xl mt-6 -translate-y-10 hover:-translate-y-4 transition duration-700" 
                                      src={group.logoImage} alt='null' />
@@ -91,8 +96,8 @@ function Group(props) {
                                 </p>
                             </div>
                             <div class="flex justify-between items-center p-1 ml-72  h-10">
-                                <div class="flex">
-                                <p className="text-sm text-black-400">
+                                <div class="flexs">
+                                <p className="text-xl text-black-400">
                                     {group.category} / <SvgIcon><GroupIcon></GroupIcon></SvgIcon>{group.length}
                                 </p>
                                 </div>
