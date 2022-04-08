@@ -8,6 +8,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import React, { useEffect, useState, useRef} from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import BoardMemoDetail from './BoardMemoDetail'
+import BoardMemoEditModal from './BoardMemoEditModal'
 
 export default function MyMemo(props){
 
@@ -19,6 +21,8 @@ export default function MyMemo(props){
     const [memo_id,setMemoId] = useState("");
     const [memo_type,setMemoType] = useState("");
     const [memoTitle,setMemoTitle] = useState("");
+    const [boardMemoDetailOpen,setBoardMemoDetailOpen] = useState(false)
+    const [boardMemoEditModalOpen,setBoardMemoEditModalOpen] = useState(false)
     const memos = useSelector(state=> state.Reducers.memo);
     var [sortedMemos,setSortedMemos] = useState([]);
     // 추가를 했을 때 reducers.js의 memo에 추가가 되지만 useSelector를 이용해 memo를 가져왔을 때 값이 바로 바뀌지 않는다.
@@ -75,6 +79,18 @@ const memoDetail = (e,memo_id, memo_content_text,memo_title,memo_type) => {
     }
 }
 
+const boardMemoDetail = (e,memo_id, memo_content_text,memo_title,memo_type) =>{
+    var target = e.target.nodeName
+    setMemoContentText(memo_content_text);
+    setMemoId(memo_id)
+    setMemoTitle(memo_title)
+    setMemoType(memo_type)
+
+    if((target === "DIV") || (target === "H1")){
+        setBoardMemoDetailOpen(true)
+    }
+}
+
 const openDetailModal = () => {
     setMemoDetailOpen(false);
 }
@@ -92,7 +108,18 @@ useEffect(()=>{
 },[memos])
 // 정렬하지않으면 자꾸 수정할 때마다 최근에 수정한 메모가 맨 앞으로 와서 한 속성을 기준으로(id) 내림차순정렬을 했다.
 
+const openBoardMemoModal = () => {
+    setBoardMemoDetailOpen(false)
+}
 
+const openBoardMemoEditModal = () => {
+    openBoardMemoModal();
+    setBoardMemoEditModalOpen(true)
+}
+
+const exitBoardMemoEditModal = () => {
+    setBoardMemoEditModalOpen(false)
+}
 
 
     return( 
@@ -122,7 +149,9 @@ useEffect(()=>{
             return(
             <>
             {
-<div onClick={(e) => {memoDetail(e, memo.id, memo.content_text, memo.memo_title,memo.type)}} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
+<div onClick={(memo.type === 'SNS') ? (e) => {memoDetail(e, memo.id, memo.content_text, memo.memo_title,memo.type)}
+: (e) => boardMemoDetail(e,memo.id,memo.content_text, memo.memo_title,memo.type)
+} key={memo.id} className="relative inline-block py-3 ml-10 mt-7 w-1/5">
 <div
    className="absolute inset-0 bg-gradient-to-r from-blue-300 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
 </div>
@@ -163,6 +192,11 @@ useEffect(()=>{
                     {/* ??? 위치옮기기 */}
 
                     <MemoDetail memoDetailOpen={memoDetailOpen} memoTitle= {memoTitle} memoType={memo_type} memoContentText={memoContentText} memo_id={memo_id} openDetailModal={openDetailModal} openEditModal={openEditModal} memoDelete={memoDelete}/>
+
+                    <BoardMemoDetail boardMemoDetailOpen={boardMemoDetailOpen} memoTitle={memoTitle} openBoardMemoModal={openBoardMemoModal} memo_id={memo_id} openBoardMemoEditModal={openBoardMemoEditModal} memoContentText={memoContentText} memoDelete={memoDelete}/>
+                    {/* ?! 여기에 sunEditor로 볼 수 있는 모달을 만든다. */}
+
+                    <BoardMemoEditModal boardMemoEditModalOpen={boardMemoEditModalOpen} memoTitle={memoTitle} memo_id={memo_id} memoContentText={memoContentText} exitBoardMemoEditModal={exitBoardMemoEditModal}/>
     </div>
     )
 }

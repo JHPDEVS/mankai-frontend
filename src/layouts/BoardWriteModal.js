@@ -36,7 +36,7 @@ const style = {
 };
 
 
-export default function BasicModal() {
+export default function BasicModal(props) {
   const [muiSelectValue, setMuiSelectValue] = useState("전체");
   const [open, setOpen] = React.useState(false);
   const [textfieldvalue,setTextFieldValue] = useState("");
@@ -194,7 +194,7 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
-<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-192" : "right-0")}>
+<div className={'w-fit fixed bottom-12 mr-12 z-10 '+(isOpen ? "right-192" : "right-96")}>
             <Fab color="primary" onClick={handleOpen}> <AddIcon /></Fab>
         </div>
 
@@ -234,17 +234,14 @@ const fileDrop = (e) => {
         value={muiSelectValue}
         onChange={SelectChange}
       >
+
+      {props.categories && props.categories.map((data)=>{
+        return(
+          <MenuItem value={data}>{data}</MenuItem>
+        )
+      })}
     
-    <MenuItem value={"전체"}>전체</MenuItem>
-    <MenuItem value={"영화"}>영화</MenuItem>
-    <MenuItem value={"음식"}>음식</MenuItem>
-    <MenuItem value={"여행"}>여행</MenuItem>
-    <MenuItem value={"자동차"}>자동차</MenuItem>
-    <MenuItem value={"IT"}>IT</MenuItem>
-    <MenuItem value={"패션"}>패션</MenuItem>
-    <MenuItem value={"취업"}>취업</MenuItem>
-    <MenuItem value={"가상화폐"}>가상화폐</MenuItem>
-    <MenuItem value={"홍보"}>홍보</MenuItem>
+
   </Select>
 </FormControl>
          </div>

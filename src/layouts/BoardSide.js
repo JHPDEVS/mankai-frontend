@@ -3,17 +3,15 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Modal from '@mui/material/Modal'
 import BoardSideCard from './BoardSideCard';
-import { AppBar, Avatar, Button, ClickAwayListener, Divider, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
+import { AppBar, Avatar, Button, ClickAwayListener, Divider, Fab, Grow, IconButton, MenuItem, MenuList, Pagination, Paper, Popper, Skeleton, Slider, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {Provider, useSelector, useDispatch, connect} from 'react-redux';
-import { useTheme } from '@mui/styles';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SvgIcon from '@mui/material/SvgIcon';
 import CreateIcon from '@mui/icons-material/Create';
 import TranslateIcon from '@mui/icons-material/Translate';
-import { Slide } from 'react-toastify';
-import Header from '../admin/layout/Header';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const drawerWidth = 700;
@@ -450,14 +448,22 @@ function BoardSide(props){
                         }
                     </div>
                     {/* 댓글 달기 */}
-                    <div className='flex fixed w-186 mr-4 bottom-0 right-0 bg-gray-100'>
+                    {/* 댓글 달기 */}
+                    <div className='flex fixed w-186 mr-2 bottom-0 right-0 bg-gray-200 rounded-xl'>
                         <div className='w-full flex'>
-                            <textarea name='post_comment' className='w-4/5 bg-gray-200' rows={4} onChange={commentHandle}
+                            <textarea name='post_comment' className='w-4/5 m-3 rounded-xl p-1 bg-gray-300' rows={3} onChange={commentHandle}
                                 value={post_comment}></textarea>
-                            <Button className='w-1/5' onClick={PostComment}>댓글 달기</Button>
-                    
+
+                            <div className='w-1/5'>
+                                <button className='bg-white px-5 mt-3 mr-3 h-20  rounded-2xl' onClick={PostComment}>댓글 달기</button>
+                            </div>
                         </div>
                     </div>
+                    <div className='fixed top-32 right-10 w-186'>
+                        <Fab color="primary" aria-label="add" onClick={handleDrawerClose}>
+                            <CloseIcon/>
+                        </Fab>
+                    </div>  
                 </div>
             }
             </Drawer>

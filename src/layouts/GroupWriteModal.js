@@ -36,7 +36,7 @@ const style = {
 };
 
 
-export default function GroupWriteModal(props) {
+export default function GroupWriteModal({group_id,category_id,GetUpdate}) {
   const [muiSelectValue, setMuiSelectValue] = useState("전체");
   const [open, setOpen] = React.useState(false);
   const [textfieldvalue,setTextFieldValue] = useState("");
@@ -155,7 +155,8 @@ const fileDrop = (e) => {
     textfieldvalue : textfieldvalue,
     selectedImages : selectedImages,
     muiSelectValue : muiSelectValue,
-    group_id:props.group_id, 
+    group_id:group_id, 
+    category_id:category_id,
     user : user,
   }
   
@@ -174,7 +175,7 @@ const fileDrop = (e) => {
       .then(function(response) {
         console.log(response.data)
          handleClose();
-
+        GetUpdate();
       }).catch(function(error){
         console.log(error);
       })

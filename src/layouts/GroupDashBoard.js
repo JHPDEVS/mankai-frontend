@@ -77,8 +77,13 @@ function GroupDashBoard(props){
                         <TableCell align="left"> {group_user.position}   </TableCell>
                         <TableCell align="center">{group_user.created_at}</TableCell>
                         <TableCell align="right">
-                            <button onClick={()=>PositionSet(group_user)}className="bg-green-500 p-1 font-bold text-white rounded-lg hover:bg-green-700 mr-2">유저로 강등</button>
-                            <button onClick={()=>DeleteGroupUser(group_user.id)} className="bg-red-500 p-1 font-bold text-white rounded-lg hover:bg-red-700">탈퇴</button>
+                            {group_master.length == 1 
+                                ?<div>최소 1명의 관리자가 필요합니다</div>
+                                :<div>
+                                <button onClick={()=>PositionSet(group_user)}className="bg-green-500 p-1 font-bold text-white rounded-lg hover:bg-green-700 mr-2">유저로 강등</button>
+                                 <button onClick={()=>DeleteGroupUser(group_user.id)} className="bg-red-500 p-1 font-bold text-white rounded-lg hover:bg-red-700">탈퇴</button>
+                             </div> 
+                            }
                         </TableCell>
                         </TableRow>
                     ))
@@ -105,8 +110,8 @@ function GroupDashBoard(props){
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {group_user.length &&
-                        group_user.map((data) => (
+                    {group_user.length 
+                        ?group_user.map((data) => (
                         <TableRow
                             key={data.user_id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -122,13 +127,14 @@ function GroupDashBoard(props){
                             <button onClick={()=>DeleteGroupUser(data.id)} className="bg-red-500 p-1 font-bold text-white rounded-lg hover:bg-red-700">탈퇴</button>
                         </TableCell>
                         </TableRow>
-                        ))              
+                        ))     
+                        :<div></div>
                     }
                     {group_master.length 
-                        ?<p></p>
+                        ?<div></div>
                         :<div className="w-full">
                             <UseAnimations animation={loading} size={48}></UseAnimations>
-                        </div>
+                         </div>
                     }
                     </TableBody>
                 </Table>
