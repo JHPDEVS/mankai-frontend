@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ImageIcon from '@mui/icons-material/Image';
 import { useForm } from 'react-hook-form';
+import CreateIcon from '@mui/icons-material/Create';
 
 
 function GroupCreateModal(props) {
@@ -92,9 +93,12 @@ function GroupCreateModal(props) {
 
     return(
         <div>
-            <button class="w-28 bg-blue-500 hover:bg-blue-700 text-white 
-            
-            font-bold py-2 px-4 mb-4 rounded-full" onClick={ModalOpen}>그룹 만들기</button>
+            {/* <button class="w-28 bg-blue-500 hover:bg-blue-700 text-white 
+            font-bold py-2 px-4 mb-4 rounded-full" onClick={ModalOpen}>그룹 만들기</button> */}
+
+            <button className="bg-gray-100 p-2 rounded-xl border-2 border-blue-200 hover:bg-gray-300 " onClick={ModalOpen}>
+                <CreateIcon></CreateIcon>글 작성하기</button>
+
             <Modal 
                 open={open}
                 onClose={ModalClose}

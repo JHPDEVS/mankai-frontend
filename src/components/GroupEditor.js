@@ -56,9 +56,9 @@ function GroupEditor ({group_intro,content,getContent}){
     return(
         <div>
             <textarea ref={txtArea} defaultValue={group_intro}/>
-            <div className="mt-4">
+            <div className="mt-2">
             <Button variant="contained"  endIcon={<SendIcon/>} onClick={PostUpload}>
-            수정하기
+            Commit!
             </Button>
             </div>
 
