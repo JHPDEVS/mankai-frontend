@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Sidebar from "../admin/layout/Sidebar"
 import Header from "../admin/layout/Header"
 
@@ -9,10 +9,11 @@ function Mypage() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     return (
 
+
         <div>
             <div className="flex h-screen">
                 <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
-                <div className="relative  flex-col flex-1">
+            <div className="relative  flex-col flex-1">
                     {/*  Site header */}
                     <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
                 <div className="w-full">

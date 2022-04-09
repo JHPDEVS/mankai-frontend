@@ -1,5 +1,4 @@
 import React from "react";
-import Moment from 'moment';
 import { Avatar } from "@mui/material";
 import { indigo } from "@mui/material/colors";
 
@@ -65,6 +64,5 @@ export default function ChatMemo(){
 
     </div>
   )
-    
 }
 

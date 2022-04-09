@@ -200,4 +200,3 @@ const exitBoardMemoEditModal = () => {
     </div>
     )
 }
-

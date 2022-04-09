@@ -11,6 +11,7 @@ import GroupNotice from '../layouts/GroupNotice';
 import BoardImage from '../images/BOARD.png';
 import SNSImage from '../images/SNS.png';
 import createTypography from '@mui/material/styles/createTypography';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // 그룹의 TAP 관리
 
@@ -161,7 +162,7 @@ function GroupDetail({match}) {
             <AppBar color="transparent" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 , boxShadow : 0 }}>
                 <Header/>
                     <div className={'fixed mt-16 w-full shadow justify-center bg-white z-10 flex '}> 
-                        <div className=" font-bold h-fit my-auto px-2 py-1 mr-10 bg-gray-200 rounded-xl">{group_data.name}</div>
+                        <div className=" font-bold h-fit w-48 my-auto text-center px-4 py-1 mr-10 bg-gray-200 rounded-xl">{group_data.name}</div>
                         {isGroup ?
                             <div className='overflow-hidden'>
                                 <Tabs
@@ -170,7 +171,7 @@ function GroupDetail({match}) {
                                     aria-label="lab API tabs example"        
                                 >
                                     
-                                        <Tab value={"1"} label="그룹 소개"/>
+                                        <Tab value={"1"} label="메인 페이지"/>
                                             {groupCategory.length >0 && groupCategory.map((category,idx)=>{
                                                 return(
                                                         <Tab value={(idx+2).toString()} label={category.title}></Tab>
@@ -185,7 +186,7 @@ function GroupDetail({match}) {
                             :<div className='pt-2 pb-2'>가입시 볼 수 있습니다.</div>
                         }
                         {isMaster &&
-                            <button onClick={modalOpen} className='text-blue-500 ml-4 rounded-2xl px-2 h-8 my-auto bg-gray-200 hover:bg-gray-300 hover:text-blue-700'>관리</button>
+                            <button onClick={modalOpen} className='text-blue-500 w-16 ml-4 rounded-2xl px-2 h-8 my-auto bg-gray-200 hover:bg-gray-300 hover:text-blue-700'>관리</button>
                         }
                     </div>
             </AppBar>
@@ -221,25 +222,25 @@ function GroupDetail({match}) {
             >
                 <Box className="bg-white w-192 mx-auto mt-10 h-240 rounded-xl p-5 relative">
                     <div>
-                            <button onClick={()=>settingClick(2)} className={'w-1/2 py-2 mb-10 hover:bg-gray-100 ' +(settingOption == "2" ? 'bg-blue-100' : "")}>카테고리 관리</button>
-                            <button onClick={()=>settingClick(1)} className={'w-1/2 py-2 mb-10 hover:bg-gray-100 ' +(settingOption == "1" ? 'bg-blue-100' : "")}>카테고리 생성</button>
+                            <button onClick={()=>settingClick(2)} className={'w-80 py-2 my-5 border-b-4 border-indigo-300 hover:border-indigo-600' +(settingOption == "2" ? 'border-b-4 border-indigo-600' : "")}>카테고리 관리</button>
+                            <button onClick={()=>settingClick(1)} className={'w-80 py-2 my-5 ml-6 border-b-4 border-indigo-300 hover:border-indigo-600' +(settingOption == "1" ? 'border-b-4 border-indigo-600' : "")}>카테고리 생성</button>
                         {settingOption == 1 ?
                             <div>
                                 <div className='text-2xl font-bold text-center mt-5 mb-5'>카테고리 제목</div>
-                                    <input type={"text"} onChange={titleHandle} className='bg-gray-300 w-full p-2 rounded-2xl'></input>
-                                    <div className='text-center text-xl font-bold mt-10 mb-10'>어떤 형식의 게시판을 만들것인가요?</div>
+                                    <input type={"text"} onChange={titleHandle} className='bg-gray-200 w-full p-2 rounded-2xl'></input>
+                                    <div className='text-center text-xl font-bold mt-10 mb-10'>어떤 타입의 게시판을 만들것인가요?</div>
                                     <div className='flex w-full'>                        
                                     {array.map((data)=>{
                                         return(
                                             <div className='w-full' onClick={()=>typeHandle(data)}>
-                                                <div className='text-center text-xl font-bold '>{data}타입</div>
+                                                <div className='text-center text-xl font-bold '>{data} 타입</div>
                                                 <div className={'pt-4 '+(data == postType ? "brightness-75" : " hover:brightness-75")}>
                                                     {data == "SNS"
-                                                        ?<div>
-                                                            <img className='w-full border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
+                                                        ?<div className='px-3'>
+                                                            <img className='w-full h-80 border-2 border-black rounded-2xl' src={SNSImage}  alt="이미지없음"></img>
                                                         </div>
-                                                        :<div className='px-5'>
-                                                            <img className='w-full border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
+                                                        :<div className='px-3 mb-3'>
+                                                            <img className='w-full h-80 border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
                                                         </div>
                                                     }
                                                 </div>
@@ -247,17 +248,28 @@ function GroupDetail({match}) {
                                         )
                                     })}
                                 </div>
-                                <button className='absolute bottom-5 left-8 bg-green-400 p-2 rounded-xl text-white font-bold w-180 hover:bg-green-500' onClick={postCategory}>만들기</button>
+                                <button className='absolute bottom-5 left-8 bg-green-300 p-2 rounded-xl text-white font-bold w-180 hover:bg-green-400' onClick={postCategory}>만들기</button>
                             </div>
                             :<div className=''>
+                                <div className='flex my-2'>
+                                    <div className='w-1/12 text-center ml-2 mb-3'>
+                                        <p className='text-xl'>타입</p>
+                                    </div>
+                                    <div className='w-5/12 text-center'>
+                                        <p className='text-xl'>카테고리 이름</p>
+                                    </div>
+                                    <div className='w-6/12 text-center pl-60'>
+                                        <p>설정 <SettingsIcon></SettingsIcon></p>
+                                    </div>
+                                </div>
                                 {groupCategory.map((category)=>{
                                     return(
                                         <div>
                                             <div className='flex my-2'>
                                                 {/* 타입 */}
-                                                <div className='w-1/12 pt-1 text-right'>{category.type}</div>  
+                                                <div className='w-1/12 pt-1 text-center'>{category.type}</div>  
                                                 {/* 타이틀 */}
-                                                <div className='w-5/12 ml-20'>
+                                                <div className='w-5/12 text-center'>
                                                     {selectedUpdate.id == category.id
                                                     ?   <div className=''>
                                                             <input onChange={CategoryHandle} defaultValue={updateText} className="bg-gray-200 py-1 px-2 rounded-lg"></input>

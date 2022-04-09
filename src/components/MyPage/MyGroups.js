@@ -18,7 +18,7 @@ function Group(props) {
             initialRender = false
         }
         else{
-        axios.get('/api/show/group/'+user.id)
+        axios.get('/api/show/mygroup/'+user.id)
         .then(res=>{
             console.log(res.data);
             setGroups(res.data)
@@ -29,7 +29,7 @@ function Group(props) {
 
     useEffect(()=>{
         if(user){
-            axios.get('/api/show/group/'+user.id)
+            axios.get('/api/show/mygroup/'+user.id)
         .then(res=>{
             console.log(res.data);
             setGroups(res.data)

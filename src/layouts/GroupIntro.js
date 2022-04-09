@@ -48,6 +48,8 @@ function GroupIntro(props)
             group_id:props.group.id,
             text:data
         }).then(res=>{
+            // ?! 여기에 한줄 소개글 수정했을 때 새로고침 오면 됨.
+            window.location.href = props.group.id;
             console.log(res.data)
         })
         // console.log("인트로",data)

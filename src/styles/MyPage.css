@@ -19,8 +19,8 @@
 	 display:inline-block;
    }
 
-   .postballoon:after { 
-	border-top:55px solid transparent; 
+.balloon:after { 
+	border-top:16px solid transparent; 
 	border-left: 25px solid transparent; 
 	border-right: 10px solid transparent; 
 	border-bottom: 10px solid rgb(248, 136, 229); 

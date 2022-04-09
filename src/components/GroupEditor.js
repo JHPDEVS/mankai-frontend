@@ -4,8 +4,12 @@ import SunEditor from 'suneditor-react';
 import plugins from "suneditor/src/plugins";
 import "suneditor/dist/css/suneditor.min.css";
 import axios from "axios";
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import { cyan } from "@mui/material/colors";
 
 function GroupEditor ({group_intro,content,getContent}){
+
     let editor = useRef(null)
     let txtArea = useRef();
 
@@ -51,7 +55,12 @@ function GroupEditor ({group_intro,content,getContent}){
     return(
         <div>
             <textarea ref={txtArea} defaultValue={group_intro}/>
-            <button onClick={PostUpload}>확인</button>
+            <div className="mt-2">
+            <Button variant="contained"  endIcon={<SendIcon/>} onClick={PostUpload}>
+            Commit!
+            </Button>
+            </div>
+
         </div>
     )
 }export default GroupEditor

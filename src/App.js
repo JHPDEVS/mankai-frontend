@@ -4,10 +4,12 @@ import {
   Route,
   Switch,
   Redirect,
+  Link
 } from 'react-router-dom'
+
 import Login from './components/Login'
 import Register from './components/Register'
-import Mypage from './components/MyPage'
+import Mypage from './components/Mypage'
 import BoardCopy from './components/BoardCopy'
 import axios from 'axios'
 import Home from './layouts/Home'
@@ -20,13 +22,12 @@ import NotiView from './components/NotiView'
 import Dashboard from './components/Dashboard'
 import Group from './components/Group'
 import DashboardUser from './admin/component/User'
+import ChatMemo from './components/MyPage/ChatMemo';
 import './css/style.scss'
-
-import MyMemoCreate from './components/MyPage/MyMemoCreate'
 import Profile from './components/MyPage/Profile';
 import YouPage from './components/MyPage/YouPage'
-
 import GroupDetail from './components/GroupDetail'
+
 axios.defaults.baseURL = 'http://localhost:8000/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
@@ -61,15 +62,22 @@ function App() {
         <Route exact path="/dashboard/user" component={DashboardUser}></Route>
 
 
-          <Route exact path="/my_memo_create" component={MyMemoCreate}></Route>
           <Route exact path="/profile" component={Profile}></Route>
           <Route exact path="/youpage/:follow_id" component={YouPage}></Route>
+        <Route exact path="/chatting_memo" component={ChatMemo}></Route>
+          {/* <Route exact path="/post_memo" component={PostMemo}></Route>
+          <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route> */}
+
+          <Route exact path="/profile" component={Profile}></Route>
+          <Route exact path="/youProfile" component={YouPage}></Route>
+          
+
+
 
         <Route exact path="/board" component={BoardCopy}></Route>
-        <Route exact path="/group" component={Group}></Route>
-        
-        <Route exact path="/group/:group_id" component={GroupDetail}></Route>
 
+        <Route exact path="/group" component={Group}></Route>
+        <Route exact path="/group/:group_id" component={GroupDetail}></Route>
         <Route path="*" component={Empty}></Route>
       </Switch>
     </Router>

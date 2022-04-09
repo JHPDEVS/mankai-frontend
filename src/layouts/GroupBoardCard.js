@@ -15,6 +15,9 @@ import axios from 'axios';
 import BoardImages from './BoardImages';
 import Dropdown from 'react-dropdown';
 import Menu from '@mui/material/Menu';
+import Modal from '@mui/material/Modal'
+import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
 import MenuItem from '@mui/material/MenuItem';
 import Moment from 'react-moment';
 import 'react-dropdown/style.css';
@@ -23,6 +26,20 @@ import UseAnimations from 'react-useanimations';
 import heart from 'react-useanimations/lib/heart'
 import settings2 from 'react-useanimations/lib/settings2'
 function GroupBoardCard(props){
+
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 600,
+        maxHeight: 630,
+        borderRadius:'10px',
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+      };
     
     const dispatch = useDispatch();
     const user = useSelector(state=>state.Reducers.user)
@@ -41,6 +58,8 @@ function GroupBoardCard(props){
     const [translated,setTranslated] = useState("");
     const [content_text,setContent_text] = useState("");
     const [moreHandle,setMoreHandle] = useState(false)
+    const [openModal,setOpenModal] = useState(false)
+    const [titlefieldvalue,setTitleFieldValue] = useState("");
 
     // 메뉴바 조절
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -64,6 +83,12 @@ function GroupBoardCard(props){
                setTranslated(res.data.message.result.translatedText); 
             })
         }
+
+        if(eText === option[1])
+        {
+            setOpenModal(true)
+        }
+
         setAnchorEl(null);
     };
     const MoreContent = () =>{
@@ -167,9 +192,65 @@ function GroupBoardCard(props){
             
     },[])
 
+    const handleModalClose = () => {
+        setOpenModal(false)
+        setTitleFieldValue("")
+    }
+
+    const textChange = (e) => {
+        setTitleFieldValue(e.target.value)
+    }
+
+
+    const submitMemo = (titlefieldvalue) => {
+        axios.post("/api/storememo",{
+            content_text:props.board.content_text,
+            memo_title : titlefieldvalue,
+            user_id : user.id,
+            groupboard_memo_id : props.board.id,
+            memo_type : 'SNS'
+        })
+        .then((res)=>{
+            console.log(res)
+            handleModalClose()
+            dispatch({
+                type: 'ADD_MEMO',
+                payload: { memo: res.data },
+              })
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
     return (  
        
         <div className ="w-full mx-auto max-w-3xl px-3 mb-5">
+
+<Modal
+        open={openModal}
+        onClose={handleModalClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+<Box sx={style}>
+           <TextField 
+          fullWidth 
+          value={titlefieldvalue}
+          onChange={textChange}
+          multiline 
+          maxRows={5}
+          id="standard-basic" 
+          label="메모 제목을 적어주세요" 
+          variant="standard"
+          />
+
+          <Button onClick={() => {submitMemo(titlefieldvalue)}} sx={{ ":hover":{
+            backgroundColor:'#6f53f0'
+          }, backgroundColor:'#4D2BF4', }} variant="contained" className="submit_button">메모저장</Button>
+          </Box>
+      </Modal>
+
              {props.board
                 ?
                 <div>

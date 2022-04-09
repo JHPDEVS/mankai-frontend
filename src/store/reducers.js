@@ -66,6 +66,7 @@ const BOARD_DELETE = "BOARD_DELETE"
 const LIKE_UPDATE ="LIKE_UPDATE"
 const SIDE_OPEN = "SIDE_OPEN"
 const SIDE_CLOSE ="SIDE_CLOSE"
+const MEMO_UPDATE = "MEMO_UPDATE"
 const GROUP_LIST = "GROUP_LIST"
 const ADD_MEMO = "ADD_MEMO"
 const MODAL_OPEN = "MODAL_OPEN"
@@ -84,6 +85,9 @@ const initialState = {
   sideLikeData:[],
   sideImageList:[],
   isOpen:false,
+
+  likeData:[],
+  memoUpdate:[],
   likeUpdate:0,
   likeId:0,
   groupChange:0,
@@ -651,6 +655,12 @@ export default handleActions(
       return{
         ...state,
         isGroupChange:state.isGroupChange+1
+      }
+    },
+    [MEMO_UPDATE]:(state,action)=>{
+      return{
+        ...state,
+        memoUpdate:[...state.memoUpdate,1]
       }
     }
   },

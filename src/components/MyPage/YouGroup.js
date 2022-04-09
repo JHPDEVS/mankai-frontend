@@ -12,7 +12,7 @@ function Group() {
     const followId = useSelector(state=>state.Reducers.followId);
 
     useEffect(()=>{
-        axios.get('/api/show/group/'+followId.id)
+        axios.get('/api/show/mygroup/'+followId.id)
         .then(res=>{
             console.log(res.data);
             setGroups(res.data)
