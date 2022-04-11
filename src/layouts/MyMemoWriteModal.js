@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField'
 import Icon from '@mui/material/Icon'
 import ImageList from '@mui/material/ImageList'
 import ImageListItem from '@mui/material/ImageListItem'
+import MemoEditor from '../components/MemoEditor'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
@@ -20,6 +21,8 @@ import { IoMdPhotos } from "react-icons/io";
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import '../App.css'
+import BoardImage from '../images/BOARD.png';
+import BASICImage from '../images/BASIC.png';
 
 const style = {
   position: 'absolute',
@@ -44,11 +47,17 @@ export default function MyMemoWriteModal(props) {
   const [imageToServer, setImageToServer] = useState([]);
   const [dragIn, setDragIn] = useState(false);
   const [openMemoTitle, setOpenMemoTitle] = useState(false);
-  // 이 값에 따라서 메모제목을 정하는 창이 올라오거나 내려오거나
+  // 이 값에 따라서 메모제목을 정하는 창이 올라오거나 내려오거나\
+  const [postTitle,setPostTitle] = useState("")
+  const [open,setOpen] = useState(false)
   const [memoTitleValue, setMemoTitleValue] = useState("");
   const user = useSelector(state=> state.Reducers.user);
   const [modalOpen,setModalOpen] = useState(false);
+  const [editorMemoOpen,setEditorMemoOpen] = useState(false)
   // 이 값에 따라서 1차 modal이 올라오거나 내려오거나
+
+  const array = ["BASIC","BOARD"]
+  const [postType, setPostType] = useState("기본")
 
   // 그리고 reducers.js에서 함수 2개 지우고 isModalOpen이라는 변수도 지우기
   const dispatch = useDispatch()
@@ -69,7 +78,10 @@ export default function MyMemoWriteModal(props) {
   }    
   }
  
-
+  const typeHandle = (data) =>{
+    console.log(data)
+    setPostType(data)
+  }
 
   const dndHandleChange = (files) => {
     const dndFileTypes = []
@@ -216,6 +228,59 @@ const fileDrop = (e) => {
   };
   // content_text와 images를 입력하기 위한 모달을 닫음
 
+  const modalClose = () => {
+    setOpen(false)
+    setPostType("BASIC")
+  }
+
+  const choiceModalOpen = () => {
+    setOpen(true)
+  }
+
+  const choiceComplete = () => {
+    if(postType === "BASIC"){
+      modalOpenFunc();
+      setOpen(false)
+    }
+    else{
+      editorMemoModalOpen()
+      setOpen(false)
+    }
+    setPostType("BASIC")
+  }
+
+  const editorMemoModalOpen = () => {
+    setEditorMemoOpen(true);
+  }
+
+  const editorMemoClose = () => {
+    setEditorMemoOpen(false)
+  }
+
+  const titleHandle = (e) => {
+      setPostTitle(e.target.value)
+  }
+
+  const getContent = (data) => {
+    axios.post('/api/storememo',{
+      memo_title : postTitle,
+      user_id : user.id,
+      content_text : data,
+      type : "BOARD"
+    })
+    .then((res)=>{
+      editorMemoClose();
+      dispatch({
+        type:"ADD_MEMO",
+        payload:{memo:res.data}
+      })
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+
+    // ?! 하고 모달닫고
+  }
 
   return (
     <div>
@@ -224,8 +289,64 @@ const fileDrop = (e) => {
       rel="stylesheet"></link>
 
 
+<Fab color="primary" onClick={choiceModalOpen}><AddIcon/></Fab>
+
+{/* ↓Editor형식/기존형식 선택모달 */}
+<Modal 
+                className="mt-40"
+                open={open}
+                onClose={modalClose}    
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box className="bg-white w-192 mx-auto mt-10 h-200 rounded-xl p-5 relative">
+                    <div>
+                            <div>
+                                    <div className='text-center text-xl font-bold mt-10 mb-10'>메모 종류를 선택하세요</div>
+                                    <div className='flex w-full'>                        
+                                    {array.map((data)=>{
+                                        return(
+                                            <div className='w-full' onClick={()=>typeHandle(data)}>
+                                                <div className='text-center text-xl font-bold '>{data} 타입</div>
+                                                <div className={'pt-4 '+(data == postType ? "brightness-75" : " hover:brightness-75")}>
+                                                    {data == "BASIC"
+                                                        ?<div className='px-3'>
+                                                            <img className='w-full h-80 border-2 border-black rounded-2xl' src={BASICImage}  alt="이미지없음"></img>
+                                                        </div>
+                                                        :<div className='px-3 mb-3'>
+                                                            <img className='w-full h-80 border-2 border-black rounded-2xl' src={BoardImage} alt="이미지없음"></img>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                <div className='grid justify-items-center mt-1'>
+                                  <button onClick={() => choiceComplete()} className='bg-green-500 p-2 rounded-xl text-white font-bold w-180 hover:bg-green-400'>만들기</button>
+                                </div>
+                                
+                            </div>
+                    </div>
+                </Box>
+            </Modal>
 
 
+{/* ↓Editor형식 메모 */}
+            <Modal 
+                open={editorMemoOpen}
+                onClose={editorMemoClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box className="bg-white w-192 mx-auto mt-10 h-190 rounded-xl p-3 relative">
+                    <p className="ml-2 mt-2">제목을 입력해주세요! </p>
+                    <input type={"text"} className="bg-gray-200 w-full rounded-xl my-3 mb-5 px-4 py-2" onChange={titleHandle}></input>
+                    <MemoEditor getContent={getContent}></MemoEditor>
+                 </Box>
+            </Modal>
+
+{/* ↓기존형식 메모 */}
       <Modal
         open={modalOpen}
         onClose={handleClose}
@@ -320,9 +441,7 @@ const fileDrop = (e) => {
     {/* 그리고 사진지울 때 자꾸 사진 드래그 되는 거 없애야 된다. */}
     </ImageList>
      : null}
-    
-
-    <form
+        <form
   name="images"
   encType="multipart/form-data"
   onSubmit={handleSubmit}
@@ -335,14 +454,14 @@ const fileDrop = (e) => {
       id="file" 
       name="images"
       onChange={imageHandleChange}/>
+      
     <Button type="submit" sx={{ ":hover":{
             backgroundColor:'#6f53f0'
           }, backgroundColor:'#4D2BF4', }} onClick = {toServer} variant="contained" className="submit_button">메모저장</Button>
         </form>
         </Box>
       </Modal>
-       <Fab color="primary" > <AddIcon onClick={modalOpenFunc}/></Fab>
-       {/* ?! 한번눌러서 말을 못알아 듣는다. */}
+       
     </div>
    
   )}

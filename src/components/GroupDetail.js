@@ -35,6 +35,8 @@ function GroupDetail({match}) {
     const [selectedUpdate,setSelectedUpdate] =useState("")
     const [updateText,setUpdateText] = useState({})
 
+
+
     const modalClose = () =>{
         setOpen(false)
     }
