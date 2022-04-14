@@ -16,6 +16,7 @@ import { Badge, IconButton } from '@mui/material'
 import Header from '../../admin/layout/Header'
 import Echo from 'laravel-echo'
 import { getRooms } from '../../store/modules/getRoom'
+import { getCurrentRoom } from '../../store/modules/getCurrentRoom'
 import { CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import Moment from 'react-moment'
@@ -27,7 +28,8 @@ import RoomInviteUserModal from './RoomInviteUserModal'
 function Chat() {
   const isOpen = useSelector(state => state.Reducers.chat_side)
   const [search, setSearch] = useState('')
-  const [index, setIndex] = useState(0)
+  // const [index, setIndex] = useState(0)
+  const index = useSelector(state => state.Reducers.chat_list_index)
   const currentUser = useSelector(state => state.Reducers.user)
   const state = useSelector(state => state.Reducers.user)
   const rooms = useSelector(state => state.Reducers.rooms)
@@ -65,9 +67,6 @@ function Chat() {
             },
           })
         })
-        .listen('.invite-event', e => {
-          console.log(e.room)
-        })
       return () => {
         channel.subscription.unbind(
           channel.eventFormatter.format('.user-connect')
@@ -75,20 +74,30 @@ function Chat() {
       }
     }
   }, [currentUser])
+
+  useEffect(() => {
+    if (rooms) {
+      // console.log(rooms);
+      const channel = window.Echo.channel('user.' + currentUser.id)
+        .listen('.invite-event', e => {
+          dispatch(getCurrentRoom(e.room.id))
+          dispatch(getRooms(currentUser.id))
+        })
+        .listen('.delete-event', e => {
+          dispatch(getRooms(currentUser.id))
+        })
+      return () => {
+        channel.subscription.unbind(
+          channel.eventFormatter.format('.invite-connect')
+        )
+      }
+    }
+  }, [rooms])
   useEffect(() => {
     console.log(currentUser)
     if (currentUser) {
       // console.log(currentUser.Reducers.user.following);
       dispatch(getRooms(currentUser.id))
-    }
-  }, [currentUser])
-
-  useEffect(() => {
-    console.log(currentUser)
-    if (currentUser) {
-      // console.log(currentUser.Reducers.user.following);
-      getRooms(currentUser.id)
-      // console.log(following);
     }
   }, [currentUser])
 
@@ -157,7 +166,7 @@ function Chat() {
               <div
                 className={
                   room.type === types
-                    ? room == currentRoom
+                    ? currentRoom && room.id == currentRoom.id
                       ? 'room border-b flex w-full bg-active p-2 hover:bg-gray-100'
                       : 'room border-b flex w-full p-2 hover:bg-gray-100'
                     : 'hidden'
@@ -252,7 +261,12 @@ function Chat() {
                   <Tabs
                     className="w-full"
                     selectedIndex={index}
-                    onSelect={index => setIndex(index)}
+                    onSelect={index =>
+                      dispatch({
+                        type: 'SET_CHAT_LIST_INDEX',
+                        payload: { index: index },
+                      })
+                    }
                   >
                     <TabList className="flex sm:flex bg-tabbg rounded-xl border ">
                       <Tab

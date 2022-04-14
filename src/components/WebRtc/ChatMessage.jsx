@@ -10,6 +10,7 @@ import prettyBytes from 'pretty-bytes'
 import { useDispatch, useSelector } from 'react-redux'
 function ChatMessage({ message: msg, user: user, date: date }) {
   const [message, setMessage] = useState(msg)
+  const [isOpen, setOpen] = useState(false)
   const translation = msg => {
     if (msg === '') {
       return
@@ -74,6 +75,32 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                     </a>
                   </div>
                   <span>{prettyBytes(message.file[0].size)}</span>
+                  {message.file[0].type == 'gif' ||
+                  message.file[0].type == 'jpg' ||
+                  message.file[0].type == 'jpeg' ||
+                  message.file[0].type == 'png' ||
+                  message.file[0].type == 'gif' ||
+                  message.file[0].type == 'bmp' ? (
+                    <div>
+                      <img
+                        src={
+                          'http://localhost:8000/storage/' +
+                          message.file[0].path
+                        }
+                        onClick={() => setOpen(true)}
+                      />
+                      {message && (
+                        <ReactImageViewer
+                          imgs={
+                            'http://localhost:8000/storage/' +
+                            message.file[0].path
+                          }
+                          isOpen={isOpen}
+                          onClose={() => setOpen(false)}
+                        />
+                      )}
+                    </div>
+                  ) : null}
                 </div>
                 <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
                   <a
@@ -145,6 +172,32 @@ function ChatMessage({ message: msg, user: user, date: date }) {
                       </a>
                     </div>
                     <span>{prettyBytes(message.file[0].size)}</span>
+                    {message.file[0].type == 'gif' ||
+                    message.file[0].type == 'jpg' ||
+                    message.file[0].type == 'jpeg' ||
+                    message.file[0].type == 'png' ||
+                    message.file[0].type == 'gif' ||
+                    message.file[0].type == 'bmp' ? (
+                      <div>
+                        <img
+                          src={
+                            'http://localhost:8000/storage/' +
+                            message.file[0].path
+                          }
+                          onClick={() => setOpen(true)}
+                        />
+                        {message && (
+                          <ReactImageViewer
+                            imgs={
+                              'http://localhost:8000/storage/' +
+                              message.file[0].path
+                            }
+                            isOpen={isOpen}
+                            onClose={() => setOpen(false)}
+                          />
+                        )}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
                     <a
