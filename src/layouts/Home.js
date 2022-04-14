@@ -6,8 +6,10 @@ import Sidebar from '../admin/layout/Sidebar'
 import Header from '../admin/layout/Header'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
+import Echo from 'laravel-echo'
 function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [message, SetMessage] = useState([])
 
   return (
     <div className="flex h-screen overflow-hidden">

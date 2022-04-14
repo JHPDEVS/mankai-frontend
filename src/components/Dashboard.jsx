@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import Sidebar from '../admin/layout/Sidebar'
 import Header from '../admin/layout/Header'
-function Dashboard() {
+function Dashboard({ match }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
