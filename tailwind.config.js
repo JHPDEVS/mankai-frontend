@@ -30,10 +30,10 @@ module.exports = {
         '6xl': ['3.75rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
       },
       spacing: {
-        '240': '52rem',
-        '192': '44rem',
-        '186': '43rem',
-        '180': '40rem'
+        240: '52rem',
+        192: '44rem',
+        186: '43rem',
+        180: '40rem',
       },
       screens: {
         xs: '480px',
@@ -66,14 +66,11 @@ module.exports = {
         secondary: '#F1F1F1',
         chatbg: '#e7e7e7',
         active: '#f9f5ff',
-<<<<<<< HEAD
         tabbg: '#f2f4f5',
         filebg: '#b2c7d9',
         videochatbg: '#edf0f5',
-=======
-        byuncolor :'#d8d8d8',
-        byuncolor2 :'#dddddd'
->>>>>>> 5ef6bef41135a0eb79b6624779cef12bb199a478
+        byuncolor: '#d8d8d8',
+        byuncolor2: '#dddddd',
       },
     },
   },

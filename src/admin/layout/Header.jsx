@@ -14,7 +14,6 @@ function Header({ sidebarOpen, setSidebarOpen }) {
   const noti_count = useSelector(state => state.Reducers.noti_count)
   const noti = useSelector(state => state.Reducers.noti)
   const noti_loading = useSelector(state => state.Reducers.noti_pending)
-<<<<<<< HEAD
   const isOpen = useSelector(state => state.Reducers.isOpen)
 
   return (
@@ -23,13 +22,6 @@ function Header({ sidebarOpen, setSidebarOpen }) {
         'sticky top-0 bg-white border-b rounded-b-xl border-slate-200 z-30'
       }
     >
-=======
-  const isOpen = useSelector(state=>state.Reducers.isOpen)
-
-
-  return (
-    <header className={"sticky top-0 bg-white border-b rounded-b-xl border-slate-200 z-30"}>
->>>>>>> 5ef6bef41135a0eb79b6624779cef12bb199a478
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 -mb-px">
           {/* Header: Left side */}

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getFollows } from './getFollows'
 import { getMemo } from './getMemo'
 import { Users } from './getUsers'
-
+import { getFollowings } from './getFollowings'
 const GET_USER_PENDING = 'GET_USER_PENDING'
 const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 const GET_USER_FAILURE = 'GET_USER_FAILURE'

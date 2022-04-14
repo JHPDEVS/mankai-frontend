@@ -71,21 +71,21 @@ const DELETE_FOLLOWINGS = 'DELETE_FOLLOWINGS'
 const DELETE_MEMO = 'DELETE_MEMO'
 const UPDATE_MEMO = 'UPDATE_MEMO'
 const BOARD_REALUPDATE = 'BOARD_REALUPDATE'
-const BOARD_UPDATE = "BOARD_UPDATE"
-const BOARD_CLICK ="BOARD_CLICK"
-const BOARD_CLEAR ="BOARD_CLEAR"
-const BOARD_DELETE = "BOARD_DELETE"
-const LIKE_UPDATE ="LIKE_UPDATE"
-const SIDE_OPEN = "SIDE_OPEN"
-const SIDE_CLOSE ="SIDE_CLOSE"
-const MEMO_UPDATE = "MEMO_UPDATE"
-const GROUP_LIST = "GROUP_LIST"
-const ADD_MEMO = "ADD_MEMO"
-const MODAL_OPEN = "MODAL_OPEN"
-const MODAL_CLOSE = "MODAL_CLOSE"
-const GROUP_IN = "GROUP_IN"
-const GROUP_OUT = "GROUP_OUT"
-const SET_FOLLOWID = "SET_FOLLOWID"
+const BOARD_UPDATE = 'BOARD_UPDATE'
+const BOARD_CLICK = 'BOARD_CLICK'
+const BOARD_CLEAR = 'BOARD_CLEAR'
+const BOARD_DELETE = 'BOARD_DELETE'
+const LIKE_UPDATE = 'LIKE_UPDATE'
+const SIDE_OPEN = 'SIDE_OPEN'
+const SIDE_CLOSE = 'SIDE_CLOSE'
+const MEMO_UPDATE = 'MEMO_UPDATE'
+const GROUP_LIST = 'GROUP_LIST'
+const ADD_MEMO = 'ADD_MEMO'
+const MODAL_OPEN = 'MODAL_OPEN'
+const MODAL_CLOSE = 'MODAL_CLOSE'
+const GROUP_IN = 'GROUP_IN'
+const GROUP_OUT = 'GROUP_OUT'
+const SET_FOLLOWID = 'SET_FOLLOWID'
 
 const initialState = {
   user: null,
@@ -100,30 +100,30 @@ const initialState = {
   chat_side: false,
   chat_invite_modal: false,
   current_room_users: null,
-  boardData:[],
-  sideData:"",
-  sideLikeData:[],
-  sideImageList:[],
-  isOpen:false,
+  boardData: [],
+  sideData: '',
+  sideLikeData: [],
+  sideImageList: [],
+  isOpen: false,
 
-  likeData:[],
-  memoUpdate:[],
-  likeUpdate:0,
-  likeId:0,
-  groupChange:0,
+  likeData: [],
+  memoUpdate: [],
+  likeUpdate: 0,
+  likeId: 0,
+  groupChange: 0,
   rooms: null,
   message: [],
-  memo : null,
-  follows : null,
+  memo: null,
+  follows: null,
   currentRoom: null,
   chat_current_page: 1,
   chat_inf_handle: true,
-  isModalOpen : false,
-  isGroupChange:0,
-  followId:0,
+  isModalOpen: false,
+  isGroupChange: 0,
+  followId: 0,
   followerFollower: null,
   followings: null,
-  followerFollowing : null,
+  followerFollowing: null,
 }
 
 export default handleActions(
@@ -181,18 +181,17 @@ export default handleActions(
         error: false,
       }
     },
-    [UPDATE_USER] : (state,action) => {
-      const copieduser = {...state.user};
+    [UPDATE_USER]: (state, action) => {
+      const copieduser = { ...state.user }
 
-
-      copieduser.name = action.payload.name;
-      copieduser.country = action.payload.country;
-      copieduser.description = action.payload.description;
-      copieduser.profile = action.payload.image;
+      copieduser.name = action.payload.name
+      copieduser.country = action.payload.country
+      copieduser.description = action.payload.description
+      copieduser.profile = action.payload.image
 
       return {
         ...state,
-        user: copieduser
+        user: copieduser,
       }
     },
     [GET_USER_FAILURE]: (state, action) => {
@@ -270,76 +269,74 @@ export default handleActions(
         error: false,
       }
     },
-    [BOARD_REALUPDATE] : (state,action)=>{
-
-    },
-    [BOARD_UPDATE]:(state,action)=>{
-      return{
-          ...state,
-          boardData:[...state.boardData,action.payload.boardData]
-      }
-    },
-    [BOARD_DELETE]:(state,action)=>{
-      return{
+    [BOARD_REALUPDATE]: (state, action) => {},
+    [BOARD_UPDATE]: (state, action) => {
+      return {
         ...state,
-        boardData : state.boardData.filter((boardDataone)=>{
-          return boardDataone.id !== action.payload.boardId
-        })
+        boardData: [...state.boardData, action.payload.boardData],
       }
     },
-  [BOARD_CLICK]:(state,action)=>{
-    return {
-      ...state,
-      sideData:action.payload.sideData,
-      sideLikeData:action.payload.sideLikeData,
-      sideImageList:action.payload.sideImageList   
-    }
-  },
-  [BOARD_CLEAR]:(state,action)=>{
-    return {
-      ...state,
-      boardData:[]
-    }
-  },
-  [SIDE_OPEN]:(state,action)=>{
-    return {
-      ...state,
-      isOpen:true
-    }
-  },
-  [SIDE_CLOSE]:(state,action)=>{
-    return {
-      ...state,
-      isOpen:false
-    }
-  },
+    [BOARD_DELETE]: (state, action) => {
+      return {
+        ...state,
+        boardData: state.boardData.filter(boardDataone => {
+          return boardDataone.id !== action.payload.boardId
+        }),
+      }
+    },
+    [BOARD_CLICK]: (state, action) => {
+      return {
+        ...state,
+        sideData: action.payload.sideData,
+        sideLikeData: action.payload.sideLikeData,
+        sideImageList: action.payload.sideImageList,
+      }
+    },
+    [BOARD_CLEAR]: (state, action) => {
+      return {
+        ...state,
+        boardData: [],
+      }
+    },
+    [SIDE_OPEN]: (state, action) => {
+      return {
+        ...state,
+        isOpen: true,
+      }
+    },
+    [SIDE_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        isOpen: false,
+      }
+    },
 
-  [MODAL_OPEN]:(state,action)=>{
-    return {
-      ...state,
-      isModalOpen:true
-    }
-  },
-  [MODAL_CLOSE]:(state,action)=>{
-    return {
-      ...state,
-      isModalOpen:false
-    }
-  },
+    [MODAL_OPEN]: (state, action) => {
+      return {
+        ...state,
+        isModalOpen: true,
+      }
+    },
+    [MODAL_CLOSE]: (state, action) => {
+      return {
+        ...state,
+        isModalOpen: false,
+      }
+    },
 
-  [LIKE_UPDATE]:(state,action)=>{
-    return{
-      ...state,
-      likeUpdate:state.likeUpdate+1,
-      likeId:action.payload.board_id
-    }
-  },
-  [GROUP_LIST]:(state,action)=>{
-    return{
-      ...state,
-      groupChange:state.groupChange+1
-    }
-  },
+    [LIKE_UPDATE]: (state, action) => {
+      return {
+        ...state,
+        likeUpdate: state.likeUpdate + 1,
+        likeId: action.payload.board_id,
+      }
+    },
+    [GROUP_LIST]: (state, action) => {
+      return {
+        ...state,
+        groupChange: state.groupChange + 1,
+      }
+    },
 
     [POST_USEREDIT_PENDING]: (state, action) => {
       return {
@@ -353,9 +350,9 @@ export default handleActions(
         ...state,
         useredit_register_pending: false,
         useredit: action.payload,
-        sideData:action.payload.sideData,
-        sideLikeData:action.payload.sideLikeData,
-        sideImageList:action.payload.sideImageList   
+        sideData: action.payload.sideData,
+        sideLikeData: action.payload.sideLikeData,
+        sideImageList: action.payload.sideImageList,
       }
     },
     [POST_USEREDIT_FAILURE]: (state, action) => {
@@ -532,11 +529,11 @@ export default handleActions(
         get_follows_error: true,
       }
     },
-  
-    [SET_FOLLOWERFOLLOWING] : (state, action) => {
+
+    [SET_FOLLOWERFOLLOWING]: (state, action) => {
       return {
         ...state,
-        followerFollowing :action.payload.followerFollowing
+        followerFollowing: action.payload.followerFollowing,
       }
     },
 
@@ -566,44 +563,44 @@ export default handleActions(
     [SET_FOLLOWID]: (state, action) => {
       return {
         ...state,
-        followId : action.payload.followId, 
+        followId: action.payload.followId,
       }
     },
-    [SET_FOLLOWERFOLLOWER] : (state, action) => {
+    [SET_FOLLOWERFOLLOWER]: (state, action) => {
       return {
         ...state,
-      followerFollower: action.payload.followerFollower,
+        followerFollower: action.payload.followerFollower,
       }
     },
-    [TOGGLE_FOLLOWERFOLLOWER] : (state, action) => {
-      var plus = true;
-      var i = 0 ;
+    [TOGGLE_FOLLOWERFOLLOWER]: (state, action) => {
+      var plus = true
+      var i = 0
 
-      var copiedfollowerFollower = [...state.followerFollower];
+      var copiedfollowerFollower = [...state.followerFollower]
       copiedfollowerFollower.forEach(follower => {
-        if(follower.id === action.payload.followerFollower.id){
-          copiedfollowerFollower.splice(i,1)
-          plus = false;
+        if (follower.id === action.payload.followerFollower.id) {
+          copiedfollowerFollower.splice(i, 1)
+          plus = false
         }
-        i++;
+        i++
       })
-      if(plus === true){
-        copiedfollowerFollower.push(action.payload.followerFollower);
+      if (plus === true) {
+        copiedfollowerFollower.push(action.payload.followerFollower)
       }
 
-      return{
-      ...state,
-      followerFollower : copiedfollowerFollower
-    }
+      return {
+        ...state,
+        followerFollower: copiedfollowerFollower,
+      }
     },
 
-    [DELETE_FOLLOWINGS] : (state,action) => {
-        return {
-          ...state,
-          followings : state.followings.filter((following)=>{
-            return following.id !== action.payload
-          })
-        }
+    [DELETE_FOLLOWINGS]: (state, action) => {
+      return {
+        ...state,
+        followings: state.followings.filter(following => {
+          return following.id !== action.payload
+        }),
+      }
     },
     [GET_MEMO_PENDING]: (state, action) => {
       return {
@@ -705,28 +702,26 @@ export default handleActions(
       return {
         ...state,
         memo: state.memo.filter((onememo, index) => {
-                    return onememo.id !== action.payload.memo_id
+          return onememo.id !== action.payload.memo_id
         }),
       }
     },
 
-    [UPDATE_MEMO]:(state, action) => {
-      return { 
+    [UPDATE_MEMO]: (state, action) => {
+      return {
         ...state,
-          memo: [
-            ...state.memo.filter(onememo => {
-              if(onememo.id === action.payload.memo_id){
-                onememo.memo_title = action.payload.memo_title  
-                onememo.content_text = action.payload.content_text
-              }
-              return onememo.id === action.payload.memo_id
+        memo: [
+          ...state.memo.filter(onememo => {
+            if (onememo.id === action.payload.memo_id) {
+              onememo.memo_title = action.payload.memo_title
+              onememo.content_text = action.payload.content_text
             }
-
-            ),
-            ...state.memo.filter(onememo => {
-              return onememo.id !== action.payload.memo_id
-            })
-          ]
+            return onememo.id === action.payload.memo_id
+          }),
+          ...state.memo.filter(onememo => {
+            return onememo.id !== action.payload.memo_id
+          }),
+        ],
       }
     },
 
@@ -808,30 +803,30 @@ export default handleActions(
         chat_inf_handle: false,
       }
     },
-    [GROUP_LIST]:(state,action)=>{
-      return{
+    [GROUP_LIST]: (state, action) => {
+      return {
         ...state,
-        groupChange:state.groupChange+1
+        groupChange: state.groupChange + 1,
       }
     },
-    [GROUP_IN]:(state,action)=>{
-      return{
+    [GROUP_IN]: (state, action) => {
+      return {
         ...state,
-        isGroupChange:state.isGroupChange+1
+        isGroupChange: state.isGroupChange + 1,
       }
     },
-    [GROUP_OUT]:(state,action)=>{
-      return{
+    [GROUP_OUT]: (state, action) => {
+      return {
         ...state,
-        isGroupChange:state.isGroupChange+1
+        isGroupChange: state.isGroupChange + 1,
       }
     },
-    [MEMO_UPDATE]:(state,action)=>{
-      return{
+    [MEMO_UPDATE]: (state, action) => {
+      return {
         ...state,
-        memoUpdate:[...state.memoUpdate,1]
+        memoUpdate: [...state.memoUpdate, 1],
       }
-    }
+    },
   },
   initialState
 )

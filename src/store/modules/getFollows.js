@@ -6,18 +6,10 @@ const GET_FOLLOWS_SUCCESS = 'GET_FOLLOWS_SUCCESS'
 const GET_FOLLOWS_FAILURE = 'GET_FOLLOWS_FAILURE'
 
 function getAPI(userId) {
-<<<<<<< HEAD
   return axios.get(`/api/follows/${userId}`)
 }
 
 export const getFollows = userId => async dispatch => {
-=======
-  console.log(userId);
-  return axios.get(`/api/follows/${userId}`)
-}
-
-export const getFollows = (userId) => async dispatch => {
->>>>>>> 5ef6bef41135a0eb79b6624779cef12bb199a478
   //먼저 요청이 시작 됬다는것을 알려줌
 
   dispatch({ type: GET_FOLLOWS_PENDING })
@@ -39,8 +31,4 @@ export const getFollows = (userId) => async dispatch => {
       })
       throw err
     })
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 5ef6bef41135a0eb79b6624779cef12bb199a478

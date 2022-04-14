@@ -4,7 +4,7 @@ import {
   Route,
   Switch,
   Redirect,
-  Link
+  Link,
 } from 'react-router-dom'
 
 import Login from './components/Login'
@@ -29,10 +29,9 @@ import Room from './components/WebRtc/VideoRoom'
 import WaitRoom from './components/WebRtc/WaitRoom'
 import speechTest from './components/stream/speechTest'
 import Group from './components/Group'
-import DashboardUser from './admin/component/User'
-import ChatMemo from './components/MyPage/ChatMemo';
+import ChatMemo from './components/MyPage/ChatMemo'
 import './css/style.scss'
-import Profile from './components/MyPage/Profile';
+import Profile from './components/MyPage/Profile'
 import YouPage from './components/MyPage/YouPage'
 import GroupDetail from './components/GroupDetail'
 
@@ -95,17 +94,13 @@ function App() {
           component={DashboardUser}
         ></Route>
 
-          <Route exact path="/profile" component={Profile}></Route>
-          <Route exact path="/youpage/:follow_id" component={YouPage}></Route>
+        <Route exact path="/profile" component={Profile}></Route>
+        <Route exact path="/youpage/:follow_id" component={YouPage}></Route>
         <Route exact path="/chatting_memo" component={ChatMemo}></Route>
-          {/* <Route exact path="/post_memo" component={PostMemo}></Route>
+        {/* <Route exact path="/post_memo" component={PostMemo}></Route>
           <Route exact path="/my_memo_edit/:id" component={MyMemoEdit}></Route> */}
 
-          <Route exact path="/profile" component={Profile}></Route>
-          <Route exact path="/youProfile" component={YouPage}></Route>
-          
-
-
+        <Route exact path="/youProfile" component={YouPage}></Route>
 
         <Route exact path="/board" component={BoardCopy}></Route>
 
