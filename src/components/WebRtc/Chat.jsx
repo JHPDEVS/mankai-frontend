@@ -31,7 +31,8 @@ function Chat(props) {
     setMessage('')
   }
 
-  const sendFile = file => {
+  const sendFile = e => {
+    const file = e.target.files[0]
     if (props.user && file && user) {
       const formData = new FormData()
       formData.append('file', file)
@@ -51,6 +52,7 @@ function Chat(props) {
             data: JSON.stringify(data),
             type: 'chat-file',
           })
+          e.target.value = ''
         })
         .catch(err => {
           console.log(err)
@@ -150,15 +152,14 @@ function Chat(props) {
             ></path>
           </svg>
         </label>
-        <form method="post" enctype="multipart/form-data">
-          <input
-            type="file"
-            id="input-file"
-            className="hidden"
-            name="input-file"
-            onChange={e => sendFile(e.target.files[0])}
-          />
-        </form>
+
+        <input
+          type="file"
+          id="input-file"
+          className="hidden"
+          name="input-file"
+          onChange={e => sendFile(e)}
+        />
       </div>
     </div>
   )

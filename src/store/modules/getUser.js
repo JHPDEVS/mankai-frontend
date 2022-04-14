@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { getFollows } from './getFollows'
 import { getMemo } from './getMemo'
+import { Users } from './getUsers'
 
 const GET_USER_PENDING = 'GET_USER_PENDING'
 const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
@@ -25,6 +26,7 @@ export const User = () => async dispatch => {
       })
       dispatch(getFollows(res.data.id))
       dispatch(getMemo(res.data.id))
+      dispatch(Users())
     })
     .catch(err => {
       // 에러가 발생할경우  GET_USER_FAILURE

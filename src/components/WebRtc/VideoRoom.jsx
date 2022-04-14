@@ -12,11 +12,13 @@ import Header from '../../admin/layout/Header'
 import { IconButton } from '@mui/material'
 import ChangeNameModal from './ChangeNameModal'
 import Chat from './Chat'
+import MiniChat from './MiniChat'
 import Mic from '@mui/icons-material/Mic'
 import MicOff from '@mui/icons-material/MicOff'
 import Videocam from '@mui/icons-material/Videocam'
 import VideocamOff from '@mui/icons-material/VideocamOff'
-import { ConstructionOutlined } from '@mui/icons-material'
+
+import Ratio from 'react-ratio/lib/Ratio'
 var localUser = new UserModel()
 const RoomAxios = axios.create()
 class VideoRoom extends Component {
@@ -687,12 +689,28 @@ class VideoRoom extends Component {
                       />
                     </div>
                   ))}
+
                   {localUser !== undefined &&
                     localUser.getStreamManager() !== undefined && (
                       <div
                         className="OT_root OT_publisher custom-class"
                         style={chatDisplay}
-                      ></div>
+                      >
+                        <div
+                          className="OT_root OT_publisher custom-class"
+                          style={chatDisplay}
+                        >
+                          <Ratio ratio={16 / 9}>
+                            <MiniChat
+                              user={localUser}
+                              chatDisplay={this.state.chatDisplay}
+                              close={this.toggleChat}
+                              messageReceived={this.checkNotification}
+                              roomID={this.props.roomName}
+                            />
+                          </Ratio>
+                        </div>
+                      </div>
                     )}
                 </div>
                 <div className="h-1/7">

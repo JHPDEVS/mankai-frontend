@@ -19,6 +19,7 @@ import { Add, AddCircleOutlined } from '@mui/icons-material'
 import { blue, green, red } from '@mui/material/colors'
 import { getCurrentRoom } from '../../store/modules/getCurrentRoom'
 import { getFollows } from '../../store/modules/getFollows'
+import MemosModal from './MemosModal'
 
 function ChatDrawer() {
   const dispatch = useDispatch()
@@ -33,6 +34,7 @@ function ChatDrawer() {
   const inviteOpen = useSelector(state => state.Reducers.chat_invite_modal)
   const follows = useSelector(state => state.Reducers.follows)
   const [isOpen, setOpen] = useState(false)
+  const [open2, setOpen2] = useState(false)
   const follow = user_id => {
     axios
       .post('/api/user/follow', {
@@ -65,6 +67,14 @@ function ChatDrawer() {
     return users
   }
 
+  const memoModalOpen = () => {
+    setOpen2(true)
+  }
+  const handleClose = e => {
+    e.preventDefault()
+    setOpen2(false)
+  }
+
   useEffect(() => {
     console.log(files)
     console.log(images)
@@ -87,6 +97,7 @@ function ChatDrawer() {
   }, [currentRoom])
   return (
     <>
+      <MemosModal open={open2} handleClose={handleClose} />
       <div className="flex flex-row  items-center  top-0  w-full">
         <div className="flex flex-row border-gray bg-tabbg rounded-t-xl  items-center w-full border-1  h-12 ">
           <span className="ml-2 font-bold text-xl">채팅방 서랍</span>
@@ -95,7 +106,18 @@ function ChatDrawer() {
       <div className="primary-bg w-full h-[calc(100vh-170px)]  overflow-y-auto">
         <div className="text-sm text-left font-bold">
           <div className="text-sm p-2">
-            <div className="flex w-full">
+            <div className="flex w-full p-2">
+              <span className="px-2 py-1 text-sm  text-blue-900  rounded-md ">
+                내 메모
+              </span>
+              <button
+                onClick={memoModalOpen}
+                className="ml-auto px-2 py-1 text-sm font-bold text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              >
+                보기
+              </button>
+            </div>
+            <div className="flex w-full p-2">
               <span className="px-2 py-1 text-sm  text-blue-900  rounded-md ">
                 파일
               </span>
@@ -106,7 +128,7 @@ function ChatDrawer() {
 
             {files
               ? files.map((message, index) =>
-                  JSON.parse(message.file).map(file => (
+                  JSON.parse(message.message).map(file => (
                     <>
                       {index <= 2 ? (
                         <div
@@ -177,8 +199,8 @@ function ChatDrawer() {
               {images.map((image, index) => (
                 <>
                   {index < 4 ? (
-                    image.file.startsWith('[') ? (
-                      JSON.parse(image.file).map((image, file) => (
+                    image.message.startsWith('[') ? (
+                      JSON.parse(image.message).map((image, file) => (
                         <ImageListItem key={image}>
                           <img
                             src={`http://localhost:8000/storage/${image}?w=161&fit=crop&auto=format`}
@@ -188,10 +210,10 @@ function ChatDrawer() {
                         </ImageListItem>
                       ))
                     ) : (
-                      <ImageListItem key={image.file}>
+                      <ImageListItem key={image.message}>
                         <img
-                          src={`http://localhost:8000/storage/${image.file}?w=161&fit=crop&auto=format`}
-                          srcSet={`http://localhost:8000/storage/${image.file}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                          src={`http://localhost:8000/storage/${image.message}?w=161&fit=crop&auto=format`}
+                          srcSet={`http://localhost:8000/storage/${image.message}?w=161&fit=crop&auto=format&dpr=2 2x`}
                           loading="lazy"
                         />
                       </ImageListItem>

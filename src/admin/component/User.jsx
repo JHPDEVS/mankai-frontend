@@ -3,37 +3,46 @@ import 'react-toastify/dist/ReactToastify.css'
 import Sidebar from '../layout/Sidebar'
 import Header from '../layout/Header'
 import { useTranslation } from 'react-i18next'
-import { useEffect, useState,Fragment } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { Users } from '../../store/modules/getUsers'
-import { Autocomplete, Avatar, Button, FormControlLabel, Radio, RadioGroup, Skeleton, TextField, Typography } from '@mui/material'
+import {
+  Autocomplete,
+  Avatar,
+  Button,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Skeleton,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { indigo } from '@mui/material/colors'
 import ReactLoading from 'react-loading'
-import Moment from 'react-moment';
-import 'moment-timezone';
-import Box from '@mui/material/Box';
+import Moment from 'react-moment'
+import 'moment-timezone'
+import Box from '@mui/material/Box'
 import { Dialog, Transition } from '@headlessui/react'
 import { AdminUserEdit } from '../../store/modules/postUserEdit'
 
-function User() {
+function User({ match }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const users = useSelector(state => state.Reducers.users)
   const loading = useSelector(state => state.Reducers.users_pending)
   const dispatch = useDispatch()
   const [isOpen, setIsOpen] = useState(false)
   const [selectedUser, setSelectUser] = useState(null)
-  const [value, setValue] = useState(null);
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    data.append("country",value);
-    data.append("user_id",selectedUser.id)
-    alert(value)  
+  const [value, setValue] = useState(null)
+  const handleSubmit = event => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    data.append('country', value)
+    data.append('user_id', selectedUser.id)
+    alert(value)
     for (var value of data.values()) {
-      console.log(value);
-   }
-    dispatch(AdminUserEdit(data));
-   
-  };
+      console.log(value)
+    }
+    dispatch(AdminUserEdit(data))
+  }
   const countries = [
     { code: 'AD', label: 'Andorra', phone: '376' },
     {
@@ -457,207 +466,239 @@ function User() {
     { code: 'ZA', label: 'South Africa', phone: '27' },
     { code: 'ZM', label: 'Zambia', phone: '260' },
     { code: 'ZW', label: 'Zimbabwe', phone: '263' },
-  ];
+  ]
   function closeModal() {
-      setIsOpen(false)
-      setSelectUser(null)
+    setIsOpen(false)
+    setSelectUser(null)
   }
 
   function openModal(user) {
-      setIsOpen(true)
-      setSelectUser(user)
+    setIsOpen(true)
+    setSelectUser(user)
   }
   useEffect(() => {
     dispatch(Users())
   }, [])
   return (
     <div className="flex h-screen overflow-hidden">
-         {/* Dialog */}
-         {selectedUser ?  
-      <Transition appear show={isOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={closeModal}
-        >
-          <div className="min-h-screen px-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Overlay className="fixed inset-0" />
-            </Transition.Child>
+      {/* Dialog */}
+      {selectedUser ? (
+        <Transition appear show={isOpen} as={Fragment}>
+          <Dialog
+            as="div"
+            className="fixed inset-0 z-10 overflow-y-auto"
+            onClose={closeModal}
+          >
+            <div className="min-h-screen px-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <Dialog.Overlay className="fixed inset-0" />
+              </Transition.Child>
 
-            {/* This element is to trick the browser into centering the modal contents. */}
-            <span
-              className="inline-block h-screen align-middle"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="inline-block w-full max-w-md p-3 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl shadow border dark:bg-gray-900">
-              <form component="form" onSubmit={handleSubmit} >
-            <div class="flex justify-end ">
-              
-                <button type="button" onClick={closeModal} class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-toggle="authentication-modal">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>  
-                </button>
+              {/* This element is to trick the browser into centering the modal contents. */}
+              <span
+                className="inline-block h-screen align-middle"
+                aria-hidden="true"
+              >
+                &#8203;
+              </span>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <div className="inline-block w-full max-w-md p-3 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl shadow border dark:bg-gray-900">
+                  <form component="form" onSubmit={handleSubmit}>
+                    <div class="flex justify-end ">
+                      <button
+                        type="button"
+                        onClick={closeModal}
+                        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                        data-modal-toggle="authentication-modal"
+                      >
+                        <svg
+                          class="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="container mx-auto">
+                      <div>
+                        <div>
+                          <div class="flex justify-center">
+                            <Avatar
+                              style={{
+                                backgroundColor: indigo[300],
+                              }}
+                            >
+                              {selectedUser.name.substring(0, 1)}
+                            </Avatar>
+                          </div>
+
+                          <div>
+                            <h1 class="font-bold text-center text-3xl text-gray-900">
+                              {selectedUser.name}
+                            </h1>
+                            <div className="px-4">
+                              <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="email"
+                                label="이메일"
+                                name="email"
+                                autoComplete="email"
+                                autoFocus
+                                defaultValue={selectedUser.email}
+                                style={{
+                                  backgroundColor: '#f2f4f8',
+                                }}
+                              />
+                            </div>
+                            <div className="px-4">
+                              <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="name"
+                                label="name"
+                                name="name"
+                                autoComplete="name"
+                                autoFocus
+                                defaultValue={selectedUser.name}
+                                style={{
+                                  backgroundColor: '#f2f4f8',
+                                }}
+                              />
+                            </div>
+                            <div className="px-4">
+                              <TextField
+                                margin="normal"
+                                fullWidth
+                                id="profile_title"
+                                label="profile_title"
+                                name="profile_title"
+                                autoComplete="title"
+                                autoFocus
+                                defaultValue={selectedUser.profile_title}
+                                style={{
+                                  backgroundColor: '#f2f4f8',
+                                }}
+                              />
+                            </div>
+                            <div className="px-4">
+                              <TextField
+                                margin="normal"
+                                fullWidth
+                                id="profile_description"
+                                label="profile_description"
+                                name="profile_description"
+                                autoComplete="profile_description"
+                                multiline
+                                rows={4}
+                                autoFocus
+                                defaultValue={selectedUser.profile_description}
+                                style={{
+                                  backgroundColor: '#f2f4f8',
+                                }}
+                              />
+                            </div>
+                            <div className="px-4">
+                              <Autocomplete
+                                disablePortal
+                                id="country"
+                                onChange={(event, value) =>
+                                  setValue(value.label)
+                                }
+                                options={countries}
+                                fullWidth
+                                name="country"
+                                renderOption={(props, option) => (
+                                  <Box
+                                    component="li"
+                                    sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                                    {...props}
+                                  >
+                                    <img
+                                      loading="lazy"
+                                      width="20"
+                                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                                      alt=""
+                                    />
+                                    {option.label}
+                                  </Box>
+                                )}
+                                value={value}
+                                renderInput={params => (
+                                  <TextField {...params} label="country" />
+                                )}
+                              />
+                            </div>
+                            <div className="p-4">
+                              <span>성별</span>
+                              <RadioGroup
+                                row
+                                name="gender"
+                                defaultValue={selectedUser.gender}
+                              >
+                                <FormControlLabel
+                                  value="male"
+                                  label="male"
+                                  control={<Radio />}
+                                />
+                                <FormControlLabel
+                                  value="female"
+                                  label="female"
+                                  control={<Radio />}
+                                />
+                              </RadioGroup>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-center">
+                      <button
+                        type="submit"
+                        className=" px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                      >
+                        저장하기
+                      </button>
+                      <button
+                        type="button"
+                        className="ml-2 px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                        onClick={closeModal}
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </Transition.Child>
             </div>
-            <div class="container mx-auto">
-        <div>
-            <div>
-                <div class="flex justify-center">
-                <Avatar
-          style={{
-            backgroundColor: indigo[300],
-          }}
-        >
-          {selectedUser.name.substring(0, 1)}
-        </Avatar>
-                </div>
-                
-                <div >
-                    <h1 class="font-bold text-center text-3xl text-gray-900">{selectedUser.name}</h1>
-                    <div className="px-4">
-                    <TextField
-                     margin="normal"
-                     required
-                     fullWidth
-                     id="email"
-                     label="이메일"
-                     name="email"
-                     autoComplete="email"
-                     autoFocus
-                     defaultValue={selectedUser.email}
-                     style={{
-                         backgroundColor: "#f2f4f8",
-                     }}
-                   />
-                    </div>
-                    <div className="px-4">
-                    <TextField
-                     margin="normal"
-                     required
-                     fullWidth
-                     id="name"
-                     label="name"
-                     name="name"
-                     autoComplete="name"
-                     autoFocus
-                     defaultValue={selectedUser.name}
-                     style={{
-                         backgroundColor: "#f2f4f8",
-                     }}
-                   />
-                    </div>
-                    <div className="px-4">
-                    <TextField
-                     margin="normal"
-                     fullWidth
-                     id="profile_title"
-                     label="profile_title"
-                     name="profile_title"
-                     autoComplete="title"
-                     autoFocus
-                     defaultValue={selectedUser.profile_title}
-                     style={{
-                         backgroundColor: "#f2f4f8",
-                     }}
-                   />
-                    </div>
-                    <div className="px-4">
-                    <TextField
-                     margin="normal"
-                     fullWidth
-                     id="profile_description"
-                     label="profile_description"
-                     name="profile_description"
-                     autoComplete="profile_description"
-                     multiline
-                     rows={4}
-                     autoFocus
-                     defaultValue={selectedUser.profile_description}
-                     style={{
-                         backgroundColor: "#f2f4f8",
-                     }}
-                   />
-                    </div>
-                    <div className="px-4">
-                    <Autocomplete
-  disablePortal
-  id="country"
-  onChange={(event, value) => setValue(value.label)} 
-  options={countries}
-  fullWidth
-  name="country"
-  renderOption={(props, option) => (
-    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-      <img
-        loading="lazy"
-        width="20"
-        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-        alt=""
-      />
-      {option.label}
-    </Box>
-  )}
-  value={value}
-  renderInput={(params) => <TextField {...params} label="country" />}
-/>
-                    </div>
-                    <div className="p-4">
-                      <span>성별</span>
-                    <RadioGroup row name="gender" defaultValue={selectedUser.gender}>
-  <FormControlLabel value="male" label="male" control={<Radio />} />
-  <FormControlLabel value="female" label="female" control={<Radio />} />
-</RadioGroup>
-                    </div>
-                   
-
-                   
-                </div>
-            </div>
-        </div>
-        </div>
-                <div className="flex justify-center">
-
-                <button
-                    type="submit"
-                    className=" px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                  >
-                    저장하기
-                  </button>
-                  <button
-                    type="button"
-                    className="ml-2 px-4 py-2 text-sm font-medium text-red-900 bg-red-100 border border-transparent rounded-md hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                    onClick={closeModal}
-                  >
-                    취소
-                  </button>
-                </div>
-                </form>
-              </div>
-            </Transition.Child>
-          </div>
-        </Dialog>
-        
-      </Transition>
-       : null}
+          </Dialog>
+        </Transition>
+      ) : null}
       {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Content area */}
@@ -667,12 +708,10 @@ function User() {
 
         <main>
           <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-
-     
-         
             <div class="flex flex-col items-start justify-between pb-6 space-y-4 border-b lg:items-center lg:space-y-0 lg:flex-row">
               <h1 class="text-2xl font-semibold whitespace-nowrap">User</h1>
               <div class="space-y-6 md:space-x-2 md:space-y-0">검색</div>
+              <div>ID: {match.params.id}</div>
             </div>
             <div class="grid grid-cols-1 gap-5 mt-6 sm:grid-cols-2 lg:grid-cols-4">
               <template x-for="i in 4">
@@ -737,8 +776,11 @@ function User() {
                       </thead>
                       <tbody class="bg-white divide-y divide-gray-200">
                         {users &&
-                          users.map((user,idx) => (
-                            <tr class="transition-all hover:bg-gray-100 hover:shadow-lg" key={user.id}>
+                          users.map((user, idx) => (
+                            <tr
+                              class="transition-all hover:bg-gray-100 hover:shadow-lg"
+                              key={user.id}
+                            >
                               <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                   <div class="flex-shrink-0 w-10 h-10">
@@ -770,12 +812,16 @@ function User() {
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
-                                <Moment format='YYYY-MM-DD H:mm:ss' local>{user.created_at}</Moment>
+                                  <Moment format="YYYY-MM-DD H:mm:ss" local>
+                                    {user.created_at}
+                                  </Moment>
                                 </div>
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
-                                <Moment format='YYYY-MM-DD H:mm:ss' local>{user.last_login_at}</Moment>
+                                  <Moment format="YYYY-MM-DD H:mm:ss" local>
+                                    {user.last_login_at}
+                                  </Moment>
                                 </div>
                               </td>
                               <td class="px-6 py-4 whitespace-nowrap">
@@ -788,7 +834,7 @@ function User() {
                               </td>
                               <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                 <button
-                                   onClick={()=>openModal(user)}
+                                  onClick={() => openModal(user)}
                                   class="text-indigo-600 hover:text-indigo-900"
                                 >
                                   보기/편집
@@ -802,30 +848,34 @@ function User() {
                             <td class="px-6 py-4 whitespace-nowrap">
                               <div class="flex items-center">
                                 <div class="flex-shrink-0 w-10 h-10">
-                                <Skeleton animation="wave" variant="circular" width={40} height={40} />
+                                  <Skeleton
+                                    animation="wave"
+                                    variant="circular"
+                                    width={40}
+                                    height={40}
+                                  />
                                 </div>
                                 <div class="ml-4">
-          
                                   <Skeleton />
                                   <Skeleton />
                                 </div>
                               </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                            <Skeleton />
+                              <Skeleton />
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                            <Skeleton />
+                              <Skeleton />
                             </td>
-                            <td >
-                            <Skeleton />
+                            <td>
+                              <Skeleton />
                             </td>
                             <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                               <a
                                 href="#"
                                 class="text-indigo-600 hover:text-indigo-900"
                               >
-                                 <Skeleton />
+                                <Skeleton />
                               </a>
                             </td>
                           </tr>
@@ -840,8 +890,6 @@ function User() {
         </main>
       </div>
     </div>
-
-    
   )
 }
 
