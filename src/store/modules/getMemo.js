@@ -9,7 +9,11 @@ function getAPI(userId) {
   return axios.get(`/api/memo/${userId}`)
 }
 
+<<<<<<< HEAD
 export const getMemo = userId => async dispatch => {
+=======
+export const getMemo = (userId) => async dispatch => {
+>>>>>>> 5ef6bef41135a0eb79b6624779cef12bb199a478
   //먼저 요청이 시작 됬다는것을 알려줌
 
   dispatch({ type: GET_MEMO_PENDING })
@@ -31,4 +35,8 @@ export const getMemo = userId => async dispatch => {
       })
       throw err
     })
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5ef6bef41135a0eb79b6624779cef12bb199a478

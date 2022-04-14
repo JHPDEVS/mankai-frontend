@@ -26,6 +26,7 @@ export const User = () => async dispatch => {
       })
       dispatch(getFollows(res.data.id))
       dispatch(getMemo(res.data.id))
+      dispatch(getFollowings(res.data.id))
       dispatch(Users())
     })
     .catch(err => {

@@ -1,0 +1,49 @@
+/* MyUser */
+#cardImg{
+    width: 50%;   
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+}
+
+.postballoon {  
+	position:relative; 
+	margin-right : 30px;
+	margin-top : 15px;
+	margin-left: 55px;
+	width:200px; 
+	height:140px;
+	 background:rgb(248, 136, 229); 
+	 border-radius: 10px;
+	 padding: 3%;
+	 display:inline-block;
+   }
+
+.balloon:after { 
+	border-top:16px solid transparent; 
+	border-left: 25px solid transparent; 
+	border-right: 10px solid transparent; 
+	border-bottom: 10px solid rgb(248, 136, 229); 
+	content:""; 
+	position:absolute;
+	top:25px;
+	left:-18px;
+ }
+
+ .oneline{
+	white-space: nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+ }
+
+
+
+ #scroll{
+	height: 80%;
+	overflow-y: scroll;
+ }
+
+ #user_page{
+	 
+	height: 100%;
+ }

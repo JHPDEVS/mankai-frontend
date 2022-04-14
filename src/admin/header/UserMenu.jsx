@@ -63,6 +63,19 @@ function UserMenu() {
 
   return (
     <div className="relative inline-flex">
+      {(user) ?
+      <IconButton
+      ref={trigger}
+      className="inline-flex justify-center items-center group"
+      aria-haspopup="true"
+      onClick={() => setDropdownOpen(!dropdownOpen)}
+      aria-expanded={dropdownOpen}
+    >
+      <Avatar>
+        <img src={user.profile} alt=""/>
+      </Avatar>
+    </IconButton>
+      :
       <IconButton
         ref={trigger}
         className="inline-flex justify-center items-center group"
@@ -76,7 +89,7 @@ function UserMenu() {
           </div>
         </div>
       </IconButton>
-
+    }
       <Transition
         className="origin-top-right z-10 absolute top-full right-0 min-w-44 bg-white border border-slate-200 py-1.5 rounded shadow-lg overflow-hidden mt-1"
         show={dropdownOpen}

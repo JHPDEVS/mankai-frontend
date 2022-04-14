@@ -32,7 +32,6 @@ function Notifications() {
     document.addEventListener('click', clickHandler)
     return () => document.removeEventListener('click', clickHandler)
   })
-
   // close if the esc key is pressed
   useEffect(() => {
     const keyHandler = ({ keyCode }) => {
