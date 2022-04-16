@@ -86,7 +86,7 @@ const MODAL_CLOSE = 'MODAL_CLOSE'
 const GROUP_IN = 'GROUP_IN'
 const GROUP_OUT = 'GROUP_OUT'
 const SET_FOLLOWID = 'SET_FOLLOWID'
-
+const SET_TO_USERS = 'SET_TO_USERS'
 const initialState = {
   user: null,
   pending: false,
@@ -105,7 +105,7 @@ const initialState = {
   sideLikeData: [],
   sideImageList: [],
   isOpen: false,
-
+  to_users: null,
   likeData: [],
   memoUpdate: [],
   likeUpdate: 0,
@@ -151,6 +151,13 @@ export default handleActions(
         error: false,
       }
     },
+    [SET_TO_USERS]: (state, action) => {
+      return {
+        ...state,
+        to_users: action.payload.toUsers,
+      }
+    },
+
     [GET_LOGIN_SUCCESS]: (state, action) => {
       return {
         login_pending: false,
