@@ -25,11 +25,13 @@ function RoomInviteUserModal(props) {
   const currentRoomUsers = useSelector(
     state => state.Reducers.current_room_users
   )
+  const toUser = useSelector(state => state.Reducers.to_users)
   const loading = useSelector(state => state.Reducers.follows_pending)
   const follows = useSelector(state => state.Reducers.follows)
   const dispatch = useDispatch()
   const [search, setSearch] = useState('')
   const [close, setClose] = useState(false)
+  const [inviteMessage, setInviteMessage] = useState(false)
   const changeHandler = (checked, user) => {
     if (checked) {
       setCheckedInviteUsers([...checkedInviteUsers, user])
@@ -43,7 +45,6 @@ function RoomInviteUserModal(props) {
   React.useEffect(() => {
     if (complete) {
       console.log(complete)
-
       axios
         .post('api/user/invite', {
           room: currentRoom,
@@ -54,11 +55,41 @@ function RoomInviteUserModal(props) {
           // props.newRoomList(res.data);
           console.log(res.data)
           setComplete(false)
-          dispatch(getCurrentRoom(currentRoom.id))
+          if(currentRoom.id != res.data.id) {
+              dispatch({ type: 'ADD_ROOM', payload: { room: res.data } })
+              dispatch({type : 'SET_CHAT_LIST_INDEX', payload : {index : 1}})
+
+          }
+          // dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: res.data } })
+          // dispatch({ type: 'CHAT_PAGE_ONE' })
+          dispatch(getCurrentRoom(res.data.id))
+          setInviteMessage(true)
           setCheckedInviteUsers([])
+          
         })
     }
   }, [checkedInviteUsers, complete])
+
+  React.useEffect(() => {
+    if(toUser && inviteMessage) {
+      let toUsers = []
+      for (let i = 0; i < toUser.length; i++) {
+        toUsers.push(toUser[i]['user_id'])
+      }
+      axios
+        .post('/api/message/send', {
+          message: `${currentUser.name}님이 새로운 유저를 초대하였습니다`,
+          room_id: currentRoom.id,
+          to_users: toUsers,
+          user_id: currentUser.id,
+          type : 'message'
+        })
+        .then(res => {
+          
+        })
+        setInviteMessage(false)
+    }
+  }, [inviteMessage])
 
   const roomInvite = e => {
     // setCheckedInviteUsers([...checkedInviteUsers]);

@@ -18,18 +18,20 @@ function Message({ message: msg }) {
   const dispatch = useDispatch()
   const [memoOpen, setMemoOpen] = useState(false)
 
+
   const handleClose = e => {
-    e.preventDefault()
-    setMemoOpen(false)
+    e.preventDefault();
+    setMemoOpen(false);
+
   }
 
   const memoModal = () => {
-    console.log(JSON.parse(message.message).id)
-    setMemoOpen(true)
+    console.log(JSON.parse(message.message).id);
+    setMemoOpen(true);
   }
   useEffect(() => {
-    if (message.type == 'memo') {
-      console.log(JSON.parse(message.message))
+    if(message.type == 'memo') {
+      console.log(JSON.parse(message.message));
     }
   }, [message])
 
@@ -52,15 +54,12 @@ function Message({ message: msg }) {
   }
   return (
     <>
-      {message.type == 'memo' ? (
-        <MemoReadModal
-          open={memoOpen}
+    {message.type == 'memo' ?
+        <MemoReadModal  open={memoOpen}
           handleClose={handleClose}
           memo={JSON.parse(message.message)}
-        />
-      ) : (
-        ''
-      )}
+        /> : ''
+    }
 
       <div
         className={
@@ -148,65 +147,64 @@ function Message({ message: msg }) {
                         onClick={() => setOpen(true)}
                       ></img>
                       <ReactImageViewer
-                        imgs={
-                          'http://localhost:8000/storage/' + message.message
-                        }
+                        imgs={'http://localhost:8000/storage/' + message.message}
                         isOpen={isOpen}
                         onClose={() => setOpen(false)}
                       />
                     </div>
                   )
-                ) : message.type == 'memo' ? (
-                  // <div onClick={memoModal} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
-                  //   <span>
-                  //     {JSON.parse(message.memos).memo_title}
-                  //   </span>
-                  // </div>
-                  <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  ">
-                    <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
-                      <a className="p-3 w-12 h-12" download href="#">
-                        <FileIcon></FileIcon>
-                      </a>
-                    </div>
-                    <div className="flex flex-col">
-                      <div>
-                        <a href="#" download className="font-bold break-all">
-                          {JSON.parse(message.message).memo_title}
+                ) : (
+                  message.type == 'memo' ? 
+                    // <div onClick={memoModal} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
+                    //   <span>
+                    //     {JSON.parse(message.memos).memo_title}
+                    //   </span>
+                    // </div>
+                    <div className="flex text-left mr-2 py-3 px-4   rounded-xl border-2  ">
+                      <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
+                        <a
+                          className="p-3 w-12 h-12"
+                          download
+                          href='#'
+                        >
+                          <FileIcon
+                          ></FileIcon>
+                        </a>
+                      </div>
+                      <div className="flex flex-col">
+                        <div>
+                          <a
+                            href='#'
+                            download
+                            className="font-bold break-all"
+                          >
+                            {JSON.parse(message.message).memo_title}
+                          </a>
+                        </div>
+                      </div>
+                      <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
+                        <a
+                          className="p-3"
+                          download
+                          href='#'
+                        >
+                          <span className="text-primarytext">
+                            <DownloadIcon />
+                          </span>
                         </a>
                       </div>
                     </div>
-                    <div className="w-12 h-12 bg-primary300  flex rounded-2xl items-center ml-2">
-                      <a className="p-3" download href="#">
-                        <span className="text-primarytext">
-                          <DownloadIcon />
-                        </span>
-                      </a>
-                    </div>
-                  </div>
-                ) : message.type == 'group' ? (
-                  <a
-                    href={
-                      'http://localhost:3000/group/' +
-                      JSON.parse(message.message).id
-                    }
-                    className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border"
-                  >
-                    {JSON.parse(message.message).name} group에서 초대메세지가
-                    왔습니다.
-                  </a>
-                ) : message.type == 'video' ? (
-                  <a
-                    href={'http://localhost:3000/video/' + currentRoom.id}
-                    className="flex transform border-indigo-500/100 transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border"
-                  >
-                    <div className="flex flex-col">
-                      <span className="">{message.message}</span>
-                      <span>
-                        {'http://localhost:3000/video/' + currentRoom.id}
-                      </span>
-                    </div>
-                  </a>
-                ) : (
+                    :
+                    (message.type == 'group' ? 
+                      <a href={'http://localhost:3000/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border">
+                        {JSON.parse(message.message).name} group에서 초대메세지가 왔습니다.
+                      </a> : message.type == 'video' ?
+                      <a href={'http://localhost:3000/video/'+currentRoom.id} className="flex transform border-indigo-500/100 transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border">
+                         <div className='flex flex-col'>
+                            <span className=''>{message.message}</span>
+                            <span>{'http://localhost:3000/video/'+currentRoom.id}</span>
+                          </div>
+                      </a> :
                   <div
                     onDoubleClick={e => translation(message.message)}
                     className="text-left mr-2 py-3 px-4 bg-secondary    rounded-xl border "
@@ -222,7 +220,7 @@ function Message({ message: msg }) {
                         ''
                       )}
                     </span>
-                  </div>
+                  </div>)
                 )}
               </div>
             </div>
@@ -315,7 +313,8 @@ function Message({ message: msg }) {
                   />
                 </div>
               )
-            ) : message.type == 'memo' ? (
+            ) : (
+              message.type == 'memo' ? 
               // <button onClick={memoModal} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
               //   <span>
               //     {JSON.parse(message.memos).memo_title}
@@ -323,8 +322,12 @@ function Message({ message: msg }) {
               //   </button>
               <div className="flex text-left mr-2 py-3 px-4 rounded-xl border-2  ">
                 <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
-                  <button className="p-3 w-12 h-12" onClick={memoModal}>
-                    <FileIcon></FileIcon>
+                  <button
+                    className="p-3 w-12 h-12"
+                    onClick={memoModal}
+                  >
+                    <FileIcon
+                    ></FileIcon>
                   </button>
                 </div>
                 <div className="flex flex-col">
@@ -346,28 +349,17 @@ function Message({ message: msg }) {
                   </button>
                 </div>
               </div>
-            ) : message.type == 'group' ? (
-              <a
-                href={
-                  'http://localhost:3000/group/' +
-                  JSON.parse(message.message).id
-                }
-                className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]"
-              >
-                {JSON.parse(message.message).name} group에서 초대메세지가
-                왔습니다.
-              </a>
-            ) : message.type == 'video' ? (
-              <a
-                href={'http://localhost:3000/video/' + currentRoom.id}
-                className="transform border-indigo-500/100 border- transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border max-w-[50%]"
-              >
-                <div className="flex flex-col">
-                  <span className="w-full">{message.message}</span>
-                  <span>{'http://localhost:3000/video/' + currentRoom.id}</span>
-                </div>
-              </a>
-            ) : (
+                 :
+                 (message.type == 'group' ? 
+                  <a href={'http://localhost:3000/group/'+JSON.parse(message.message).id} className="transform transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 bg-primary hover:bg-blue-700 text-white rounded-xl border max-w-[50%]">
+                    {JSON.parse(message.message).name} group에서 초대메세지가 왔습니다.
+                  </a> : message.type == 'video' ? 
+                        <a href={'http://localhost:3000/video/'+currentRoom.id} className="transform border-indigo-500/100 border- transition duration-500 hover:scale-105 text-left mr-2 py-3 px-4 hover:bg-blue-700 hover:text-white text-primary rounded-xl border max-w-[50%]">
+                          <div className='flex flex-col'>
+                            <span className='w-full'>{message.message}</span>
+                            <span>{'http://localhost:3000/video/'+currentRoom.id}</span>
+                          </div>
+                        </a> :
               <div
                 onDoubleClick={e => translation(message.message)}
                 className="text-left mr-2 py-3 px-4 bg-primary text-white rounded-xl border max-w-[50%]"
@@ -383,7 +375,7 @@ function Message({ message: msg }) {
                     ''
                   )}
                 </span>
-              </div>
+              </div>)
             )}
           </>
         ) : null}

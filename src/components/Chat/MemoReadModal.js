@@ -1,3 +1,4 @@
+
 import {
   Badge,
   CircularProgress,
@@ -15,66 +16,68 @@ import * as React from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
+import SunEditor from 'suneditor-react'
 import MemoDetailImages from '../../layouts/MemoDetailImages'
 function MemoReadModal(props) {
   const { t } = useTranslation(['lang'])
   const dispatch = useDispatch()
   const currentUser = useSelector(state => state.Reducers.user)
-  const [memoTitle, setMemoTitle] = useState(null)
-  const [selectedImage, setSelectedImage] = useState([])
+  const [memoTitle, setMemoTitle] = useState(null);
+  const [selectedImage,setSelectedImage] = useState([])
 
   useEffect(() => {
-    if (props.memo) {
-      setMemoTitle(props.memo.memo_title)
+    if(props.memo) {
+      setMemoTitle(props.memo.memo_title);
     }
-  }, [props])
+  },[props])
 
   useEffect(() => {
-    console.log(memoTitle)
+    console.log(memoTitle);
   }, [memoTitle])
 
-  useEffect(() => {
-    if (props.open === true) {
+  useEffect(()=>{
+    if(props.open === true){
       console.log(props.memo.id)
-      axios
-        .get('/api/getmemoimages/' + props.memo.id)
-        .then(res => {
-          if (res.data.length == 0) setSelectedImage('No Data')
-          if (res.data.length >= 1) {
-            for (let i = 0; i < res.data.length; i++) {
-              setSelectedImage(images => [...images, res.data[i].url])
-            }
+    axios.get('/api/getmemoimages/'+props.memo.id)
+      .then((res)=>{
+        if(res.data.length == 0)
+           setSelectedImage("No Data")
+          if(res.data.length >= 1 ){
+          for(let i = 0 ; i < res.data.length ; i++){
+            setSelectedImage(images => [...images, res.data[i].url]);
+          }            
           }
           console.log(res.data)
-        })
-        .catch(err => {
+      })
+      .catch((err)=>{
           console.log(err)
-        })
-    } else {
+      })
+    } 
+    else{
       setSelectedImage([])
     }
-  }, [props.open])
+  },[props.open])
 
-  const myMemoUpdate = e => {
+  const myMemoUpdate = (e) => {
     // console.log(JSON.parse(props.memos).id);
-    console.log(props.memo)
-    axios
-      .post('api/storememo', {
-        user_id: currentUser.id,
-        content_text: props.memo.content_text,
-        memo_title: memoTitle,
+    console.log(props.memo);
+    axios.post('api/storememo', {
+      user_id : currentUser.id,
+      content_text : props.memo.content_text,
+      memo_title : memoTitle,
+      memo_type : props.memo.type
+    })
+    .then(res => {
+      console.log(res.data);
+      dispatch({
+        type: 'ADD_MEMO',
+        payload: { memo: res.data },
       })
-      .then(res => {
-        console.log(res.data)
-        dispatch({
-          type: 'ADD_MEMO',
-          payload: { memo: res.data },
-        })
-        props.handleClose(e)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      props.handleClose(e);
+    }).catch(err => {
+      console.log(err);
+    })
+
   }
 
   return (
@@ -137,40 +140,43 @@ function MemoReadModal(props) {
               </div>
               <div className="container mx-auto">
                 <div className="font-bold text-xl p-2 oveflow-x-auto">
-                  <input
-                    value={memoTitle}
-                    onChange={e => setMemoTitle(e.target.value)}
-                  />
+                <input value={memoTitle} onChange={e => setMemoTitle(e.target.value)} />
                 </div>
-                <hr
-                  style={{
-                    width: '100%',
-                    marginTop: 6,
-                  }}
-                />
+                <hr style={{
+                    width:'100%',
+                    marginTop:6
+                }}/>
                 <div className="flex flex-col overflow-y-auto h-96 px-2">
-                  {props.memo ? props.memo.content_text : ''}
-                  {selectedImage == '' ? (
-                    <div className="flex justify-center">
-                      <Skeleton
-                        variant="rectangular"
-                        width={595}
-                        height={400}
-                      />
-                    </div>
-                  ) : selectedImage != 'No Data' ? (
-                    <div className="flex justify-center">
-                      <MemoDetailImages imageList={selectedImage} />
-                    </div>
-                  ) : (
-                    <div></div>
-                  )}
-                  {/* {selectedImage != 'No data'
-                      ?<div></div>
-                      :selectedImage[0]
-                          ?<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>   
-                          :<div className='flex justify-center'><Skeleton variant="rectangular" width={595} height={400} /></div>
-                    } */}
+                  {/* { props.memo ? 
+                    props.memo.content_text
+                   : ''
+                  }
+                  {selectedImage == ''
+                    ?<div className='flex justify-center'><Skeleton variant="rectangular" width={595} height={400} /></div>
+                    :selectedImage != 'No Data'
+                        ?<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>   
+                        :<div></div>
+                  } */}
+                  {
+                    props.memo ?  
+                      props.memo.type === 'SNS' ?
+                      <div>
+                        {props.memo.content_text}
+                        {selectedImage == ''
+                        ?<div className='flex justify-center'><Skeleton variant="rectangular" width={595} height={400} /></div>
+                        :selectedImage != 'No Data'
+                            ?<div className='flex justify-center'><MemoDetailImages imageList={selectedImage}/></div>   
+                            :''}
+                      </div> :
+                      <SunEditor 
+                      readOnly
+                      hideToolbar 
+                      height="500" 
+                      defaultValue={props.memo.content_text}/>
+                      
+                    : ''  
+                  }
+
                 </div>
               </div>
               <div className="flex justify-center py-2">
@@ -193,44 +199,7 @@ function MemoReadModal(props) {
         </div>
       </Dialog>
     </Transition>
-    // <Modal
-    //   open={props.open}
-    //   onClose={props.handleClose}
-    //   aria-labelledby="modal-modal-title"
-    //   aria-describedby="modal-modal-description"
-    // >
-    //     {props.memo ?
-    //   <Box sx={style}>
-
-    //     <Typography id="modal-modal-title" variant="h6" component="h2">
-    //       <input value={memoTitle} onChange={e => setMemoTitle(e.target.value)} />
-    //     </Typography>
-    //     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-    //         {props.memo.content_text}
-    //     </Typography>
-    //     <Typography id="modal-modal-footer" sx={{ mt: 2 }}>
-    //       {/* <hr className="mb-2" /> */}
-    //       <Button
-    //         onClick={e => myMemoUpdate(e)}
-    //         variant="contained"
-    //         color="button"
-    //         size="small"
-    //       >
-    //         {/* {t('lang:COMPLETE')} */}
-    //         내 메모로 저장
-    //       </Button>
-    //       <Button
-    //         onClick={props.handleClose}
-    //         variant="contained"
-    //         color="button"
-    //         size="small"
-    //       >
-    //         {t('lang:CANCEL')}
-    //       </Button>
-    //     </Typography>
-    //   </Box>
-    //   : ''}
-    // </Modal>
+ 
   )
 }
 export default MemoReadModal

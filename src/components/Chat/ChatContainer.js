@@ -18,13 +18,13 @@ import 'moment/locale/ko'
 import MessageIcon from '@mui/icons-material/Message'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition
-const mic = new SpeechRecognition()
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+const mic = new SpeechRecognition();
 
 mic.continuous = true
 mic.interimResults = true
 // mic.lang = 'ja'
+
 
 function ChatContainer() {
   const messages = useSelector(state => state.Reducers.message)
@@ -40,11 +40,11 @@ function ChatContainer() {
   const dispatch = useDispatch()
   const chatCurrentPage = useSelector(state => state.Reducers.chat_current_page)
   const chatInfHandle = useSelector(state => state.Reducers.chat_inf_handle)
-  const [speechBoolean, setSpeechBoolean] = useState(false)
-  const [speechList, setSpeechList] = useState(false)
-  const [usersCountry, setUsersCountry] = useState([])
-  const [checkLag, setCheckLag] = useState(null)
-  const [sendSpeech, setSendSpeech] = useState(false)
+  const [speechBoolean, setSpeechBoolean] = useState(false);
+  const [speechList, setSpeechList] = useState(false);
+  const [usersCountry, setUsersCountry] = useState([]);
+  const [checkLag, setCheckLag] = useState(null);
+  const [sendSpeech, setSendSpeech] = useState(false);
   // const [toUser, setToUser] = useState({})
   const toUser = useSelector(state => state.Reducers.to_users)
   const scrollChatToBottom = chatBody =>
@@ -58,22 +58,19 @@ function ChatContainer() {
   const chatScroll = document.getElementById('scrollableDiv')
 
   useEffect(() => {
-    if (currentChatRoom) {
-      document
-        .getElementById('scrollableDiv')
-        .addEventListener('scroll', handleScroll)
+    if(currentChatRoom) {
+      document.getElementById('scrollableDiv').addEventListener('scroll', handleScroll);
 
       return () => {
-        document
-          .getElementById('scrollableDiv')
-          .removeEventListener('scroll', handleScroll)
+        document.getElementById('scrollableDiv').removeEventListener('scroll', handleScroll);
+  
       }
     }
-  })
+  });
 
   const handleScroll = () => {
-    if (document.getElementById('scrollableDiv').scrollTop == 0) {
-      setSendNewMessage(null)
+    if(document.getElementById('scrollableDiv').scrollTop == 0 ) {
+      setSendNewMessage(null);
     }
   }
 
@@ -111,8 +108,8 @@ function ChatContainer() {
 
   useEffect(() => {
     if (sendSpeech) {
-      console.log('보내기')
-      if (window.confirm(`녹음을 보낼까요? ${tempSpeech} => ${speech}`)) {
+      console.log('보내기');
+      if(window.confirm(`녹음을 보낼까요? ${tempSpeech} => ${speech}`)) {
         let toUsers = []
         for (let i = 0; i < toUser.length; i++) {
           toUsers.push(toUser[i]['user_id'])
@@ -123,56 +120,58 @@ function ChatContainer() {
             room_id: currentChatRoom.id,
             to_users: toUsers,
             user_id: currentUser.id,
-            type: 'message',
+            type : 'message'
           })
           .then(res => {
             transBotChat()
+            
           })
       }
       setCheckLag(null)
       setSendSpeech(false)
     }
 
-    setSpeech(null)
-  }, [sendSpeech, tempSpeech])
+    setSpeech(null);
+  }, [sendSpeech, tempSpeech]);
   const speechToText = () => {
-    setSpeechList(!speechList)
+    setSpeechList(!speechList);
     // console.log(speechBoolean);
   }
 
-  const speechStart = lang => {
-    setCheckLag(lang)
-    setSpeechList(!speechList)
-    setSpeechBoolean(!speechBoolean)
+  const speechStart = (lang) => {
+      setCheckLag(lang);
+      setSpeechList(!speechList);
+      setSpeechBoolean(!speechBoolean)
+
   }
 
   useEffect(() => {
     // console.log(speechBoolean);
-    if (speechBoolean) {
+    if(speechBoolean) {   
       // console.log('start');
-      mic.start()
+      mic.start();
       mic.onend = () => {
         console.log('continue..')
-        mic.start()
+        mic.start();
       }
-    } else {
+    }else {
       // console.log('stop');
-      mic.stop()
+      mic.stop();
       mic.onend = () => {
         console.log('stopped mic on click')
       }
-      if (speech) {
-        console.log(checkLag)
-        setTempSpeech(speech)
+      if(speech) {
+        console.log(checkLag);
+        setTempSpeech(speech);
         axios
-          .post('api/translate/text', { country: checkLag, text: speech })
-          .then(res => {
-            setSpeech(res.data)
-            setSendSpeech(true)
-          })
-          .catch(err => {
-            console.log(err)
-          })
+        .post('api/translate/text', { country: checkLag, text: speech })
+        .then(res => {
+          setSpeech(res.data)
+          setSendSpeech(true);
+        })
+        .catch(err => {
+          console.log(err)
+        })
       }
     }
     mic.onstart = () => {
@@ -181,73 +180,65 @@ function ChatContainer() {
 
     mic.onresult = event => {
       const transcript = Array.from(event.results)
-        .map(result => result[0])
-        .map(result => result.transcript)
-        .join('')
+      .map(result => result[0])
+      .map(result => result.transcript)
+      .join('')
       // console.log(transcript)
       setSpeech(transcript)
-
+      
       mic.onerror = event => {
-        console.log(event.error)
+        console.log(event.error);
       }
     }
-  }, [speechBoolean])
+
+  }, [speechBoolean]);
 
   useEffect(() => {
-    console.log(speech)
+
+    console.log(speech);
   }, [speech])
   useEffect(() => {
     if (currentChatRoom) {
       const channel = window.Echo.channel('room.' + currentChatRoom.id) // 채팅방 참여
         .listen('.send-message', e => {
           // e.message.read_users = "[]";
+          
           dispatch({
             type: 'ADD_MESSAGE_REVERSE',
             payload: {
               message: e.message,
             },
           })
-          if (
-            document.getElementById('scrollableDiv').scrollTop != 0 &&
-            e.message.user_id != currentUser.id
-          ) {
-            //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-            if (
-              e.message.type == 'message' ||
-              e.message.type == 'group' ||
-              e.message.type == 'video'
-            ) {
-              setSendNewMessage(e.message.message)
-            } else if (e.message.type == 'file') {
-              setSendNewMessage('파일이 도착했습니다')
-            } else {
-              setSendNewMessage('메모가 도착했습니다')
-            }
-          }
+          if (document.getElementById('scrollableDiv').scrollTop !=
+              0 && e.message.user_id != currentUser.id) { //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
+                if(e.message.type == 'message' || e.message.type == 'group' || e.message.type == 'video'){
+                  setSendNewMessage(e.message.message);
+                }else if(e.message.type == 'file'){
+                  setSendNewMessage('파일이 도착했습니다')
+                }else {
+                  setSendNewMessage('메모가 도착했습니다')
+                }
+                
+          } 
           dispatch({
             type: 'SET_ROOM_UPDATED_AT',
             payload: {
               updated_at: e.message.updated_at,
               last_message: e.message.message,
               room_id: e.message.room_id,
+              type : e.message.type
             },
           })
 
           if (e.message.type == 'file' || e.message.type == 'memo') {
-            if (
-              e.message.type == 'file' &&
-              e.message.message.startsWith('[{')
-            ) {
+            if (e.message.type == 'file' && e.message.message.startsWith('[{')) {
               dispatch({
                 type: 'ADD_CHAT_SIDE_FILES',
                 payload: {
                   files: e.message,
                 },
               })
-            } else if (
-              e.message.message.startsWith('[') ||
-              e.message.type == 'file'
-            ) {
+            } else if (e.message.message.startsWith('[') || e.message.type == 'file') {
               dispatch({
                 type: 'ADD_CHAT_SIDE_IMAGES',
                 payload: {
@@ -265,34 +256,30 @@ function ChatContainer() {
           }
         })
 
+
       return () => {
         channel.subscription.unbind(
           channel.eventFormatter.format('.send-message')
         )
       }
+
     }
   }, [currentChatRoom])
 
   useEffect(() => {
-    if (currentChatRoom) {
+    if(currentChatRoom) {
       const currentRoomUsersCountry = []
-      for (let i = 0; i < JSON.parse(currentChatRoom.users).length; i++) {
-        console.log(JSON.parse(currentChatRoom.users)[i].country)
-        if (
-          currentRoomUsersCountry.includes(
-            JSON.parse(currentChatRoom.users)[i].country
-          ) == false &&
-          JSON.parse(currentChatRoom.users)[i].country != null
-        ) {
-          console.log(JSON.parse(currentChatRoom.users)[i].country)
-          currentRoomUsersCountry.push(
-            JSON.parse(currentChatRoom.users)[i].country
-          )
+      for (let i = 0; i < JSON.parse(currentChatRoom.users).length; i++){
+        console.log(JSON.parse(currentChatRoom.users)[i].country);
+        if (currentRoomUsersCountry.includes(JSON.parse(currentChatRoom.users)[i].country) == false && JSON.parse(currentChatRoom.users)[i].country != null) {
+          console.log(JSON.parse(currentChatRoom.users)[i].country);
+          currentRoomUsersCountry.push(JSON.parse(currentChatRoom.users)[i].country);
         }
       }
-      setUsersCountry(currentRoomUsersCountry)
+      setUsersCountry(currentRoomUsersCountry);
     }
-  }, [currentChatRoom])
+
+  }, [currentChatRoom]);
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
@@ -325,23 +312,23 @@ function ChatContainer() {
         })
         .then(res => {
           console.log('파일 전송됨')
-          if (document.getElementById('scrollableDiv').scrollTop != 0) {
-            //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-            document.getElementById('scrollableDiv').scrollTop =
-              document.getElementById('scrollableDiv').scrollHeight
+          if (document.getElementById('scrollableDiv').scrollTop !=
+              0) { //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
+                document.getElementById('scrollableDiv').scrollTop = document.getElementById('scrollableDiv')
+                .scrollHeight
           }
           e.target.value = ''
         })
     }
   }
   const officalCheck = user => {
-    if (user.position === 'offical') {
+    if (user.position === 'official') {
       return true
     }
   }
 
   const changeVideo = () => {
-    window.location.href = 'http://localhost:3000/video/' + currentChatRoom.id
+    window.location.href = 'http://localhost:3000/video/'+currentChatRoom.id;
   }
 
   // useEffect(() => {
@@ -378,7 +365,7 @@ function ChatContainer() {
             room_id: currentChatRoom.id,
             user_id: users[i].user_id,
             to_users: toUsers,
-            type: 'message',
+            type : 'message'
           })
           .then(res => {
             console.log(res.data)
@@ -388,44 +375,47 @@ function ChatContainer() {
     }
   }
 
-  const sendMessage = type => {
+  const sendMessage = (type) => {
+
     let toUsers = []
     for (let i = 0; i < toUser.length; i++) {
       toUsers.push(toUser[i]['user_id'])
     }
-    if (type == 'video') {
+    if(type == 'video') {
       axios
-        .post('/api/message/send', {
-          message: currentUser.name + '님이 화상채팅에 초대했습니다',
-          room_id: currentChatRoom.id,
-          to_users: toUsers,
-          user_id: currentUser.id,
-          type: type,
-        })
-        .then(res => {
-          console.log(res.data)
-          changeVideo()
-        })
-    } else {
+      .post('/api/message/send', {
+        message: currentUser.name + '님이 화상채팅에 초대했습니다',
+        room_id: currentChatRoom.id,
+        to_users: toUsers,
+        user_id: currentUser.id,
+        type : type
+      })
+      .then(res => {
+        console.log(res.data)
+        changeVideo();
+      })
+    }else {
       axios
-        .post('/api/message/send', {
-          message: newMessage,
-          room_id: currentChatRoom.id,
-          to_users: toUsers,
-          user_id: currentUser.id,
-          type: type,
-        })
-        .then(res => {
-          console.log(res.data)
+      .post('/api/message/send', {
+        message: newMessage,
+        room_id: currentChatRoom.id,
+        to_users: toUsers,
+        user_id: currentUser.id,
+        type : type
+      })
+      .then(res => {
+        console.log(res.data)
           transBotChat()
-          if (document.getElementById('scrollableDiv').scrollTop != 0) {
-            //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-            document.getElementById('scrollableDiv').scrollTop =
-              document.getElementById('scrollableDiv').scrollHeight
+          if (document.getElementById('scrollableDiv').scrollTop !=
+              0) { //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
+                document.getElementById('scrollableDiv').scrollTop = document.getElementById('scrollableDiv')
+                .scrollHeight
           }
-        })
-      setNewMessage('')
+      })
+    setNewMessage('')
     }
+    
+
   }
 
   const onKeyPress = e => {
@@ -451,6 +441,7 @@ function ChatContainer() {
       .then(res => {
         dispatch({ type: 'DELETE_ROOM', payload: { room: res.data } })
         dispatch({ type: 'SET_CURRENT_CHATROOM', payload: { room: null } })
+
       })
   }
 
@@ -461,7 +452,7 @@ function ChatContainer() {
       dispatch(getMessage(currentChatRoom.id, 1))
       // setFollowing(currentUser.following)
       let toUsers = JSON.parse(currentChatRoom.users)
-      dispatch({ type: 'SET_TO_USERS', payload: { toUsers: toUsers } })
+      dispatch({type : 'SET_TO_USERS', payload : {toUsers : toUsers}})
       mic.lang = currentUser.country
 
       // setToUser(toUsers)
@@ -496,9 +487,7 @@ function ChatContainer() {
                       <a
                         // href={'video/'+currentChatRoom.id}
                         href="#"
-                        onClick={e => {
-                          sendMessage('video')
-                        }}
+                        onClick={e => {sendMessage('video');}}
                         className="flex items-center justify-center bg-primary300 hover:bg-primaryactive text-primarytext h-10 w-10 rounded-2xl"
                       >
                         <span>
@@ -629,42 +618,23 @@ function ChatContainer() {
                       ))
                     : null}
                 </InfiniteScroll>
-
-                {speechBoolean ? (
-                  <span className="rounded-xl bg-blue-300 p-2 absolute bottom-0">
-                    인식중
-                  </span>
-                ) : (
-                  <i class="fa-solid fa-spinner fa-spin-pulse"></i>
-                )}
-                {speechList ? (
-                  <div className="rounded-xl w-1/6 border p-1 absolute bottom-0">
-                    {currentChatRoom
-                      ? usersCountry.map((country, index) => (
-                          <button
-                            onClick={e => speechStart(country)}
-                            className="bg-blue-300 w-1/3 text-white p-1 rounded-sm m-1"
-                          >
-                            {country}
-                          </button>
-                        ))
-                      : ''}
-                  </div>
-                ) : (
-                  <i class="fa-solid fa-spinner fa-spin-pulse"></i>
-                )}
+                
+                {speechBoolean ? <span className='rounded-xl bg-blue-300 p-2 absolute bottom-0'>인식중</span> : <i class="fa-solid fa-spinner fa-spin-pulse"></i>}
+                {speechList ? 
+                <div className='rounded-xl w-1/6 border p-1 absolute bottom-0'>
+                  {currentChatRoom ? usersCountry.map((country, index) => (
+                    <button onClick={e => speechStart(country)} className='bg-blue-300 w-1/3 text-white p-1 rounded-sm m-1'>{country}</button>
+                  )) : ''}  
+                </div> : <i className="fa-solid fa-spinner fa-spin-pulse"></i>} 
               </div>
             ) : null}
-
+            
             <div className=" w-full flex ">
               {JSON.parse(currentChatRoom.users).findIndex(officalCheck) ? (
                 <div className="flex flex-row  items-center  bottom-0 my-2 w-full">
                   <div className="ml-2 flex flex-row border-gray bg-white items-center w-full border rounded-3xl h-12 px-2">
-                    {speechBoolean ? (
-                      <button
-                        onClick={e => setSpeechBoolean(!speechBoolean)}
-                        className="focus:outline-none flex items-center justify-center h-10 w-10 hover:text-red-600 text-red-400 ml-1"
-                      >
+                    {speechBoolean ? 
+                      <button onClick={e => setSpeechBoolean(!speechBoolean)} className="focus:outline-none flex items-center justify-center h-10 w-10 hover:text-red-600 text-red-400 ml-1">
                         <svg
                           className="w-5 h-5"
                           fill="none"
@@ -679,26 +649,21 @@ function ChatContainer() {
                           ></path>
                         </svg>
                       </button>
-                    ) : (
-                      <button
-                        onClick={speechToText}
-                        className="focus:outline-none flex items-center justify-center h-10 w-10 hover:text-red-600 text-red-400 ml-1"
+                      : <button onClick={speechToText} className="focus:outline-none flex items-center justify-center h-10 w-10 hover:text-red-600 text-red-400 ml-1">
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                          ></path>
-                        </svg>
-                      </button>
-                    )}
+                        <path
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                        ></path>
+                      </svg>
+                    </button>  }
                     <div className="w-full">
                       <input
                         value={newMessage || ''}
@@ -744,18 +709,10 @@ function ChatContainer() {
                 ''
               )}
             </div>
-            {sendNewMessage ? (
-              <button
-                onClick={e =>
-                  (document.getElementById('scrollableDiv').scrollTop = 0)
-                }
-                class="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 bg-gray-300 rounded-xl opacity-50"
-              >
-                {sendNewMessage}
-              </button>
-            ) : (
-              ''
-            )}
+            {sendNewMessage ? <button onClick={e => document.getElementById('scrollableDiv').scrollTop = 0}
+                    className="absolute bottom-20 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 bg-gray-300 rounded-xl opacity-50">
+                    { sendNewMessage }
+                </button> : ''} 
           </div>
         </div>
       ) : (

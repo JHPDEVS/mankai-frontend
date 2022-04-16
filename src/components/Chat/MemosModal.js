@@ -27,38 +27,38 @@ function MemosModal(props) {
   const toUser = useSelector(state => state.Reducers.to_users)
   const changeHandler = (checked, memo) => {
     if (checked) {
-      setCheckedMemos([...checkedMemos, memo])
+        setCheckedMemos([...checkedMemos, memo])
       console.log('체크 ')
     } else {
-      setCheckedMemos(checkedMemos.filter(el => el !== memo))
+        setCheckedMemos(checkedMemos.filter(el => el !== memo))
       console.log('체크 해제')
     }
   }
   React.useEffect(() => {
     if (complete) {
-      let toUsers = []
-      for (let i = 0; i < toUser.length; i++) {
-        toUsers.push(toUser[i]['user_id'])
-      }
-      axios
-        .post('/api/message/send', {
-          memos: checkedMemos,
-          room_id: currentChatRoom.id,
-          to_users: toUsers,
-          user_id: currentUser.id,
-          type: 'memo',
-        })
-        .then(res => {
-          console.log(res.data)
-          setComplete(false)
-          setCheckedMemos([])
-        })
+        let toUsers = []
+        for (let i = 0; i < toUser.length; i++) {
+          toUsers.push(toUser[i]['user_id'])
+        }
+        axios
+          .post('/api/message/send', {
+            memos : checkedMemos,
+            room_id: currentChatRoom.id,
+            to_users: toUsers,
+            user_id: currentUser.id,
+            type : 'memo'
+          })
+          .then(res => {
+            console.log(res.data);
+            setComplete(false)
+            setCheckedMemos([])
+          })
     }
   }, [checkedMemos, complete])
 
   const sendMemo = e => {
     // setCheckedInviteUsers([...checkedInviteUsers]);
-
+    
     setComplete(true)
     props.handleClose(e)
   }
@@ -129,37 +129,41 @@ function MemosModal(props) {
                   내 메모
                 </div>
                 <div className="flex flex-col overflow-y-auto h-96 px-2">
-                  {memos ? (
-                    memos.map((memo, index) => (
-                      <div
-                        key={index}
-                        className="relative flex w-full my-2 items-center"
-                      >
-                        <div class="relative flex-shrink-0">
-                          <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
-                            <button className="p-3 w-12 h-12">
-                              <FileIcon></FileIcon>
+                  { memos ? (
+                    memos
+                      .map((memo, index) => (
+                        <div key={index} className="relative flex w-full my-2 items-center">
+                          <div className="relative flex-shrink-0">
+                            <div className="w-12 h-12 bg-primary300 flex rounded-2xl items-center ml-1 ">
+                            <button
+                              className="p-3 w-12 h-12"
+                            >
+                              <FileIcon
+                              ></FileIcon>
                             </button>
                           </div>
-                        </div>
-                        <div class="flex-1 relative min-w-0">
-                          <p class="text-xl h-10 ml-2 font-medium text-gray-900 truncate dark:text-white">
-                            {memo.memo_title}
-                          </p>
-                        </div>
+                          </div>
+                          <div className="flex-1 relative min-w-0">
+                            <p className="text-xl h-10 ml-2 font-medium text-gray-900 truncate dark:text-white">
+                              {memo.memo_title}
+                            </p>
+                          </div>
 
-                        <input
-                          type="checkbox"
-                          id={'check' + index}
-                          className="rounded-full relative peer w-6 h-6"
-                          onChange={e => {
-                            changeHandler(e.currentTarget.checked, memo)
-                          }}
-                          checked={checkedMemos.includes(memo) ? true : false}
-                        />
-                        {/* <div class="absolute inset-0 bg-white peer-checked:bg-purple-50 peer-checked:border-purple-300 z-10 border rounded-2xl"></div> */}
-                      </div>
-                    ))
+                          <input
+                            type="checkbox"
+                            id={'check' + index}
+                            className="rounded-full relative peer w-6 h-6"
+                            onChange={e => {
+                              changeHandler(e.currentTarget.checked, memo)
+                            }}
+                            checked={
+                              checkedMemos.includes(memo) ? true : false
+                            }
+                          />
+                          {/* <div class="absolute inset-0 bg-white peer-checked:bg-purple-50 peer-checked:border-purple-300 z-10 border rounded-2xl"></div> */}
+                          
+                        </div>
+                      ))
                   ) : (
                     <div className="">
                       <CircularProgress size={48} />

@@ -25,6 +25,8 @@ import moment from 'moment'
 import { now } from 'moment'
 import ChatDrawer from './ChatDrawer'
 import RoomInviteUserModal from './RoomInviteUserModal'
+import firebase from 'firebase/app';
+import "firebase/messaging"
 function Chat() {
   const isOpen = useSelector(state => state.Reducers.chat_side)
   const [search, setSearch] = useState('')
@@ -43,6 +45,23 @@ function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const open1 = Boolean(anchorEl)
   const dispatch = useDispatch()
+
+
+  // const option = {
+  //   method: 'POST',
+  //   url: '', 
+  //   json: {
+  //     'to': notiToken, 
+  //     'notification': { 
+  //       'title': 'hello', 
+  //       'body': 'world!',
+  //     }
+  //   },
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'key=AAAAyHNj1PU:APA91bGTHakJiPoM3gBUvETE5jxDLTDkPejPWLKc1Vx9qbPZWFNmukec16arubGCZ6-lwceJaPSPleykqjEGwKDsZOiCtGsl21eA8pYABWZGzdA8JfHt6kY_tAk9Si_4ShNmEbBPQK4b' //위에서 찾았던 서버키 앞에 'key='을 붙여서 사용합니다.
+  //   }
+  // }
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -64,6 +83,7 @@ function Chat() {
               updated_at: e.message.updated_at,
               last_message: e.message.message,
               room_id: e.message.room_id,
+              type : e.message.type
             },
           })
         })
@@ -76,23 +96,27 @@ function Chat() {
   }, [currentUser])
 
   useEffect(() => {
-    if (rooms) {
+    if(rooms) {
       // console.log(rooms);
-      const channel = window.Echo.channel('user.' + currentUser.id)
-        .listen('.invite-event', e => {
-          dispatch(getCurrentRoom(e.room.id))
-          dispatch(getRooms(currentUser.id))
-        })
-        .listen('.delete-event', e => {
-          dispatch(getRooms(currentUser.id))
-        })
+      const channel = window.Echo.channel('user.' + currentUser.id) 
+      .listen('.invite-event', e => {
+
+          dispatch(getCurrentRoom(e.room.id));
+          dispatch(getRooms(currentUser.id)); 
+        
+      })
+      .listen('.delete-event', e => {
+        dispatch(getRooms(currentUser.id));
+
+      })
       return () => {
         channel.subscription.unbind(
           channel.eventFormatter.format('.invite-connect')
         )
       }
     }
-  }, [rooms])
+
+  }, [rooms]);
   useEffect(() => {
     console.log(currentUser)
     if (currentUser) {
@@ -100,6 +124,7 @@ function Chat() {
       dispatch(getRooms(currentUser.id))
     }
   }, [currentUser])
+
 
   const userName = (types, users) => {
     users = JSON.parse(users)
@@ -261,12 +286,7 @@ function Chat() {
                   <Tabs
                     className="w-full"
                     selectedIndex={index}
-                    onSelect={index =>
-                      dispatch({
-                        type: 'SET_CHAT_LIST_INDEX',
-                        payload: { index: index },
-                      })
-                    }
+                    onSelect={index => dispatch({type: 'SET_CHAT_LIST_INDEX', payload : {index : index}})}
                   >
                     <TabList className="flex sm:flex bg-tabbg rounded-xl border ">
                       <Tab
