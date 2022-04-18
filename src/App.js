@@ -35,7 +35,7 @@ import Profile from './components/MyPage/Profile'
 import YouPage from './components/MyPage/YouPage'
 import GroupDetail from './components/GroupDetail'
 
-axios.defaults.baseURL = 'http://localhost:8000/'
+axios.defaults.baseURL = 'http://api.mankai.shop/'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
 axios.defaults.withCredentials = true

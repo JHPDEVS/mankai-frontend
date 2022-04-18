@@ -2,7 +2,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware')
 module.exports = function (app) {
   app.use(
     createProxyMiddleware('/api', {
-      target: 'http://localhost:8000',
+      target: 'http://api.mankai.shop/',
       pathRewrite: { '^/api': 'api' },
       changeOrigin: true,
     })
@@ -10,7 +10,7 @@ module.exports = function (app) {
 
   app.use(
     createProxyMiddleware('/sanctum', {
-      target: 'http://localhost:8000',
+      target: 'http://api.mankai.shop/',
       pathRewrite: { '^/sanctum': 'sanctum' },
       changeOrigin: true,
     })
